@@ -13,5 +13,128 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\model">
+      <UniqueIdentifier>{d0d1cc0d-8036-451b-be7a-3929b6e89d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\geo">
+      <UniqueIdentifier>{ef96525f-905b-4ac4-b81d-f442dfbed32b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\model">
+      <UniqueIdentifier>{7d29bc78-9cf3-4ee9-894f-0663d44735eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\model\geo">
+      <UniqueIdentifier>{267ecd08-b1d9-4e00-bcf1-8f4f96ffe3e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view">
+      <UniqueIdentifier>{5bf97ed1-0d1b-4ca4-927b-8b32812e4f68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view\solidshader">
+      <UniqueIdentifier>{40fc9cda-9b9f-428c-8cc7-216ff3dbde19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view\solidshader\geo">
+      <UniqueIdentifier>{39ef010b-da0f-4a44-9408-d89a850bf8db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view">
+      <UniqueIdentifier>{11d8f380-6b24-4e9d-9a40-74e31e60e1a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\solidshader">
+      <UniqueIdentifier>{38d315e4-e4b2-4369-bdae-135963a32f6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{382bd395-3457-48b2-b922-3eee7a90d15d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{99903d7d-46a3-4f01-a304-8c62c66a5bbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\solidshader\geo">
+      <UniqueIdentifier>{667ddbe0-d81b-48cd-899d-7e79e80790c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sim">
+      <UniqueIdentifier>{1329eddc-72a1-4638-9d90-771ac6548404}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sim">
+      <UniqueIdentifier>{5dc851a7-248e-4036-a3aa-0626d981aea1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\camera">
+      <UniqueIdentifier>{7d77e97d-68bd-41e9-bc4a-b6df69e1a52e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util\camera">
+      <UniqueIdentifier>{1afc2cf1-61c0-44f5-96cb-8db42cc07367}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\simplegeo\grid.cpp">
+      <Filter>Source Files\model\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\solidshader\solidshader.cpp">
+      <Filter>Source Files\view\solidshader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\io.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\solidshader\geo\grid.cpp">
+      <Filter>Source Files\view\solidshader\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\TestScene.cpp">
+      <Filter>Source Files\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\Logger.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\camera\StaticCamera.cpp">
+      <Filter>Source Files\util\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\geo\Line.cpp">
+      <Filter>Source Files\model\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\solidshader\geo\Line.cpp">
+      <Filter>Source Files\view\solidshader\geo</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\model\geo\grid.h">
+      <Filter>Header Files\model\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\solidshader\geo\grid.h">
+      <Filter>Header Files\view\solidshader\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\solidshader\solidshader.h">
+      <Filter>Header Files\view\solidshader</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\io.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\TestScene.h">
+      <Filter>Header Files\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\Logger.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\camera\StaticCamera.h">
+      <Filter>Header Files\util\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\solidshader\geo\Line.h">
+      <Filter>Header Files\view\solidshader\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\geo\Line.h">
+      <Filter>Header Files\model\geo</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\solidshader.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\solidshader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
