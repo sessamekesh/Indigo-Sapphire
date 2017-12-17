@@ -6,6 +6,7 @@
 #include <future>
 #include <GLFW/glfw3.h>
 #include <util/Logger.h>
+#include <vector>
 
 namespace view
 {
@@ -17,6 +18,12 @@ namespace view
 			glm::vec4 _cColor;
 		};
 		void setVertexAttribPointers();
+
+		struct BasicGeometry
+		{
+			std::vector<SolidShaderVertex> verts_;
+			std::vector<std::uint32_t> indices_;
+		};
 
 		class SolidShader
 		{

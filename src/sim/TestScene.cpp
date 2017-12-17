@@ -1,6 +1,7 @@
 #include <sim/TestScene.h>
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace sim
 {
@@ -14,7 +15,8 @@ namespace sim
 		, lineModel_(nullptr)
 		, grid_(nullptr)
 		, line_(nullptr)
-		, projMatrix_(glm::perspective(glm::radians(80.f), 16.f / 9.f, 0.1f, 100.f))
+		, computerMonitor_(nullptr)
+		, projMatrix_(glm::perspective(glm::radians(90.f), 16.f / 9.f, 0.1f, 100.f))
 	{}
 	TestScene::~TestScene()
 	{
@@ -81,7 +83,7 @@ namespace sim
 		while (!glfwWindowShouldClose(_window))
 		{
 			// Basic events...
-			glClearColor(0x2e / 255.f, 0x6c / 255.f, 0x7e / 255.f, 1.f);
+			glClearColor(0x36 / 255.f, 0x45 / 255.f, 0x4f / 255.f, 1.f);
 			int width, height;
 			glfwGetWindowSize(this->_window, &width, &height);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -100,6 +102,9 @@ namespace sim
 
 				line_->prepare();
 				line_->render(solidShader_);
+
+				computerMonitor_->prepare();
+				computerMonitor_->render(solidShader_);
 			}
 			else
 			{
@@ -139,7 +144,13 @@ namespace sim
 
 	bool TestScene::initializeSceneObjects()
 	{
-		gridModel_ = std::make_shared<model::geo::Grid>(0.5f, 0.5f, 5.f, 5.f, glm::vec4(1.f, 0.f, 0.f, 1.f), 0.1f, 0.1f, glm::vec3(-2.f, 0.f, 2.f), glm::quat(), true, glm::vec4(0.1f, 0.1f, 0.1f, 1.f));
+		gridModel_ = std::shared_ptr<model::geo::Grid>(new model::geo::Grid(
+			5.f, 5.f, 100.f, 100.f,
+			0.085f,
+			glm::vec3(-50.f, -7.f, 5.f),
+			glm::angleAxis(glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)),
+			true, glm::vec4(0.1f, 0.1f, 0.1f, 1.f)
+		));
 		if (!gridModel_)
 		{
 			return false;
@@ -151,7 +162,11 @@ namespace sim
 			return false;
 		}
 
-		grid_ = std::make_shared<view::solidshader::geo::Grid>(gridModel_);
+		grid_ = std::make_shared<view::solidshader::geo::Grid>(
+			gridModel_,
+			16u,
+			glm::vec4(0x40/255.f, 0x5e/255.f, 0x5b/255.f, 1.f) // Grid color
+		);
 		if (!grid_ || !grid_->prepare())
 		{
 			log.error << "Failed to initialize grid object." << util::endl;
@@ -165,11 +180,29 @@ namespace sim
 			return false;
 		}
 
+		computerMonitor_ = std::shared_ptr<view::solidshader::assets::ComputerMonitor>(
+			new view::solidshader::assets::ComputerMonitor(
+				glm::vec3(0.f, -7.f, 25.f),
+				glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
+				glm::vec3(4.f, 4.f, 4.f)
+			)
+		);
+		if (!computerMonitor_ || !computerMonitor_->prepare())
+		{
+			log.error << "Failed to initialize computer monitor object." << util::endl;
+			return false;
+		}
+
 		return true;
 	}
 
 	bool TestScene::teardownSceneObjects()
 	{
+		if (computerMonitor_)
+		{
+			computerMonitor_->release();
+			computerMonitor_ = nullptr;
+		}
 		if (line_)
 		{
 			line_->release();

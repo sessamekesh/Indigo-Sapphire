@@ -9,6 +9,7 @@
 #include <util/camera/StaticCamera.h>
 #include <view/solidshader/geo/grid.h>
 #include <view/solidshader/geo/Line.h>
+#include <view/solidshader/assets/computermonitor.h>
 
 namespace sim
 {
@@ -64,6 +65,7 @@ namespace sim
 	private:
 		std::shared_ptr<view::solidshader::geo::Grid> grid_;
 		std::shared_ptr<view::solidshader::geo::Line> line_;
+		std::shared_ptr<view::solidshader::assets::ComputerMonitor> computerMonitor_;
 
 		bool initializeSceneObjects();
 		bool teardownSceneObjects();

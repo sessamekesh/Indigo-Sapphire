@@ -25,6 +25,9 @@ namespace view
 
 				glm::mat4 worldTransform();
 
+				std::vector<view::solidshader::SolidShaderVertex> getVertices();
+				std::vector<std::uint32_t> getIndices();
+
 			private:
 				std::uint8_t nSubdivisions_;
 				glm::vec4 color_;
@@ -36,9 +39,6 @@ namespace view
 
 				glm::mat4 worldTransform_;
 				bool worldTransformDirty_;
-
-				std::vector<view::solidshader::SolidShaderVertex> getVertices();
-				std::vector<std::uint32_t> getIndices();
 			};
 		}
 	}

@@ -24,6 +24,7 @@ namespace util
 		public:
 			InternalLogger(const char* prefix);
 			InternalLogger& operator<<(const char* msg);
+			InternalLogger& operator<<(const std::string& msg);
 
 			void setActive(bool isOn);
 		private:
@@ -38,6 +39,7 @@ namespace util
 		void setDefaultLevel(LOG_LEVEL defaultLevel);
 		
 		InternalLogger& operator<<(const char* msg);
+		InternalLogger& operator<<(const std::string& msg);
 		
 		InternalLogger info;
 		InternalLogger debug;

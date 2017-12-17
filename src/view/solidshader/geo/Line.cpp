@@ -44,6 +44,8 @@ namespace view
 					auto&& indices = getIndices();
 					glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(std::uint32_t), &indices[0], 0x00);
 
+					glBindVertexArray(NULL);
+
 					numIndices_ = indices.size();
 				}
 

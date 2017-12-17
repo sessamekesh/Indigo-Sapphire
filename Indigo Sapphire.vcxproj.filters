@@ -61,6 +61,12 @@
     <Filter Include="Header Files\util\camera">
       <UniqueIdentifier>{1afc2cf1-61c0-44f5-96cb-8db42cc07367}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\view\solidshader\assets">
+      <UniqueIdentifier>{776d3801-0e8b-447d-8187-eb2e8d062a4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\solidshader\assets">
+      <UniqueIdentifier>{3ec3d9b3-41a2-4a75-8a52-2237510bc287}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -96,6 +102,12 @@
     <ClCompile Include="src\view\solidshader\geo\Line.cpp">
       <Filter>Source Files\view\solidshader\geo</Filter>
     </ClCompile>
+    <ClCompile Include="src\view\solidshader\assets\importedgeo.cpp">
+      <Filter>Source Files\view\solidshader\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\solidshader\assets\computermonitor.cpp">
+      <Filter>Source Files\view\solidshader\assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -127,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="include\model\geo\Line.h">
       <Filter>Header Files\model\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\solidshader\assets\importedgeo.h">
+      <Filter>Header Files\view\solidshader\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\solidshader\assets\computermonitor.h">
+      <Filter>Header Files\view\solidshader\assets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
