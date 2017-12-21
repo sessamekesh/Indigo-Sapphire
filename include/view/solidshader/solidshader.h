@@ -29,6 +29,7 @@ namespace view
 		{
 		public:
 			SolidShader();
+			SolidShader(const SolidShader&) = delete;
 			~SolidShader();
 			bool initialize();
 

@@ -138,7 +138,13 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\model\geo\Line.cpp" />
+    <ClCompile Include="src\model\geo\plane.cpp" />
+    <ClCompile Include="src\model\geo\rectangle.cpp" />
     <ClCompile Include="src\model\simplegeo\grid.cpp" />
+    <ClCompile Include="src\model\specialgeo\metaball\boxboundedmetaballpath.cpp" />
+    <ClCompile Include="src\model\specialgeo\metaball\metaball.cpp" />
+    <ClCompile Include="src\model\specialgeo\metaball\metaballgroup.cpp" />
+    <ClCompile Include="src\model\withworldtransform.cpp" />
     <ClCompile Include="src\sim\TestScene.cpp" />
     <ClCompile Include="src\util\camera\StaticCamera.cpp" />
     <ClCompile Include="src\util\io.cpp" />
@@ -148,10 +154,19 @@
     <ClCompile Include="src\view\solidshader\geo\grid.cpp" />
     <ClCompile Include="src\view\solidshader\geo\Line.cpp" />
     <ClCompile Include="src\view\solidshader\solidshader.cpp" />
+    <ClCompile Include="src\view\special\metaball\phongshader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h" />
     <ClInclude Include="include\model\geo\Line.h" />
+    <ClInclude Include="include\model\geo\plane.h" />
+    <ClInclude Include="include\model\geo\rectangle.h" />
+    <ClInclude Include="include\model\specialgeo\metaball\boxboundedmetaballpath.h" />
+    <ClInclude Include="include\model\specialgeo\metaball\charge.h" />
+    <ClInclude Include="include\model\specialgeo\metaball\imetaballpath.h" />
+    <ClInclude Include="include\model\specialgeo\metaball\metaball.h" />
+    <ClInclude Include="include\model\specialgeo\metaball\metaballgroup.h" />
+    <ClInclude Include="include\model\withworldtransform.h" />
     <ClInclude Include="include\resources.h" />
     <ClInclude Include="include\sim\TestScene.h" />
     <ClInclude Include="include\util\camera\StaticCamera.h" />
@@ -162,8 +177,11 @@
     <ClInclude Include="include\view\solidshader\geo\grid.h" />
     <ClInclude Include="include\view\solidshader\geo\Line.h" />
     <ClInclude Include="include\view\solidshader\solidshader.h" />
+    <ClInclude Include="include\view\special\metaball\phongshader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\metaball-phong.frag" />
+    <None Include="shaders\metaball-phong.vert" />
     <None Include="shaders\solidshader.frag">
       <DeploymentContent>true</DeploymentContent>
       <FileType>Text</FileType>

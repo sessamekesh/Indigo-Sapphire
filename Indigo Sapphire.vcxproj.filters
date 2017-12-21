@@ -67,6 +67,30 @@
     <Filter Include="Source Files\view\solidshader\assets">
       <UniqueIdentifier>{3ec3d9b3-41a2-4a75-8a52-2237510bc287}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\model\specialgeo">
+      <UniqueIdentifier>{7205f7b7-2987-4e0e-8d2d-db05a52b8ca5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\model\specialgeo\metaball">
+      <UniqueIdentifier>{66b876e4-195e-4f93-a370-d0a83f477922}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\specialgeo">
+      <UniqueIdentifier>{2191a9d5-2785-4644-8b8b-c4c719acf50a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\specialgeo\metaball">
+      <UniqueIdentifier>{9a33d36e-d5c8-4bae-816b-4e1955c5495b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\special">
+      <UniqueIdentifier>{dfd0c62d-d6bd-4414-91c7-1bf2b646d5e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view\special">
+      <UniqueIdentifier>{2e0c34a7-2b11-475f-b5e2-342b800f3732}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view\special\metaball">
+      <UniqueIdentifier>{f26876e7-6aea-47d7-bdbc-df049cbbe7d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\special\metaball">
+      <UniqueIdentifier>{9a668f54-0501-40ae-9e77-60f37b52063a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -108,6 +132,27 @@
     <ClCompile Include="src\view\solidshader\assets\computermonitor.cpp">
       <Filter>Source Files\view\solidshader\assets</Filter>
     </ClCompile>
+    <ClCompile Include="src\model\specialgeo\metaball\boxboundedmetaballpath.cpp">
+      <Filter>Source Files\model\specialgeo\metaball</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\specialgeo\metaball\metaball.cpp">
+      <Filter>Source Files\model\specialgeo\metaball</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\geo\rectangle.cpp">
+      <Filter>Source Files\model\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\specialgeo\metaball\metaballgroup.cpp">
+      <Filter>Source Files\model\specialgeo\metaball</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\geo\plane.cpp">
+      <Filter>Source Files\model\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\withworldtransform.cpp">
+      <Filter>Source Files\model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\special\metaball\phongshader.cpp">
+      <Filter>Source Files\view\special\metaball</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -146,12 +191,45 @@
     <ClInclude Include="include\view\solidshader\assets\computermonitor.h">
       <Filter>Header Files\view\solidshader\assets</Filter>
     </ClInclude>
+    <ClInclude Include="include\model\specialgeo\metaball\charge.h">
+      <Filter>Header Files\model\specialgeo\metaball</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\metaball\imetaballpath.h">
+      <Filter>Header Files\model\specialgeo\metaball</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\metaball\boxboundedmetaballpath.h">
+      <Filter>Header Files\model\specialgeo\metaball</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\metaball\metaballgroup.h">
+      <Filter>Header Files\model\specialgeo\metaball</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\metaball\metaball.h">
+      <Filter>Header Files\model\specialgeo\metaball</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\geo\rectangle.h">
+      <Filter>Header Files\model\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\geo\plane.h">
+      <Filter>Header Files\model\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\withworldtransform.h">
+      <Filter>Header Files\model</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\special\metaball\phongshader.h">
+      <Filter>Header Files\view\special\metaball</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\solidshader.vert">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="shaders\solidshader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\metaball-phong.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\metaball-phong.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
