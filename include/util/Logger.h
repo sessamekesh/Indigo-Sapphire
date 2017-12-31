@@ -22,7 +22,7 @@ namespace util
 		class InternalLogger
 		{
 		public:
-			InternalLogger(const char* prefix);
+			InternalLogger(std::string prefix);
 			InternalLogger& operator<<(const char* msg);
 			InternalLogger& operator<<(const std::string& msg);
 
@@ -30,11 +30,11 @@ namespace util
 		private:
 			bool _out;
 			bool _shouldPrefix;
-			const char* _prefix;
+			std::string prefix_;
 		};
 
 	public:
-		Logger(LOG_LEVEL defaultLogLevel, LOG_LEVEL minLevel, const char* prefix);
+		Logger(LOG_LEVEL defaultLogLevel, LOG_LEVEL minLevel, std::string prefix);
 		void setMinLevel(LOG_LEVEL level);
 		void setDefaultLevel(LOG_LEVEL defaultLevel);
 		
@@ -50,6 +50,6 @@ namespace util
 	private:
 		LOG_LEVEL _defaultLevel;
 		LOG_LEVEL _minLevel;
-		const char* _prefix;
+		std::string prefix_;
 	};
 }

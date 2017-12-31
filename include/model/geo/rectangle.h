@@ -21,6 +21,8 @@ namespace model
 			~Rectangle() = default;
 
 			glm::vec3 pos() const;
+			float width() const;
+			float height() const;
 
 		protected:
 			float width_;

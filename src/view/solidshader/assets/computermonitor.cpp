@@ -37,7 +37,7 @@ namespace view
 			{
 				if (!isReady_)
 				{
-					auto importedGeo = importFromFile(ASSET_PATH("/static/computerscreen/computer_screen.fbx"), glm::vec4(0.2f, 0.2f, 0.2f, 1.f), { log_ });
+					auto importedGeo = importFromFile(ASSET_PATH("static/computerscreen/computer_screen.fbx"), glm::vec4(0.2f, 0.2f, 0.2f, 1.f), { log_ });
 					if (!importedGeo)
 					{
 						log_.error << "Could not load geometry for computer monitor - asset preparation failed" << util::endl;

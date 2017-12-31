@@ -70,12 +70,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\include;$(IncludePath)</IncludePath>
-    <LibraryPath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\kamis\indigo-sapphire\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\kamis\indigo-sapphire\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\include;$(IncludePath)</IncludePath>
-    <LibraryPath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\kamis\indigo-sapphire\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\kamis\indigo-sapphire\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\include;$(IncludePath)</IncludePath>
@@ -136,52 +136,99 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\lodepng.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\model\geo\Line.cpp" />
     <ClCompile Include="src\model\geo\plane.cpp" />
     <ClCompile Include="src\model\geo\rectangle.cpp" />
+    <ClCompile Include="src\model\imagedata.cpp" />
+    <ClCompile Include="src\model\light\directionallight.cpp" />
     <ClCompile Include="src\model\simplegeo\grid.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\boxboundedmetaballpath.cpp" />
+    <ClCompile Include="src\model\specialgeo\metaball\debugmetaballgroup.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\metaball.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\metaballgroup.cpp" />
     <ClCompile Include="src\model\withworldtransform.cpp" />
+    <ClCompile Include="src\sim\lakescene\lakescene.cpp" />
+    <ClCompile Include="src\sim\scene.cpp" />
     <ClCompile Include="src\sim\TestScene.cpp" />
     <ClCompile Include="src\util\camera\StaticCamera.cpp" />
+    <ClCompile Include="src\util\command\directionallightparser.cpp" />
+    <ClCompile Include="src\util\command\floatparser.cpp" />
+    <ClCompile Include="src\util\command\parserfactory.cpp" />
+    <ClCompile Include="src\util\command\quaternion.cpp" />
+    <ClCompile Include="src\util\command\staticcameraparser.cpp" />
+    <ClCompile Include="src\util\command\vec3parser.cpp" />
+    <ClCompile Include="src\util\command\withworldtransformparser.cpp" />
     <ClCompile Include="src\util\io.cpp" />
     <ClCompile Include="src\util\Logger.cpp" />
+    <ClCompile Include="src\view\cubemap.cpp" />
+    <ClCompile Include="src\view\shader.cpp" />
     <ClCompile Include="src\view\solidshader\assets\computermonitor.cpp" />
     <ClCompile Include="src\view\solidshader\assets\importedgeo.cpp" />
     <ClCompile Include="src\view\solidshader\geo\grid.cpp" />
     <ClCompile Include="src\view\solidshader\geo\Line.cpp" />
     <ClCompile Include="src\view\solidshader\solidshader.cpp" />
+    <ClCompile Include="src\view\special\metaball\metaballgroup.cpp" />
     <ClCompile Include="src\view\special\metaball\phongshader.cpp" />
+    <ClCompile Include="src\view\special\skyboxshader.cpp" />
+    <ClCompile Include="src\view\special\skybox\daylight.cpp" />
+    <ClCompile Include="src\view\terrainshader\assets\importedgeo.cpp" />
+    <ClCompile Include="src\view\terrainshader\terrainshader.cpp" />
+    <ClCompile Include="src\view\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\lodepng.h" />
     <ClInclude Include="include\model\geo\grid.h" />
     <ClInclude Include="include\model\geo\Line.h" />
     <ClInclude Include="include\model\geo\plane.h" />
     <ClInclude Include="include\model\geo\rectangle.h" />
+    <ClInclude Include="include\model\imagedata.h" />
+    <ClInclude Include="include\model\light\directionallight.h" />
     <ClInclude Include="include\model\specialgeo\metaball\boxboundedmetaballpath.h" />
     <ClInclude Include="include\model\specialgeo\metaball\charge.h" />
+    <ClInclude Include="include\model\specialgeo\metaball\debugmetaballgroup.h" />
     <ClInclude Include="include\model\specialgeo\metaball\imetaballpath.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaball.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaballgroup.h" />
     <ClInclude Include="include\model\withworldtransform.h" />
     <ClInclude Include="include\resources.h" />
+    <ClInclude Include="include\sim\lakescene\lakescene.h" />
+    <ClInclude Include="include\sim\scene.h" />
     <ClInclude Include="include\sim\TestScene.h" />
     <ClInclude Include="include\util\camera\StaticCamera.h" />
+    <ClInclude Include="include\util\command\directionallightparser.h" />
+    <ClInclude Include="include\util\command\floatparser.h" />
+    <ClInclude Include="include\util\command\icommandparser.h" />
+    <ClInclude Include="include\util\command\parseablevalue.h" />
+    <ClInclude Include="include\util\command\parserfactory.h" />
+    <ClInclude Include="include\util\command\quaternion.h" />
+    <ClInclude Include="include\util\command\staticcameraparser.h" />
+    <ClInclude Include="include\util\command\vec3parser.h" />
+    <ClInclude Include="include\util\command\withworldtransformparser.h" />
     <ClInclude Include="include\util\io.h" />
     <ClInclude Include="include\util\Logger.h" />
+    <ClInclude Include="include\util\pipelinestate.h" />
+    <ClInclude Include="include\view\cubemap.h" />
+    <ClInclude Include="include\view\shader.h" />
     <ClInclude Include="include\view\solidshader\assets\computermonitor.h" />
     <ClInclude Include="include\view\solidshader\assets\importedgeo.h" />
     <ClInclude Include="include\view\solidshader\geo\grid.h" />
     <ClInclude Include="include\view\solidshader\geo\Line.h" />
     <ClInclude Include="include\view\solidshader\solidshader.h" />
+    <ClInclude Include="include\view\special\metaball\metaballgroup.h" />
     <ClInclude Include="include\view\special\metaball\phongshader.h" />
+    <ClInclude Include="include\view\special\skyboxshader.h" />
+    <ClInclude Include="include\view\special\skybox\daylight.h" />
+    <ClInclude Include="include\view\terrainshader\assets\importedgeo.h" />
+    <ClInclude Include="include\view\terrainshader\terrainshader.h" />
+    <ClInclude Include="include\view\texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\metaball-phong.frag" />
     <None Include="shaders\metaball-phong.vert" />
+    <None Include="shaders\skybox.frag" />
+    <None Include="shaders\skybox.vert" />
     <None Include="shaders\solidshader.frag">
       <DeploymentContent>true</DeploymentContent>
       <FileType>Text</FileType>
@@ -190,6 +237,8 @@
       <DeploymentContent>true</DeploymentContent>
       <FileType>Text</FileType>
     </None>
+    <None Include="shaders\terrain.frag" />
+    <None Include="shaders\terrain.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

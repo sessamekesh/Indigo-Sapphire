@@ -91,6 +91,45 @@
     <Filter Include="Source Files\view\special\metaball">
       <UniqueIdentifier>{9a668f54-0501-40ae-9e77-60f37b52063a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\util\command">
+      <UniqueIdentifier>{93a936f2-2730-446c-84f5-9e290647699d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\command">
+      <UniqueIdentifier>{512bbe83-bf30-4964-bb69-9d75eea5c1f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sim\lakescene">
+      <UniqueIdentifier>{1a621fc0-d90e-4e64-91f8-c83f117b4584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sim\lakescene">
+      <UniqueIdentifier>{07d95bfa-ffd8-454b-ab59-8d18544b15d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\model\light">
+      <UniqueIdentifier>{7b22b461-5d9f-48e4-b2d2-18e387bd8100}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\light">
+      <UniqueIdentifier>{7c18138c-b418-493c-9521-81460e73dad5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view\terrainshader">
+      <UniqueIdentifier>{8b50ff24-bd66-4e6e-99fb-17400efa7805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\terrainshader">
+      <UniqueIdentifier>{0e84360b-9ee8-4f4a-9537-067eb65228d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view\terrainshader\assets">
+      <UniqueIdentifier>{50983f2f-ec52-4118-8df3-9de36cf7dce7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\terrainshader\assets">
+      <UniqueIdentifier>{ace887e4-1822-473f-bbbe-3af70775f6a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaders">
+      <UniqueIdentifier>{6ba049f6-248e-47fb-b7d1-c7388ceec36e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view\special\skybox">
+      <UniqueIdentifier>{159feabd-c74c-452f-a54e-00162f9bf45b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\special\skybox">
+      <UniqueIdentifier>{7a312a35-42a7-4b6a-8b0e-d67184ce1923}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -152,6 +191,69 @@
     </ClCompile>
     <ClCompile Include="src\view\special\metaball\phongshader.cpp">
       <Filter>Source Files\view\special\metaball</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\special\metaball\metaballgroup.cpp">
+      <Filter>Source Files\view\special\metaball</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\specialgeo\metaball\debugmetaballgroup.cpp">
+      <Filter>Source Files\model\specialgeo\metaball</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\shader.cpp">
+      <Filter>Source Files\view</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\command\floatparser.cpp">
+      <Filter>Source Files\util\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\command\vec3parser.cpp">
+      <Filter>Source Files\util\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\scene.cpp">
+      <Filter>Source Files\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\lakescene\lakescene.cpp">
+      <Filter>Source Files\sim\lakescene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\light\directionallight.cpp">
+      <Filter>Source Files\model\light</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\command\staticcameraparser.cpp">
+      <Filter>Source Files\util\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\command\parserfactory.cpp">
+      <Filter>Source Files\util\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lodepng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\terrainshader\terrainshader.cpp">
+      <Filter>Source Files\view\terrainshader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\texture.cpp">
+      <Filter>Source Files\view</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\terrainshader\assets\importedgeo.cpp">
+      <Filter>Source Files\view\terrainshader\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\imagedata.cpp">
+      <Filter>Source Files\model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\command\quaternion.cpp">
+      <Filter>Source Files\util\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\command\withworldtransformparser.cpp">
+      <Filter>Source Files\util\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\command\directionallightparser.cpp">
+      <Filter>Source Files\util\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\cubemap.cpp">
+      <Filter>Source Files\view</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\special\skyboxshader.cpp">
+      <Filter>Source Files\view\special</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\special\skybox\daylight.cpp">
+      <Filter>Source Files\view\special\skybox</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -218,19 +320,103 @@
     <ClInclude Include="include\view\special\metaball\phongshader.h">
       <Filter>Header Files\view\special\metaball</Filter>
     </ClInclude>
+    <ClInclude Include="include\view\special\metaball\metaballgroup.h">
+      <Filter>Header Files\view\special\metaball</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\metaball\debugmetaballgroup.h">
+      <Filter>Header Files\model\specialgeo\metaball</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\scene.h">
+      <Filter>Header Files\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\shader.h">
+      <Filter>Header Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\pipelinestate.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\floatparser.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\icommandparser.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\vec3parser.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\parseablevalue.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\lakescene.h">
+      <Filter>Header Files\sim\lakescene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\light\directionallight.h">
+      <Filter>Header Files\model\light</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\staticcameraparser.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\parserfactory.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lodepng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\terrainshader\terrainshader.h">
+      <Filter>Header Files\view\terrainshader</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\texture.h">
+      <Filter>Header Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\terrainshader\assets\importedgeo.h">
+      <Filter>Header Files\view\terrainshader\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\quaternion.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\withworldtransformparser.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\command\directionallightparser.h">
+      <Filter>Header Files\util\command</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\imagedata.h">
+      <Filter>Header Files\model</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\cubemap.h">
+      <Filter>Header Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\special\skyboxshader.h">
+      <Filter>Header Files\view\special</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\special\skybox\daylight.h">
+      <Filter>Header Files\view\special\skybox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\solidshader.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="shaders\solidshader.frag">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\metaball-phong.frag">
+      <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shaders\metaball-phong.vert">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="shaders\metaball-phong.frag">
-      <Filter>Resource Files</Filter>
+    <None Include="shaders\solidshader.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\solidshader.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\terrain.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\terrain.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.frag">
+      <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

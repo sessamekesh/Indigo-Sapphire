@@ -18,6 +18,13 @@ namespace model
 
 		glm::mat4 worldTransform();
 
+		void pos(const glm::vec3& pos);
+		glm::vec3 pos() const;
+		void rot(const glm::quat& rot);
+		glm::quat rot() const;
+		void scl(const glm::vec3& scl);
+		glm::vec3 scl() const;
+
 	protected:
 		glm::vec3 pos_;
 		glm::quat rot_;

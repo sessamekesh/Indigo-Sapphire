@@ -6,48 +6,47 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <sim/TestScene.h>
+#include <sim/lakescene/lakescene.h>
+#include <thread>
 
 int main()
 {
 	{
-		// TODO SESS: Add a command structure, so you can send commands to the scene
-		//  Probably on a separate thread, every frame checking to see if a command has been issued
-		//  Commands like
-		// - list
-		// - pos <object_id>
-		// - rot <object_id>
-		// - scl <object_id>
-		// - setpos <object_id> <pos>
-		// - setrot <object_id> <rot>
-		// - setscl <object_id> <scl>
-		// - export <filename>
-		// And then of course, standard WASD/arrows (shift for slow, ctrl fast) for moving the camera
-		// Commands are interpreted by the scene
-
-		// Envisioned example:
-		// [start: null scene]
-		// list scenes
-		// run IntroScene
-		// record IntroScene introsceneframes
-		// run CharacterScene
-		// inspect CharacterScene
-		// show_pip
-		// list
-		// keyframes main_camera
-		// set mc_kf1_pos 0 5 0
-		// run CharacterScene
-
 		// This would be able to change things that would otherwise be hard-coded, but you won't be able to add/remove
 		//  objects using the CLI interface. Still though. It's something!
 
 		// TODO SESS: Read in input values from a file. This way we can avoid recompiling every time you want
 		//  to move something just a little little bit.
-		sim::TestScene scene;
+		//sim::TestScene scene;
 
-		if (scene.Init())
+		//if (scene.Init())
+		//{
+		//	scene.Run();
+		//}
+
+		util::command::ParserFactory pf;
+		sim::lake::LakeScene ls(pf);
+		if (ls.Init())
 		{
-			scene.Run();
+			// TODO SESS: Make this more elaborate and global, so that the
+			//  `t.detach()` at the bottom is unnecessary.
+			using namespace std::chrono_literals;
+			// Start up command listener thread...
+			std::thread t([&ls](){
+				std::this_thread::sleep_for(1s);
+				std::cout << "Listening for commands." << std::endl;
+				while (ls.isRunning())
+				{
+					std::string nextCmd;
+					std::getline(std::cin, nextCmd);
+					ls.queueCommand(nextCmd);
+				}
+				return true;
+			});
+			ls.Run();
+			t.detach();
 		}
+		ls.Shutdown();
 	}
 
 	std::cin.ignore();

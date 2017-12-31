@@ -4,13 +4,13 @@ namespace util
 {
 	const char* endl = "\n";
 
-	Logger::Logger(LOG_LEVEL defaultLogLevel, LOG_LEVEL minLevel, const char* prefix)
+	Logger::Logger(LOG_LEVEL defaultLogLevel, LOG_LEVEL minLevel, std::string prefix)
 		: info(prefix)
 		, debug(prefix)
 		, warn(prefix)
 		, error(prefix)
 		, panic(prefix)
-		, _prefix(prefix)
+		, prefix_(prefix)
 	{
 		setMinLevel(minLevel);
 		setDefaultLevel(defaultLogLevel);
@@ -56,10 +56,10 @@ namespace util
 		}
 	}
 
-	Logger::InternalLogger::InternalLogger(const char* prefix)
+	Logger::InternalLogger::InternalLogger(std::string prefix)
 		: _out(true)
 		, _shouldPrefix(true)
-		, _prefix(prefix)
+		, prefix_(prefix)
 	{}
 
 	Logger::InternalLogger& Logger::InternalLogger::operator<<(const char* msg)
@@ -71,9 +71,9 @@ namespace util
 
 		for (const char* s = msg; s != nullptr && *s != '\0'; s++)
 		{
-			if (_shouldPrefix && _prefix != nullptr)
+			if (_shouldPrefix)
 			{
-				std::cout << _prefix;
+				std::cout << prefix_;
 				_shouldPrefix = false;
 			}
 

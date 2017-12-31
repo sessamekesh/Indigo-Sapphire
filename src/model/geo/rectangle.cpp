@@ -19,5 +19,15 @@ namespace model
 		{
 			return pos_;
 		}
+
+		float Rectangle::width() const
+		{
+			return width_;
+		}
+
+		float Rectangle::height() const
+		{
+			return height_;
+		}
 	}
 }

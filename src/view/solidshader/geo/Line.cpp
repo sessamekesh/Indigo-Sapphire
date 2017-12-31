@@ -153,7 +153,6 @@ namespace view
 
 				for (std::uint8_t i = 0u; i < nSubdivisions_ * 2 - 2; i+=2)
 				{
-					// TODO SESS: Continue here, in making the line renderable!
 					tr.push_back(i);
 					tr.push_back(i + 1);
 					tr.push_back(i + 2);

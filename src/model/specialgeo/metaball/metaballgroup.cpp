@@ -40,8 +40,8 @@ namespace model
 				{
 					float distance;
 					int idx;
-				} closestMetaball = { glm::dot(activeMetaballs_[0].pos(matWorld) - viewerPos, lookAtDirection) - activeMetaballs_[0].radius(), 0 };
-				for (auto i = 1; i < activeMetaballs_.size(); i++)
+				} closestMetaball = { glm::dot(activeMetaballs_[0u].pos(matWorld) - viewerPos, lookAtDirection) - activeMetaballs_[0].radius(), 0 };
+				for (auto i = 1; i < (int)activeMetaballs_.size(); i++)
 				{
 					float dist = glm::dot(activeMetaballs_[i].pos(matWorld) - viewerPos, lookAtDirection) - activeMetaballs_[i].radius();
 					if (closestMetaball.distance < 0.f || (dist < closestMetaball.distance && dist > 0.f))
@@ -163,6 +163,14 @@ namespace model
 				}
 
 				return tr;
+			}
+
+			void MetaballGroup::update(float dt)
+			{
+				for (auto&& m : activeMetaballs_)
+				{
+					m.update(dt);
+				}
 			}
 		}
 	}

@@ -46,7 +46,7 @@ namespace view
 				glGetShaderInfoLog(vs, SolidShader::MAX_INFO_LOG_LENGTH, nullptr, errLog);
 				log.error << "Failed to compile solid shader vertex shader! Error below\n=====BEGIN ERROR LOG=====\n";
 				log.error << errLog;
-				log.error << "\n======END ERROR LOG=====\n" << util::endl;
+				log.error << "\n======END ERROR LOG=====" << util::endl;
 				delete[] errLog;
 
 				return false;
@@ -69,7 +69,7 @@ namespace view
 				glGetShaderInfoLog(fs, SolidShader::MAX_INFO_LOG_LENGTH, nullptr, errLog);
 				log.error << "Failed to compile solid shader fragment shader! Error below\n=====BEGIN ERROR LOG=====\n";
 				log.error << errLog;
-				log.error << "\n======END ERROR LOG=====\n" << util::endl;
+				log.error << "\n======END ERROR LOG=====" << util::endl;
 				delete[] errLog;
 
 				return false;
@@ -139,10 +139,10 @@ namespace view
 		}
 		void setVertexAttribPointers()
 		{
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), nullptr);
-			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+			//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
 			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
+			//glEnableVertexAttribArray(1);
 		}
 	}
 }

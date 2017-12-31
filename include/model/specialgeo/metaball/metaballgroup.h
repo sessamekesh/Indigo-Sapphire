@@ -33,6 +33,8 @@ namespace model
 
 				std::optional<geo::Rectangle> getOrthoBindingRect(const glm::vec3& viewerPos, const glm::vec3& lookAtDirection, const glm::vec3& viewerUp);
 
+				void update(float dt);
+
 				Metaball getMetaball(const int idx) const;
 				void removeMetaballAt(const int idx);
 				unsigned int addMetaball(const Metaball& metaball);

@@ -5,5 +5,4 @@
 
 namespace util
 {
-	std::future<std::string> readFileAsync(const char* path);
-}
+	std::future<std::string> readFileAsync(const char* path);}

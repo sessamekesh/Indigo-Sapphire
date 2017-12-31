@@ -23,12 +23,45 @@ namespace model
 		if (isWorldTransformDirty_)
 		{
 			worldTransform_ = glm::mat4();
-			worldTransform_ *= glm::translate(pos_);
-			worldTransform_ *= glm::toMat4(rot_);
-			worldTransform_ *= glm::scale(scl_);
+			worldTransform_ = glm::translate(worldTransform_, pos_);
+			worldTransform_ = glm::rotate(worldTransform_, glm::angle(rot_), glm::axis(rot_));
+			worldTransform_ = glm::scale(worldTransform_, scl_);
 			isWorldTransformDirty_ = false;
 		}
 
 		return worldTransform_;
+	}
+
+	void WithWorldTransform::pos(const glm::vec3 & pos)
+	{
+		pos_ = pos;
+		isWorldTransformDirty_ = true;
+	}
+
+	glm::vec3 WithWorldTransform::pos() const
+	{
+		return pos_;
+	}
+
+	void WithWorldTransform::rot(const glm::quat& rot)
+	{
+		rot_ = rot;
+		isWorldTransformDirty_ = true;
+	}
+
+	glm::quat WithWorldTransform::rot() const
+	{
+		return rot_;
+	}
+
+	void WithWorldTransform::scl(const glm::vec3& scl)
+	{
+		scl_ = scl;
+		isWorldTransformDirty_ = true;
+	}
+
+	glm::vec3 WithWorldTransform::scl() const
+	{
+		return scl_;
 	}
 }

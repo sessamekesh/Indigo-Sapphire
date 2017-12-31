@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <model/specialgeo/metaball/debugmetaballgroup.h>
 
 namespace sim
 {
@@ -10,13 +11,18 @@ namespace sim
 		, _window(nullptr)
 		, log(util::LOG_LEVEL::DEBUG, util::LOG_LEVEL::INFO, "[TestScene] ")
 		, solidShader_(nullptr)
+		, metaballPhongShader_(nullptr)
 		, camera_(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 5.f), glm::vec3(0.f, 1.f, 0.f))
 		, gridModel_(nullptr)
 		, lineModel_(nullptr)
+		, metaballGroupModel_(nullptr)
 		, grid_(nullptr)
 		, line_(nullptr)
 		, computerMonitor_(nullptr)
+		, metaballGroup_(nullptr)
 		, projMatrix_(glm::perspective(glm::radians(90.f), 16.f / 9.f, 0.1f, 100.f))
+		, isFirstFrame_(true)
+		, lastFrameTime_(std::chrono::high_resolution_clock::now())
 	{}
 	TestScene::~TestScene()
 	{
@@ -92,6 +98,20 @@ namespace sim
 			glDisable(GL_CULL_FACE);
 			glEnable(GL_DEPTH_TEST);
 
+			if (isFirstFrame_)
+			{
+				lastFrameTime_ = std::chrono::high_resolution_clock::now();
+				isFirstFrame_ = false;
+			}
+			else
+			{
+				float dt = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastFrameTime_).count() / 1000.f;
+				lastFrameTime_ = std::chrono::high_resolution_clock::now();
+
+				metaballGroupModel_->update(dt);
+			}
+
+			glDisable(GL_BLEND);
 			if (solidShader_->activate())
 			{
 				solidShader_->setViewMatrix(camera_.getViewTransform());
@@ -103,12 +123,46 @@ namespace sim
 				line_->prepare();
 				line_->render(solidShader_);
 
-				computerMonitor_->prepare();
-				computerMonitor_->render(solidShader_);
+				//computerMonitor_->prepare();
+				//computerMonitor_->render(solidShader_);
 			}
 			else
 			{
 				log.warn << "Failed to activate solid shader, not drawing any solid objects this frame" << util::endl;
+			}
+
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			if (metaballPhongShader_->activate())
+			{
+				metaballPhongShader_->setViewMatrix(camera_.getViewTransform());
+				metaballPhongShader_->setCameraPos(camera_.pos());
+				metaballPhongShader_->setProjMatrix(projMatrix_);
+				metaballPhongShader_->setStepSize(0.08f);
+				metaballPhongShader_->setLight(
+					glm::vec3(0.1f, 0.1f, 0.1f),
+					glm::vec3(1.f, 1.f, 1.f),
+					glm::vec3(1.f, 1.f, 1.f)
+				);
+				metaballPhongShader_->setLightDir(
+					glm::normalize(glm::vec3(1.f, -2.f, 3.f))
+				);
+
+				if (metaballGroup_->preparePhong(
+					camera_.pos(),
+					camera_.lookDir(),
+					camera_.up()
+				)) {
+					metaballGroup_->renderPhong(metaballPhongShader_);
+				}
+				else
+				{
+					// log.debug << "Metaball group prepare failed. Perhaps it is behind the camera?" << util::endl;
+				}
+			}
+			else
+			{
+				log.warn << "Failed to activate metaball phong shader, not drawing any phong metaballs this frame" << util::endl;
 			}
 
 			// Present...
@@ -122,6 +176,7 @@ namespace sim
 
 	bool TestScene::initializeShaders()
 	{
+		log.info << "Creating shaders...";
 		solidShader_ = std::make_shared<view::solidshader::SolidShader>();
 		if (!solidShader_->initialize())
 		{
@@ -129,15 +184,30 @@ namespace sim
 			return false;
 		}
 
+		metaballPhongShader_ = std::make_shared<view::special::metaball::PhongShader>();
+		if (!metaballPhongShader_->initialize())
+		{
+			log.error << "Failed to create metaball phong shader" << util::endl;
+			return false;
+		}
+		log.info << "Shaders created";
+
 		return true;
 	}
 
 	bool TestScene::teardownShaders()
 	{
+		log.warn << "Tearing down shaders..." << util::endl;
+		if (metaballPhongShader_ != nullptr)
+		{
+			metaballPhongShader_ = nullptr;
+		}
+
 		if (solidShader_ != nullptr)
 		{
 			solidShader_ = nullptr;
 		}
+		log.warn << "Shaders destroyed" << util::endl;
 
 		return true;
 	}
@@ -161,6 +231,18 @@ namespace sim
 		{
 			return false;
 		}
+
+		metaballGroupModel_ = std::shared_ptr<model::specialgeo::metaball::MetaballGroup>(
+			new model::specialgeo::metaball::DebugMetaballGroup(
+				glm::vec3(0.f, 0.f, 10.f),
+				glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
+				glm::vec3(1.f, 1.f, 1.f),
+				glm::vec3(-5.f, -2.f, -1.f),
+				glm::vec3(5.f, 2.f, 1.f),
+				8u,
+				3.f
+			)
+		);
 
 		grid_ = std::make_shared<view::solidshader::geo::Grid>(
 			gridModel_,
@@ -193,11 +275,30 @@ namespace sim
 			return false;
 		}
 
+		metaballGroup_ = std::shared_ptr<view::special::metaball::MetaballGroup>(
+			new view::special::metaball::MetaballGroup(
+				metaballGroupModel_,
+				glm::vec3(1.f, 0.f, 0.f),
+				glm::vec3(1.f, 1.f, 1.f),
+				100.f
+			)
+		);
+		if (!metaballGroup_ || !metaballGroup_->preparePhong(camera_.pos(), camera_.lookDir(), camera_.up()))
+		{
+			log.error << "Failed to initialize metaball group object." << util::endl;
+			return false;
+		}
+
 		return true;
 	}
 
 	bool TestScene::teardownSceneObjects()
 	{
+		if (metaballGroup_)
+		{
+			metaballGroup_->release();
+			metaballGroup_ = nullptr;
+		}
 		if (computerMonitor_)
 		{
 			computerMonitor_->release();

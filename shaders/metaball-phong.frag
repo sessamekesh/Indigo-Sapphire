@@ -1,12 +1,13 @@
 // https://github.com/orglofch/metaballs/blob/master/Metaballs/metaball_shader_3d.frag
 
-varying vec4 fColor;
+#version 120
+
+varying vec3 fWorldPos;
 
 #define MAX_CHARGES 30
 
 #define EPSILON 0.01
 #define INF 1.0 / 0.0
-#define MAX_REFLECTIONS 2
 
 #define INTERSECTION_ENTRY
 #define INTERSECTION_ENTRANCE
@@ -24,6 +25,11 @@ uniform vec3 ambientColor;
 uniform vec3 diffuseColor;
 uniform vec3 specularColor;
 uniform float shininess;
+
+uniform vec3 mtlDiffuse;
+uniform vec3 mtlSpecular;
+
+uniform float stepSize;
 
 /**
  * Calculates the intersections with the given charge sphere.
@@ -91,7 +97,7 @@ float calculateCharge(in float distance, in float charge_radius)
         return 0;
     }
 
-    return 1.0 - r * r * r * (r * ( r * 6.0 - 15.0) + 10.0);
+    return 1.0 - r*r*r * (r * (r * 6.0 - 15.0) + 10.0);
 }
 
 bool findIntersection(in vec3 ro, in vec3 rd, out vec3 pos, out vec3 normal)
@@ -108,13 +114,14 @@ bool findIntersection(in vec3 ro, in vec3 rd, out vec3 pos, out vec3 normal)
     float min_t = INF;
     float max_t = 0.0;
 
-    for (int i = 0; i < charge_count; ++i)
+    for (int i = 0; i < numCharges; ++i)
     {
         float roots[2];
         int num_roots = findSphereIntersection(ro, rd, i, roots);
         if (num_roots > 0)
         {
-            active_charges[intersection_count++] = i;
+            active_charges[intersection_count] = i;
+			intersection_count++;
             if (num_roots >= 1 && roots[0] > 0)
             {
                 max_t = max(max_t, roots[0]);
@@ -147,7 +154,7 @@ bool findIntersection(in vec3 ro, in vec3 rd, out vec3 pos, out vec3 normal)
             step_charge += calculateCharge(dist, metaball.w);
         }
 
-        if (step_charge >= 0.4)
+        if (step_charge >= 0.34)
         {
             normal = vec3(0, 0, 0);
             // Add normals for each metaball based on their contribution
@@ -165,10 +172,8 @@ bool findIntersection(in vec3 ro, in vec3 rd, out vec3 pos, out vec3 normal)
             normal = normalize(normal);
             return true;
         }
-        // Take larger steps the lower our step charge
-        //  (the farther we are from the meta surface)
-        float step = step_charge;
-        cur_t += 0.5; // TODO SESS: You could use a fancier formula here...
+		// TODO SESS: If the step charge is low (i.e., we are far from the surface) take a larger step
+		cur_t += stepSize;
     }
 
     return false;
@@ -176,21 +181,32 @@ bool findIntersection(in vec3 ro, in vec3 rd, out vec3 pos, out vec3 normal)
 
 vec4 colorForIntersection(in vec3 rd, in vec3 pos, in vec3 normal)
 {
-    // TODO SESS: Fill this in
-    return vec4(1.0, 0.0, 0.0, 1.0);
+	vec4 color = vec4(ambientColor, 1.0);
+	vec3 l_pos, l_normal;
+	float lambertian = max(dot(-lightDir, normal), 0.0);
+	float specular = 0.0;
+	if (lambertian > 0.0)
+	{
+		vec3 refl_dir = reflect(-lightDir, normal);
+		float spec_angle = max(dot(refl_dir, rd), 0.0);
+		specular = pow(spec_angle, shininess/4.0);
+	}
+	color += lambertian * vec4(mtlDiffuse * diffuseColor, 1.0) + specular * vec4(mtlSpecular * specularColor, 1.0);
+
+    return color;
 }
 
 void main()
 {
     // TODO SESS: Use RH coordinates or LH? Original uses LH
-    vec3 pixel_in_world = (matView * vec4(gl_FragCoord.xy, 0, 1)).xyz;
+    // vec3 pixel_in_world = (matView * vec4(gl_FragCoord.xy, 0, 1)).xyz;
 
     vec3 ro = cameraPos;
-    vec3 rd = normalize(pixel_in_world - cameraPos);
+    vec3 rd = normalize(fWorldPos - cameraPos);
 
     vec4 final_color = vec4(0.0);
     float color_frac = 1.0;
-    for (int i = 0; i < MAX_REFLECTIONS + 1; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         vec3 pos, normal;
         if (!findIntersection(ro, rd, pos, normal))
@@ -200,6 +216,8 @@ void main()
 
         vec4 color = colorForIntersection(rd, pos, normal);
 
+		final_color = final_color * (1.0 - color_frac) + color * color_frac;
+
         // Set parameters for next iteration
         color_frac = color_frac * 0.2;
         ro = pos + normal;
@@ -207,5 +225,5 @@ void main()
     }
 
     // TODO SESS: Adjust this for blending
-    gl_FragCoord = vec4(final_color.xyz, 1.0);
+    gl_FragColor = clamp(final_color, 0.0, 1.0);
 }

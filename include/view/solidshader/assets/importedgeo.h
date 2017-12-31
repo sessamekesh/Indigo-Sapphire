@@ -14,7 +14,6 @@ namespace view
 	{
 		namespace assets
 		{
-			// TODO SESS: Implement
 			std::optional<std::map<std::string, BasicGeometry>> importFromFile(
 				const std::string& file,
 				const glm::vec4& defaultColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.f),

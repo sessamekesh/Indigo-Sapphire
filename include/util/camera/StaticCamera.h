@@ -21,6 +21,15 @@ namespace util
 
 			const glm::mat4& getViewTransform();
 
+			glm::vec3 pos() const;
+			glm::vec3 lookDir(bool normalized = false) const;
+			glm::vec3 lookAt() const;
+			glm::vec3 up() const;
+
+			void pos(const glm::vec3& pos);
+			void lookAt(const glm::vec3& lookAt);
+			void up(const glm::vec3& up);
+
 		protected:
 			glm::vec3 pos_;
 			glm::vec3 lookAt_;
