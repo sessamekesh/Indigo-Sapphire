@@ -9,9 +9,11 @@
 #include <util/command/parserfactory.h>
 #include <model/light/directionallight.h>
 #include <view/special/skybox/daylight.h>
+#include <view/special/watersurface/rectangle.h>
+#include <view/framebuffer.h>
+#include <util/camera/planarreflectioncamera.h>
 
-// TODO SESS: Put in a skybox around the entire scene now
-// After that, you can start working on the water surface
+// TODO SESS: start working on the water surface!
 // After that, you can start working on the rocks
 // After that, you can start working on the trees
 // After that, you can start working on the waterbender effect
@@ -44,7 +46,12 @@ namespace sim
 			bool shouldExit() override;
 
 			//
-			// Helpers
+			// Rendering Organization
+			//
+			void renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::optional<glm::vec3> clipNormal = std::nullopt, std::optional<glm::vec3> clipOrigin = std::nullopt);
+
+			//
+			// Initialization Helpers
 			//
 		private:
 			bool setupTextures();
@@ -58,12 +65,14 @@ namespace sim
 			std::shared_ptr<view::terrainshader::TerrainShader> terrainShader_;
 			std::shared_ptr<view::special::SkyboxShader> skyboxShader_;
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
+			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 
 			//
 			// Models
 			//
 		private:
 			std::shared_ptr<model::specialgeo::metaball::MetaballGroup> metaballGroupModel_;
+			std::shared_ptr<model::geo::Rectangle> waterSurfaceModel_;
 
 			//
 			// Resources
@@ -71,9 +80,11 @@ namespace sim
 		private:
 			std::shared_ptr<view::special::metaball::MetaballGroup> metaballGroup_;
 			std::shared_ptr<view::terrainshader::assets::ImportedGeo> terrain_;
-			std::shared_ptr<util::camera::StaticCamera> camera_;
+			std::shared_ptr<util::camera::StaticCamera> mainCamera_;
+			std::shared_ptr<util::camera::PlanarReflectionCamera> waterReflectionCamera_;
 			model::light::DirectionalLight sunlight_;
 			std::shared_ptr<view::special::skybox::DaylightSkybox> skybox_;
+			std::shared_ptr<view::special::watersurface::Rectangle> waterSurface_;
 			
 			glm::mat4 projMatrix_;
 
@@ -82,6 +93,12 @@ namespace sim
 			//
 		private:
 			std::map<std::string, std::shared_ptr<view::Texture>> textures_;
+
+			//
+			// Framebuffers
+			//
+			std::shared_ptr<view::Framebuffer> waterReflectionFramebuffer_;
+			std::shared_ptr<view::Framebuffer> waterRefractionFramebuffer_;
 		};
 	}
 }

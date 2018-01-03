@@ -12,6 +12,16 @@ namespace model
 			, normal_(normal)
 		{}
 
+		glm::vec3 Plane::origin() const
+		{
+			return origin_;
+		}
+
+		glm::vec3 Plane::normal() const
+		{
+			return normal_;
+		}
+
 		std::optional<glm::vec3> Plane::getRayIntersection(const glm::vec3& origin, const glm::vec3& normal) const
 		{
 			// Find some value "t" such that (RayOrigin + RayNormal * t - PlaneOrigin) * PlaneNormal = 0

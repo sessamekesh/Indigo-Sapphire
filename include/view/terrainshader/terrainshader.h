@@ -40,6 +40,8 @@ namespace view
 			void setTexture(const std::shared_ptr<Texture>& tex);
 			void setLight(const model::light::DirectionalLight& light);
 
+			void setClipPlane(const glm::vec3& origin, const glm::vec3& normal);
+
 		private:
 			virtual void setVertexAttribPointersInternal() override;
 			virtual unsigned int getNumVertexAttribPointers() override;
@@ -48,6 +50,8 @@ namespace view
 		protected:
 			struct UniformLocationsStruct
 			{
+				GLuint clipPlaneOrigin;
+				GLuint clipPlaneNormal;
 				GLuint matWorld;
 				GLuint matView;
 				GLuint matProj;

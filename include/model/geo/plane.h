@@ -17,6 +17,9 @@ namespace model
 			Plane(const Plane&) = default;
 			~Plane() = default;
 
+			glm::vec3 origin() const;
+			glm::vec3 normal() const;
+
 			std::optional<glm::vec3> getRayIntersection(const glm::vec3& origin, const glm::vec3& normal) const;
 
 		private:

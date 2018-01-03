@@ -20,7 +20,6 @@ namespace model
 			Rectangle(const Rectangle&) = default;
 			~Rectangle() = default;
 
-			glm::vec3 pos() const;
 			float width() const;
 			float height() const;
 

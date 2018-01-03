@@ -34,6 +34,7 @@ namespace view
 			void setViewMatrix(const glm::mat4& m);
 			void setProjMatrix(const glm::mat4& m);
 			void setCubemap(const std::shared_ptr<view::Cubemap> cubemap);
+			void setClipPlane(const glm::vec3& origin, const glm::vec3& normal);
 
 		private:
 			virtual void setVertexAttribPointersInternal() override;
@@ -43,6 +44,8 @@ namespace view
 		protected:
 			struct UniformLocationStruct
 			{
+				GLuint clipPlaneOrigin;
+				GLuint clipPlaneNormal;
 				GLuint matWorld;
 				GLuint matView;
 				GLuint matProj;

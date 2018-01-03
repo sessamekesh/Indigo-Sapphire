@@ -15,11 +15,6 @@ namespace model
 			, height_(height)
 		{}
 
-		glm::vec3 Rectangle::pos() const
-		{
-			return pos_;
-		}
-
 		float Rectangle::width() const
 		{
 			return width_;

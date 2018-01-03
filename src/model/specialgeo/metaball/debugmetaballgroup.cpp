@@ -32,7 +32,7 @@ namespace model
 							std::shared_ptr<model::specialgeo::metaball::IMetaballPath>(
 								new BoxBoundedMetaballPath(
 									lowerBound, upperBound,
-									glm::vec3(xdist(mt) / 3.f, ydist(mt) / 3.f, zdist(mt) / 3.f),
+									glm::vec3(xdist(mt) / 8.f, ydist(mt) / 3.f, zdist(mt) / 3.f),
 									glm::vec3(xdist(mt) + lowerBound.x, ydist(mt) + lowerBound.y, zdist(mt) + lowerBound.z)
 								)
 							)

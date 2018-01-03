@@ -130,6 +130,18 @@
     <Filter Include="Source Files\view\special\skybox">
       <UniqueIdentifier>{7a312a35-42a7-4b6a-8b0e-d67184ce1923}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\view\special\watersurface">
+      <UniqueIdentifier>{bd421dd9-3d4d-44e6-b2f6-ac4bcbb11477}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\special\watersurface">
+      <UniqueIdentifier>{c0e08031-0246-421d-b76e-b583d82e097f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\model\specialgeo\water">
+      <UniqueIdentifier>{b513545a-08b7-4751-a650-71dcb24452a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\specialgeo\water">
+      <UniqueIdentifier>{0cd07a27-823a-4eaf-81fb-e7a0068b9836}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -254,6 +266,21 @@
     </ClCompile>
     <ClCompile Include="src\view\special\skybox\daylight.cpp">
       <Filter>Source Files\view\special\skybox</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\special\watersurface\watersurfaceshader.cpp">
+      <Filter>Source Files\view\special\watersurface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\special\watersurface\rectangle.cpp">
+      <Filter>Source Files\view\special\watersurface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\framebuffer.cpp">
+      <Filter>Source Files\view</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\camera\camerabase.cpp">
+      <Filter>Source Files\util\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\camera\planarreflectioncamera.cpp">
+      <Filter>Source Files\util\camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -392,6 +419,24 @@
     <ClInclude Include="include\view\special\skybox\daylight.h">
       <Filter>Header Files\view\special\skybox</Filter>
     </ClInclude>
+    <ClInclude Include="include\view\special\watersurface\watersurfaceshader.h">
+      <Filter>Header Files\view\special\watersurface</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\special\watersurface\rectangle.h">
+      <Filter>Header Files\view\special\watersurface</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\framebuffer.h">
+      <Filter>Header Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\camera\camerabase.h">
+      <Filter>Header Files\util\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\camera\planarreflectioncamera.h">
+      <Filter>Header Files\util\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\water\ripple.h">
+      <Filter>Header Files\model\specialgeo\water</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\metaball-phong.frag">
@@ -416,6 +461,12 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shaders\skybox.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\watersurface.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\watersurface.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

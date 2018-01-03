@@ -65,8 +65,16 @@ namespace view
 			return 3u;
 		}
 
+		void TerrainShader::setClipPlane(const glm::vec3& origin, const glm::vec3& normal)
+		{
+			glUniform3fv(uniformLocations_.clipPlaneNormal, 1, glm::value_ptr(normal));
+			glUniform3fv(uniformLocations_.clipPlaneOrigin, 1, glm::value_ptr(origin));
+		}
+
 		bool TerrainShader::getUniformLocations()
 		{
+			uniformLocations_.clipPlaneNormal = glGetUniformLocation(program_, "clipPlaneNormal");
+			uniformLocations_.clipPlaneOrigin = glGetUniformLocation(program_, "clipPlaneOrigin");
 			uniformLocations_.matWorld = glGetUniformLocation(program_, "matWorld");
 			uniformLocations_.matView = glGetUniformLocation(program_, "matView");
 			uniformLocations_.matProj = glGetUniformLocation(program_, "matProj");

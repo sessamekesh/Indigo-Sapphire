@@ -152,6 +152,8 @@
     <ClCompile Include="src\sim\lakescene\lakescene.cpp" />
     <ClCompile Include="src\sim\scene.cpp" />
     <ClCompile Include="src\sim\TestScene.cpp" />
+    <ClCompile Include="src\util\camera\camerabase.cpp" />
+    <ClCompile Include="src\util\camera\planarreflectioncamera.cpp" />
     <ClCompile Include="src\util\camera\StaticCamera.cpp" />
     <ClCompile Include="src\util\command\directionallightparser.cpp" />
     <ClCompile Include="src\util\command\floatparser.cpp" />
@@ -163,6 +165,7 @@
     <ClCompile Include="src\util\io.cpp" />
     <ClCompile Include="src\util\Logger.cpp" />
     <ClCompile Include="src\view\cubemap.cpp" />
+    <ClCompile Include="src\view\framebuffer.cpp" />
     <ClCompile Include="src\view\shader.cpp" />
     <ClCompile Include="src\view\solidshader\assets\computermonitor.cpp" />
     <ClCompile Include="src\view\solidshader\assets\importedgeo.cpp" />
@@ -173,6 +176,8 @@
     <ClCompile Include="src\view\special\metaball\phongshader.cpp" />
     <ClCompile Include="src\view\special\skyboxshader.cpp" />
     <ClCompile Include="src\view\special\skybox\daylight.cpp" />
+    <ClCompile Include="src\view\special\watersurface\rectangle.cpp" />
+    <ClCompile Include="src\view\special\watersurface\watersurfaceshader.cpp" />
     <ClCompile Include="src\view\terrainshader\assets\importedgeo.cpp" />
     <ClCompile Include="src\view\terrainshader\terrainshader.cpp" />
     <ClCompile Include="src\view\texture.cpp" />
@@ -191,11 +196,14 @@
     <ClInclude Include="include\model\specialgeo\metaball\imetaballpath.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaball.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaballgroup.h" />
+    <ClInclude Include="include\model\specialgeo\water\ripple.h" />
     <ClInclude Include="include\model\withworldtransform.h" />
     <ClInclude Include="include\resources.h" />
     <ClInclude Include="include\sim\lakescene\lakescene.h" />
     <ClInclude Include="include\sim\scene.h" />
     <ClInclude Include="include\sim\TestScene.h" />
+    <ClInclude Include="include\util\camera\camerabase.h" />
+    <ClInclude Include="include\util\camera\planarreflectioncamera.h" />
     <ClInclude Include="include\util\camera\StaticCamera.h" />
     <ClInclude Include="include\util\command\directionallightparser.h" />
     <ClInclude Include="include\util\command\floatparser.h" />
@@ -210,6 +218,7 @@
     <ClInclude Include="include\util\Logger.h" />
     <ClInclude Include="include\util\pipelinestate.h" />
     <ClInclude Include="include\view\cubemap.h" />
+    <ClInclude Include="include\view\framebuffer.h" />
     <ClInclude Include="include\view\shader.h" />
     <ClInclude Include="include\view\solidshader\assets\computermonitor.h" />
     <ClInclude Include="include\view\solidshader\assets\importedgeo.h" />
@@ -220,6 +229,8 @@
     <ClInclude Include="include\view\special\metaball\phongshader.h" />
     <ClInclude Include="include\view\special\skyboxshader.h" />
     <ClInclude Include="include\view\special\skybox\daylight.h" />
+    <ClInclude Include="include\view\special\watersurface\rectangle.h" />
+    <ClInclude Include="include\view\special\watersurface\watersurfaceshader.h" />
     <ClInclude Include="include\view\terrainshader\assets\importedgeo.h" />
     <ClInclude Include="include\view\terrainshader\terrainshader.h" />
     <ClInclude Include="include\view\texture.h" />
@@ -239,6 +250,8 @@
     </None>
     <None Include="shaders\terrain.frag" />
     <None Include="shaders\terrain.vert" />
+    <None Include="shaders\watersurface.frag" />
+    <None Include="shaders\watersurface.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

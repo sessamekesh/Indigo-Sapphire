@@ -1,8 +1,12 @@
-varying vec3 fTexCoords;
+#version 400
+
+in vec3 fTexCoords;
 uniform samplerCube skyTexture;
+
+layout(location = 0) out vec4 color;
 
 void main()
 {
 	//gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
-    gl_FragColor = texture(skyTexture, normalize(fTexCoords));
+    color = texture(skyTexture, normalize(fTexCoords));
 }
