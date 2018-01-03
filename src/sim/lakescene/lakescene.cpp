@@ -122,11 +122,13 @@ namespace sim
 			//
 			auto waterOrigin = waterSurfaceModel_->pos();
 			auto waterNormal = glm::rotate(waterSurfaceModel_->rot(), glm::vec3(0.f, 1.f, 0.f));
-			//glEnable(GL_CLIP_DISTANCE0);
+			glDisable(GL_CLIP_DISTANCE0);
 			waterReflectionCamera_->reflectionPlane(model::geo::Plane(waterOrigin, waterNormal));
 			waterReflectionFramebuffer_->bind();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			renderEnvironment(waterReflectionCamera_, waterNormal, waterOrigin);
 			waterRefractionFramebuffer_->bind();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			renderEnvironment(mainCamera_, -waterNormal, waterOrigin);
 			view::Framebuffer::bindDefaultFramebuffer();
 			glViewport(0, 0, width, height);
@@ -407,19 +409,19 @@ namespace sim
 		{
 			// This is a wee bit awkward, eh?
 			registerProperty("camera", util::command::StaticCameraParser::uuid,
-				std::reinterpret_pointer_cast<void>(mainCamera_)
+				std::static_pointer_cast<void>(mainCamera_)
 			);
 			registerProperty("terrain_base", util::command::WithWorldTransformParser::uuid,
-				std::reinterpret_pointer_cast<void>(terrain_)
+				std::static_pointer_cast<void>(terrain_)
 			);
 			registerProperty("sunlight", util::command::DirectionalLightParser::uuid,
 				std::shared_ptr<void>(&sunlight_, [](void*) {})
 			);
 			registerProperty("skybox", util::command::WithWorldTransformParser::uuid,
-				std::reinterpret_pointer_cast<void>(skybox_)
+				std::static_pointer_cast<void>(skybox_)
 			);
 			registerProperty("water_surface", util::command::WithWorldTransformParser::uuid,
-				std::reinterpret_pointer_cast<void>(waterSurfaceModel_)
+				std::static_pointer_cast<void>(waterSurfaceModel_)
 			);
 
 			return true;

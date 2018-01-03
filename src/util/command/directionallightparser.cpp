@@ -24,7 +24,7 @@ namespace util
 			auto prop = pass.subVals[0];
 			pass.subVals.erase(pass.subVals.begin());
 
-			auto lightPtr = std::reinterpret_pointer_cast<model::light::DirectionalLight>(ptr);
+			auto lightPtr = std::static_pointer_cast<model::light::DirectionalLight>(ptr);
 			if (prop == "direction")
 			{
 				auto v = std::make_shared<glm::vec3>();
@@ -69,7 +69,7 @@ namespace util
 
 		std::vector<PropertyCommand> DirectionalLightParser::serializeValue(std::shared_ptr<void> ptr)
 		{
-			auto lightPtr = std::reinterpret_pointer_cast<model::light::DirectionalLight>(ptr);
+			auto lightPtr = std::static_pointer_cast<model::light::DirectionalLight>(ptr);
 			
 			auto ambientPtr = std::make_shared<glm::vec3>(lightPtr->ambient());
 			auto diffusePtr = std::make_shared<glm::vec3>(lightPtr->diffuse());

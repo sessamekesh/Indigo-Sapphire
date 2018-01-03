@@ -70,12 +70,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\kamis\indigo-sapphire\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\kamis\indigo-sapphire\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\include;$(IncludePath)</IncludePath>
+    <LibraryPath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\kamis\indigo-sapphire\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\kamis\indigo-sapphire\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\include;$(IncludePath)</IncludePath>
+    <LibraryPath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>F:\OpenGL\indigo-sapphire\Indigo Sapphire\include;$(IncludePath)</IncludePath>

@@ -41,8 +41,8 @@ namespace view
 
 		void TerrainShader::setTexture(const std::shared_ptr<Texture>& tex)
 		{
-			glActiveTexture(GL_TEXTURE0);
 			glUniform1ui(uniformLocations_.texture, 0u);
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, tex->texture());
 		}
 

@@ -25,7 +25,7 @@ namespace util
 				return false;
 			}
 
-			auto quatPtr = std::reinterpret_pointer_cast<glm::quat>(ptr);
+			auto quatPtr = std::static_pointer_cast<glm::quat>(ptr);
 			if (cmd.subVals[0] == "axis")
 			{
 				glm::vec3 axis = glm::axis(*quatPtr);
@@ -62,7 +62,7 @@ namespace util
 
 		std::vector<PropertyCommand> QuaternionParser::serializeValue(std::shared_ptr<void> ptr)
 		{
-			auto qp = std::reinterpret_pointer_cast<glm::quat>(ptr);
+			auto qp = std::static_pointer_cast<glm::quat>(ptr);
 			auto axisPtr = std::make_shared<glm::vec3>(glm::axis(*qp));
 			auto anglePtr = std::make_shared<float>(glm::angle(*qp));
 			auto axisVal = vec3_.serializeValue(axisPtr);

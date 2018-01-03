@@ -15,5 +15,5 @@ void main()
    vec4 reflectColor = texture(reflectionTexture, reflectUV);
    vec4 refractColor = texture(refractionTexture, refractUV);
 
-   gl_FragColor = refractColor;
+   gl_FragColor = mix(reflectColor, refractColor, 0.5);
 }

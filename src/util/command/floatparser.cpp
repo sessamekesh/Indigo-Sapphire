@@ -22,14 +22,14 @@ namespace util
 			}
 			else
 			{
-				*std::reinterpret_pointer_cast<float>(ptr) = v;
+				*std::static_pointer_cast<float>(ptr) = v;
 				return true;
 			}
 		}
 
 		std::vector<PropertyCommand> FloatParser::serializeValue(std::shared_ptr<void> ptr)
 		{
-			float v = *std::reinterpret_pointer_cast<float>(ptr);
+			float v = *std::static_pointer_cast<float>(ptr);
 			std::stringstream ss("");
 			ss << v;
 			return { { {}, ss.str() } };

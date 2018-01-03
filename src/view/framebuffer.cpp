@@ -33,20 +33,26 @@ namespace view
 
 		glGenFramebuffers(1, &fbo_);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
 		glGenTextures(1, &colorBuffer_);
 		glBindTexture(GL_TEXTURE_2D, colorBuffer_);
 		glTexImage2D(GL_TEXTURE_2D, 0u, GL_RGB, textureWidth, textureHeight, 0u, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
+		
 		glGenRenderbuffers(1, &depthBuffer_);
 		glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer_);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width_, height_);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer_);
-		glBindRenderbuffer(GL_RENDERBUFFER, NULL);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, textureWidth, textureHeight);
 
-		glDrawBuffer(GL_COLOR_ATTACHMENT0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer_, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer_, 0u);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer_);
+
+		auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE)
+		{
+			return false;
+		}
 		
 		Framebuffer::bindDefaultFramebuffer();
 

@@ -20,7 +20,7 @@ namespace util
 				return false;
 			}
 
-			auto vec3Ptr = std::reinterpret_pointer_cast<glm::vec3>(ptr);
+			auto vec3Ptr = std::static_pointer_cast<glm::vec3>(ptr);
 			if (cmd.subVals.size() == 1)
 			{
 				switch (cmd.subVals[0][0])
@@ -84,7 +84,7 @@ namespace util
 
 		std::vector<PropertyCommand> Vec3Parser::serializeValue(std::shared_ptr<void> ptr)
 		{
-			auto vp = std::reinterpret_pointer_cast<glm::vec3>(ptr);
+			auto vp = std::static_pointer_cast<glm::vec3>(ptr);
 			auto xp = std::shared_ptr<float>(&vp->x, [](float*) {});
 			auto yp = std::shared_ptr<float>(&vp->y, [](float*) {});
 			auto zp = std::shared_ptr<float>(&vp->z, [](float*) {});

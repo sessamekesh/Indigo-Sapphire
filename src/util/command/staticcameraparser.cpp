@@ -22,7 +22,7 @@ namespace util
 			auto prop = pass.subVals[0];
 			pass.subVals.erase(pass.subVals.begin(), pass.subVals.begin() + 1u);
 
-			auto camera = std::reinterpret_pointer_cast<util::camera::StaticCamera>(ptr);
+			auto camera = std::static_pointer_cast<util::camera::StaticCamera>(ptr);
 			if (prop == "pos")
 			{
 				auto v = std::make_shared<glm::vec3>(camera->pos());
@@ -61,7 +61,7 @@ namespace util
 
 		std::vector<PropertyCommand> StaticCameraParser::serializeValue(std::shared_ptr<void> ptr)
 		{
-			auto camera = std::reinterpret_pointer_cast<util::camera::StaticCamera>(ptr);
+			auto camera = std::static_pointer_cast<util::camera::StaticCamera>(ptr);
 			auto pos = camera->pos();
 			auto lookAt = camera->lookAt();
 			auto up = camera->up();

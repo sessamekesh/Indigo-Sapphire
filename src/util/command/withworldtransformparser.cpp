@@ -24,7 +24,7 @@ namespace util
 				return false;
 			}
 
-			auto wwtPtr = std::reinterpret_pointer_cast<model::WithWorldTransform>(ptr);
+			auto wwtPtr = std::static_pointer_cast<model::WithWorldTransform>(ptr);
 
 			if (cmd.subVals[0] == "pos")
 			{
@@ -72,7 +72,7 @@ namespace util
 
 		std::vector<PropertyCommand> WithWorldTransformParser::serializeValue(std::shared_ptr<void> ptr)
 		{
-			auto wwtPtr = std::reinterpret_pointer_cast<model::WithWorldTransform>(ptr);
+			auto wwtPtr = std::static_pointer_cast<model::WithWorldTransform>(ptr);
 			auto posPtr = std::make_shared<glm::vec3>(wwtPtr->pos());
 			auto rotPtr = std::make_shared<glm::quat>(wwtPtr->rot());
 			auto sclPtr = std::make_shared<glm::vec3>(wwtPtr->scl());
