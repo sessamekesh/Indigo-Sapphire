@@ -71,6 +71,8 @@ namespace view
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
+		glBindTexture(GL_TEXTURE_2D, NULL);
+
 		isLoaded_ = true;
 		return true;
 	}

@@ -10,7 +10,7 @@ namespace sim
 		LakeScene::LakeScene(
 			util::command::ParserFactory& parserFactory
 		)
-			: Scene("Lake Scene", 1280u, 720u)
+			: Scene("Lake Scene", 1920u, 1080u)
 			, metaballPhongShader_(nullptr)
 			, terrainShader_(nullptr)
 			, skyboxShader_(nullptr)
@@ -33,6 +33,10 @@ namespace sim
 			, textures_({})
 			, waterReflectionFramebuffer_(nullptr)
 			, waterRefractionFramebuffer_(nullptr)
+			, waterShadingTilingMultiplier_(0.05f)
+			, waterShadingDUDVScale_(0.02f)
+			, waterDUDVOffset_(0.f)
+			, waterDUDVOffsetVelocity_(0.05f)
 		{
 			registerParser(parserFactory.floatParser());
 			registerParser(parserFactory.vec3Parser());
@@ -58,6 +62,12 @@ namespace sim
 			}
 			auto ax = glm::vec3(0.f, 1.f, 0.f);
 			skybox_->rot(glm::angleAxis(ng, ax));
+
+			waterDUDVOffset_ += waterDUDVOffsetVelocity_ * dt;
+			while (waterDUDVOffset_ > 1.f)
+			{
+				waterDUDVOffset_ -= 1.f;
+			}
 		}
 
 		void LakeScene::renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::optional<glm::vec3> clipNormal, std::optional<glm::vec3> clipOrigin)
@@ -147,8 +157,13 @@ namespace sim
 			{
 				waterSurfaceShader_->setReflectionTexture(waterReflectionFramebuffer_);
 				waterSurfaceShader_->setRefractionTexture(waterRefractionFramebuffer_);
+				waterSurfaceShader_->setTilingStrength(waterShadingTilingMultiplier_);
+				waterSurfaceShader_->setDUDVScaleFactor(waterShadingDUDVScale_);
+				waterSurfaceShader_->setDUDVMap(textures_["lake-dudv"]);
 				waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
 				waterSurfaceShader_->setProjMatrix(projMatrix_);
+				waterSurfaceShader_->setDUDVSampleOffset(waterDUDVOffset_);
+				waterSurfaceShader_->setCameraPosition(mainCamera_->pos());
 
 				waterSurface_->render(waterSurfaceShader_);
 			}
@@ -263,7 +278,7 @@ namespace sim
 					glm::vec3(1.f, 1.f, 1.f),
 					glm::vec3(-25.f, -5.f, -1.f),
 					glm::vec3(25.f, 5.f, 3.f),
-					3u,
+					25u,
 					5.f
 				)
 			);
@@ -423,6 +438,15 @@ namespace sim
 			registerProperty("water_surface", util::command::WithWorldTransformParser::uuid,
 				std::static_pointer_cast<void>(waterSurfaceModel_)
 			);
+			registerProperty("lake_surface_tiling", util::command::FloatParser::uuid_,
+				std::shared_ptr<void>(&waterShadingTilingMultiplier_, [](void*) {})
+			);
+			registerProperty("lake_surface_dudv_scale", util::command::FloatParser::uuid_,
+				std::shared_ptr<void>(&waterShadingDUDVScale_, [](void*) {})
+			);
+			registerProperty("lake_surface_velocity", util::command::FloatParser::uuid_,
+				std::shared_ptr<void>(&waterDUDVOffsetVelocity_, [](void*) {})
+			);
 
 			return true;
 		}
@@ -434,6 +458,9 @@ namespace sim
 			unregisterProperty("sunlight");
 			unregisterProperty("skybox");
 			unregisterProperty("water_surface");
+			unregisterProperty("lake_surface_tiling");
+			unregisterProperty("lake_surface_dudv_scale");
+			unregisterProperty("lake_surface_velocity");
 			return true;
 		}
 
@@ -447,35 +474,45 @@ namespace sim
 			return false;
 		}
 
-		bool LakeScene::setupTextures()
+		bool LakeScene::loadSingleTexture(std::string texName, std::string fName)
 		{
-			auto dryGrassOpt = model::readPNG(ASSET_PATH("texture/dry-grass.png"));
-			if (!dryGrassOpt)
+			if (textures_.find(texName) != textures_.end())
 			{
-				log.error << "Failed to load dry grass image" << util::endl;
+				log.error << "Texture " << texName << " already registered." << util::endl;
 				return false;
 			}
 
-			auto dryGrassTexture = std::shared_ptr<view::Texture>(
-				new view::Texture()
-			);
-			if (!dryGrassTexture->init(view::Texture::RGBA, *dryGrassOpt))
+			auto opt = model::readPNG(fName);
+			if (!opt)
 			{
-				log.error << "Failed to create dry grass texture" << util::endl;
+				log.error << "Failed to load image: " << fName << util::endl;
 				return false;
 			}
-			textures_["dry-grass"] = dryGrassTexture;
+
+			auto texture = std::make_shared<view::Texture>();
+			if (!texture->init(view::Texture::RGBA, *opt))
+			{
+				log.error << "Failed to create texture: " << texName << util::endl;
+				return false;
+			}
+
+			textures_[texName] = texture;
+
+			return true;
+		}
+
+		bool LakeScene::setupTextures()
+		{
+			if (!loadSingleTexture("dry-grass", ASSET_PATH("texture/dry-grass.png"))) return false;
+			if (!loadSingleTexture("lake-dudv", ASSET_PATH("texture/water-dudv.png"))) return false;
 
 			return true;
 		}
 
 		bool LakeScene::teardownTextures()
 		{
-			if (textures_.find("dry-grass") != textures_.end())
-			{
-				textures_["dry-grass"]->release();
-				textures_.erase("dry-grass");
-			}
+			textures_.erase("dry-grass");
+			textures_.erase("lake-dudv");
 
 			return true;
 		}

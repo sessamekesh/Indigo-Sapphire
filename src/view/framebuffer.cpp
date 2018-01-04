@@ -81,7 +81,7 @@ namespace view
 
 	void Framebuffer::bind()
 	{
-		glBindTexture(GL_TEXTURE_2D, 0);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 		glViewport(0, 0, width_, height_);
 	}

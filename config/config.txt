@@ -1,9 +1,12 @@
 SETP camera.pos 0,25,-250
 SETP camera.lookAt 0,19,5
 SETP camera.up 0,1,0
+SETP lake_surface_dudv_scale 0.02
+SETP lake_surface_tiling 0.85
+SETP lake_surface_velocity 1.1
 SETP skybox.pos 0,0,0
 SETP skybox.rot.axis 0,1,0
-SETP skybox.rot.angle 1.32204
+SETP skybox.rot.angle 2.47693
 SETP skybox.scl 40,40,40
 SETP sunlight.ambient 0.1,0.1,0.1
 SETP sunlight.diffuse 0.9,0.9,0.9

@@ -28,6 +28,11 @@ namespace view
 				glUniformMatrix4fv(uniformLocations_.matProj, 1, GL_FALSE, glm::value_ptr(m));
 			}
 
+			void WaterSurfaceShader::setCameraPosition(const glm::vec3& cp)
+			{
+				glUniform3fv(uniformLocations_.cameraPosition, 1, glm::value_ptr(cp));
+			}
+
 			void WaterSurfaceShader::setVertexAttribPointersInternal()
 			{
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
@@ -38,32 +43,40 @@ namespace view
 				return 1u;
 			}
 
-			void WaterSurfaceShader::setReflectionTexture(std::shared_ptr<view::Texture> tex)
-			{
-				glActiveTexture(GL_TEXTURE0);
-				glUniform1ui(uniformLocations_.reflectionTexture, 0u);
-				glBindTexture(GL_TEXTURE_2D, tex->texture());
-			}
-
-			void WaterSurfaceShader::setRefractionTexture(std::shared_ptr<view::Texture> tex)
-			{
-				glActiveTexture(GL_TEXTURE1);
-				glUniform1ui(uniformLocations_.refractionTexture, 1u);
-				glBindTexture(GL_TEXTURE_2D, tex->texture());
-			}
-
 			void WaterSurfaceShader::setReflectionTexture(std::shared_ptr<view::Framebuffer> fbo)
 			{
-				glUniform1ui(uniformLocations_.reflectionTexture, 0u);
-				glBindTexture(GL_TEXTURE_2D, fbo->colorBufferTexture());
+				glUniform1i(uniformLocations_.reflectionTexture, 0);
 				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, fbo->colorBufferTexture());
 			}
 
 			void WaterSurfaceShader::setRefractionTexture(std::shared_ptr<view::Framebuffer> fbo)
 			{
-				glUniform1ui(uniformLocations_.refractionTexture, 1u);
-				glBindTexture(GL_TEXTURE_2D, fbo->colorBufferTexture());
+				glUniform1i(uniformLocations_.refractionTexture, 1);
 				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, fbo->colorBufferTexture());
+			}
+
+			void WaterSurfaceShader::setDUDVMap(std::shared_ptr<view::Texture> tex)
+			{
+				glUniform1i(uniformLocations_.dudvMap, 2);
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, tex->texture());
+			}
+
+			void WaterSurfaceShader::setTilingStrength(float s)
+			{
+				glUniform1f(uniformLocations_.tilingStrength, s);
+			}
+
+			void WaterSurfaceShader::setDUDVScaleFactor(float dudvs)
+			{
+				glUniform1f(uniformLocations_.scaleFactor, dudvs);
+			}
+
+			void WaterSurfaceShader::setDUDVSampleOffset(float t)
+			{
+				glUniform1f(uniformLocations_.dudvSampleOffset, t);
 			}
 
 			bool WaterSurfaceShader::getUniformLocations()
@@ -73,6 +86,11 @@ namespace view
 				uniformLocations_.matProj = glGetUniformLocation(program_, "matProj");
 				uniformLocations_.reflectionTexture = glGetUniformLocation(program_, "reflectionTexture");
 				uniformLocations_.refractionTexture = glGetUniformLocation(program_, "refractionTexture");
+				uniformLocations_.dudvMap = glGetUniformLocation(program_, "dudvMap");
+				uniformLocations_.tilingStrength = glGetUniformLocation(program_, "tilingStrength");
+				uniformLocations_.scaleFactor = glGetUniformLocation(program_, "scaleFactor");
+				uniformLocations_.dudvSampleOffset = glGetUniformLocation(program_, "dudvSampleOffset");
+				uniformLocations_.cameraPosition = glGetUniformLocation(program_, "cameraPosition");
 
 				return true;
 			}

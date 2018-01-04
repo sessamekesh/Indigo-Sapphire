@@ -56,6 +56,7 @@ namespace sim
 		private:
 			bool setupTextures();
 			bool teardownTextures();
+			bool loadSingleTexture(std::string texName, std::string fName);
 
 			//
 			// Shaders
@@ -99,6 +100,15 @@ namespace sim
 			//
 			std::shared_ptr<view::Framebuffer> waterReflectionFramebuffer_;
 			std::shared_ptr<view::Framebuffer> waterRefractionFramebuffer_;
+
+			//
+			// Properties
+			//
+		private:
+			float waterShadingTilingMultiplier_;
+			float waterShadingDUDVScale_;
+			float waterDUDVOffset_;
+			float waterDUDVOffsetVelocity_;
 		};
 	}
 }

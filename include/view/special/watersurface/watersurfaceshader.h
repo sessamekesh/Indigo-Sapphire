@@ -28,11 +28,16 @@ namespace view
 				void setViewMatrix(const glm::mat4& m);
 				void setProjMatrix(const glm::mat4& m);
 
-				void setReflectionTexture(std::shared_ptr<view::Texture> tex);
-				void setRefractionTexture(std::shared_ptr<view::Texture> tex);
+				void setCameraPosition(const glm::vec3& v);
 
 				void setReflectionTexture(std::shared_ptr<view::Framebuffer> fbo);
 				void setRefractionTexture(std::shared_ptr<view::Framebuffer> fbo);
+
+				void setDUDVMap(std::shared_ptr<view::Texture> tex);
+
+				void setTilingStrength(float s);
+				void setDUDVScaleFactor(float dudvs);
+				void setDUDVSampleOffset(float t);
 
 			private:
 				virtual void setVertexAttribPointersInternal() override;
@@ -44,9 +49,14 @@ namespace view
 				{
 					GLuint reflectionTexture;
 					GLuint refractionTexture;
+					GLuint dudvMap;
 					GLuint matWorld;
 					GLuint matView;
 					GLuint matProj;
+					GLuint tilingStrength;
+					GLuint scaleFactor;
+					GLuint dudvSampleOffset;
+					GLuint cameraPosition;
 				} uniformLocations_;
 			};
 		}
