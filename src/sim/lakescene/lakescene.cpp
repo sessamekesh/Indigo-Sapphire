@@ -29,7 +29,7 @@ namespace sim
 				glm::vec3(1.f, -1.f, 0.f)) // Direction
 			, skybox_(nullptr)
 			, waterSurface_(nullptr)
-			, projMatrix_(glm::perspective(glm::radians(90.f), 128.f / 72.f, 0.1f, 1000.0f))
+			, projMatrix_(glm::perspective(glm::radians(45.f), 128.f / 72.f, 0.1f, 1000.0f))
 			, textures_({})
 			, waterReflectionFramebuffer_(nullptr)
 			, waterRefractionFramebuffer_(nullptr)
@@ -274,7 +274,7 @@ namespace sim
 		bool LakeScene::initializeResources()
 		{
 			mainCamera_ = std::shared_ptr<util::camera::StaticCamera>(new util::camera::StaticCamera(
-				glm::vec3(0.f, 0.f, -25.f),
+				glm::vec3(0.f, 15.f, -75.f),
 				glm::vec3(0.f, 0.f, 5.f),
 				glm::vec3(0.f, 1.f, 0.f)));
 			waterReflectionCamera_ = std::shared_ptr<util::camera::PlanarReflectionCamera>(new util::camera::PlanarReflectionCamera(
@@ -288,7 +288,7 @@ namespace sim
 
 			metaballGroupModel_ = std::shared_ptr<model::specialgeo::metaball::MetaballGroup>(
 				new model::specialgeo::metaball::DebugMetaballGroup(
-					glm::vec3(0.f, 0.f, 10.f),
+					glm::vec3(0.f, -7.5f, 10.f),
 					glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
 					glm::vec3(1.f, 1.f, 1.f),
 					glm::vec3(-25.f, -5.f, -1.f),

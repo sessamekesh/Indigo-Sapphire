@@ -62,6 +62,7 @@ namespace sim
 
 		bool loadConfigFromFile(std::string fName);
 		bool saveConfigToFile(std::string fName);
+
 		//
 		// Properties
 		//
