@@ -5,6 +5,7 @@
 #include <memory>
 #include <view/texture.h>
 #include <view/framebuffer.h>
+#include <model/light/directionallight.h>
 
 namespace view
 {
@@ -34,10 +35,17 @@ namespace view
 				void setRefractionTexture(std::shared_ptr<view::Framebuffer> fbo);
 
 				void setDUDVMap(std::shared_ptr<view::Texture> tex);
+				void setNormalMap(std::shared_ptr<view::Texture> tex);
+
+				void setLight(const model::light::DirectionalLight& light);
+				void setWaterSurfaceOrientation(const glm::quat& rot);
 
 				void setTilingStrength(float s);
 				void setDUDVScaleFactor(float dudvs);
 				void setDUDVSampleOffset(float t);
+
+				void setShineDamper(float s);
+				void setReflectivity(float v);
 
 			private:
 				virtual void setVertexAttribPointersInternal() override;
@@ -57,6 +65,12 @@ namespace view
 					GLuint scaleFactor;
 					GLuint dudvSampleOffset;
 					GLuint cameraPosition;
+					GLuint normalMap;
+					GLuint lightColor;
+					GLuint lightDir;
+					GLuint quatSurfaceOrientation;
+					GLuint shineDamper;
+					GLuint reflectivity;
 				} uniformLocations_;
 			};
 		}

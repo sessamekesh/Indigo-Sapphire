@@ -37,6 +37,8 @@ namespace sim
 			, waterShadingDUDVScale_(0.02f)
 			, waterDUDVOffset_(0.f)
 			, waterDUDVOffsetVelocity_(0.05f)
+			, waterShineDamper_(20.f)
+			, waterReflectivity_(0.6f)
 		{
 			registerParser(parserFactory.floatParser());
 			registerParser(parserFactory.vec3Parser());
@@ -119,6 +121,42 @@ namespace sim
 			}
 		}
 
+		void LakeScene::renderMetaballs(std::shared_ptr<util::camera::CameraBase> camera)
+		{
+			//
+			// After all opaque calls are finished, do transparent calls
+			//
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			if (metaballPhongShader_->activate())
+			{
+				metaballPhongShader_->setViewMatrix(camera->getViewTransform());
+				metaballPhongShader_->setCameraPos(camera->pos());
+				metaballPhongShader_->setProjMatrix(projMatrix_);
+				metaballPhongShader_->setStepSize(0.15f);
+				metaballPhongShader_->setLight(
+					glm::vec3(0.1f, 0.1f, 0.1f),
+					glm::vec3(0.5f, 0.5f, 0.5f),
+					glm::vec3(1.f, 1.f, 1.f)
+				);
+				metaballPhongShader_->setLightDir(
+					glm::normalize(glm::vec3(1.f, -2.f, 3.f))
+				);
+
+				if (metaballGroup_->preparePhong(
+					camera->pos(),
+					glm::normalize(camera->lookAt() - camera->pos()),
+					camera->up()
+				)) {
+					metaballGroup_->renderPhong(metaballPhongShader_);
+				}
+			}
+			else
+			{
+				log.warn << "Failed to activate metaball shader, not drawing metaballs" << util::endl;
+			}
+		}
+
 		void LakeScene::render()
 		{
 			glClearColor(0x36 / 255.f, 0x45 / 255.f, 0x4f / 255.f, 1.f);
@@ -137,9 +175,11 @@ namespace sim
 			waterReflectionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			renderEnvironment(waterReflectionCamera_, waterNormal, waterOrigin);
+			renderMetaballs(waterReflectionCamera_);
 			waterRefractionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			renderEnvironment(mainCamera_, -waterNormal, waterOrigin);
+			renderMetaballs(mainCamera_);
 			view::Framebuffer::bindDefaultFramebuffer();
 			glViewport(0, 0, width, height);
 
@@ -153,17 +193,23 @@ namespace sim
 			// Water surface
 			//
 			glDisable(GL_CULL_FACE);
+			glDisable(GL_BLEND);
 			if (waterSurfaceShader_->activate())
 			{
 				waterSurfaceShader_->setReflectionTexture(waterReflectionFramebuffer_);
 				waterSurfaceShader_->setRefractionTexture(waterRefractionFramebuffer_);
 				waterSurfaceShader_->setTilingStrength(waterShadingTilingMultiplier_);
+				waterSurfaceShader_->setNormalMap(textures_["lake-normal"]);
 				waterSurfaceShader_->setDUDVScaleFactor(waterShadingDUDVScale_);
 				waterSurfaceShader_->setDUDVMap(textures_["lake-dudv"]);
 				waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
 				waterSurfaceShader_->setProjMatrix(projMatrix_);
 				waterSurfaceShader_->setDUDVSampleOffset(waterDUDVOffset_);
 				waterSurfaceShader_->setCameraPosition(mainCamera_->pos());
+				waterSurfaceShader_->setLight(sunlight_);
+				waterSurfaceShader_->setWaterSurfaceOrientation(waterSurfaceModel_->rot());
+				waterSurfaceShader_->setReflectivity(waterReflectivity_);
+				waterSurfaceShader_->setShineDamper(waterShineDamper_);
 
 				waterSurface_->render(waterSurfaceShader_);
 			}
@@ -172,38 +218,7 @@ namespace sim
 				log.warn << "Failed to activate water surface shader, not drawing water" << util::endl;
 			}
 
-			//
-			// After all opaque calls are finished, do transparent calls
-			//
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			if (metaballPhongShader_->activate())
-			{
-				metaballPhongShader_->setViewMatrix(mainCamera_->getViewTransform());
-				metaballPhongShader_->setCameraPos(mainCamera_->pos());
-				metaballPhongShader_->setProjMatrix(projMatrix_);
-				metaballPhongShader_->setStepSize(0.15f);
-				metaballPhongShader_->setLight(
-					glm::vec3(0.1f, 0.1f, 0.1f),
-					glm::vec3(0.5f, 0.5f, 0.5f),
-					glm::vec3(1.f, 1.f, 1.f)
-				);
-				metaballPhongShader_->setLightDir(
-					glm::normalize(glm::vec3(1.f, -2.f, 3.f))
-				);
-
-				if (metaballGroup_->preparePhong(
-					mainCamera_->pos(),
-					mainCamera_->lookDir(),
-					mainCamera_->up()
-				)) {
-					metaballGroup_->renderPhong(metaballPhongShader_);
-				}
-			}
-			else
-			{
-				log.warn << "Failed to activate metaball shader, not drawing metaballs" << util::endl;
-			}
+			renderMetaballs(mainCamera_);
 		}
 
 		bool LakeScene::initializeShaders()
@@ -447,6 +462,12 @@ namespace sim
 			registerProperty("lake_surface_velocity", util::command::FloatParser::uuid_,
 				std::shared_ptr<void>(&waterDUDVOffsetVelocity_, [](void*) {})
 			);
+			registerProperty("lake_surface_shine_damper", util::command::FloatParser::uuid_,
+				std::shared_ptr<void>(&waterShineDamper_, [](void*) {})
+			);
+			registerProperty("lake_surface_reflectivity", util::command::FloatParser::uuid_,
+				std::shared_ptr<void>(&waterReflectivity_, [](void*) {})
+			);
 
 			return true;
 		}
@@ -505,6 +526,7 @@ namespace sim
 		{
 			if (!loadSingleTexture("dry-grass", ASSET_PATH("texture/dry-grass.png"))) return false;
 			if (!loadSingleTexture("lake-dudv", ASSET_PATH("texture/water-dudv.png"))) return false;
+			if (!loadSingleTexture("lake-normal", ASSET_PATH("texture/water-normal.png"))) return false;
 
 			return true;
 		}
@@ -513,6 +535,7 @@ namespace sim
 		{
 			textures_.erase("dry-grass");
 			textures_.erase("lake-dudv");
+			textures_.erase("lake-normal");
 
 			return true;
 		}

@@ -64,6 +64,13 @@ namespace view
 				glBindTexture(GL_TEXTURE_2D, tex->texture());
 			}
 
+			void WaterSurfaceShader::setNormalMap(std::shared_ptr<view::Texture> tex)
+			{
+				glUniform1i(uniformLocations_.normalMap, 3);
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, tex->texture());
+			}
+
 			void WaterSurfaceShader::setTilingStrength(float s)
 			{
 				glUniform1f(uniformLocations_.tilingStrength, s);
@@ -79,6 +86,27 @@ namespace view
 				glUniform1f(uniformLocations_.dudvSampleOffset, t);
 			}
 
+			void WaterSurfaceShader::setLight(const model::light::DirectionalLight& light)
+			{
+				glUniform3fv(uniformLocations_.lightColor, 1, glm::value_ptr(light.diffuse()));
+				glUniform3fv(uniformLocations_.lightDir, 1, glm::value_ptr(light.direction()));
+			}
+
+			void WaterSurfaceShader::setWaterSurfaceOrientation(const glm::quat& rot)
+			{
+				glUniform4fv(uniformLocations_.quatSurfaceOrientation, 1, glm::value_ptr(rot));
+			}
+
+			void WaterSurfaceShader::setShineDamper(float s)
+			{
+				glUniform1f(uniformLocations_.shineDamper, s);
+			}
+
+			void WaterSurfaceShader::setReflectivity(float r)
+			{
+				glUniform1f(uniformLocations_.reflectivity, r);
+			}
+
 			bool WaterSurfaceShader::getUniformLocations()
 			{
 				uniformLocations_.matWorld = glGetUniformLocation(program_, "matWorld");
@@ -91,6 +119,12 @@ namespace view
 				uniformLocations_.scaleFactor = glGetUniformLocation(program_, "scaleFactor");
 				uniformLocations_.dudvSampleOffset = glGetUniformLocation(program_, "dudvSampleOffset");
 				uniformLocations_.cameraPosition = glGetUniformLocation(program_, "cameraPosition");
+				uniformLocations_.normalMap = glGetUniformLocation(program_, "normalMap");
+				uniformLocations_.lightColor = glGetUniformLocation(program_, "lightColor");
+				uniformLocations_.lightDir = glGetUniformLocation(program_, "lightDir");
+				uniformLocations_.quatSurfaceOrientation = glGetUniformLocation(program_, "quatSurfaceOrientation");
+				uniformLocations_.shineDamper = glGetUniformLocation(program_, "shineDamper");
+				uniformLocations_.reflectivity = glGetUniformLocation(program_, "reflectivity");
 
 				return true;
 			}

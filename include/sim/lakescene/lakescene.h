@@ -49,6 +49,7 @@ namespace sim
 			// Rendering Organization
 			//
 			void renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::optional<glm::vec3> clipNormal = std::nullopt, std::optional<glm::vec3> clipOrigin = std::nullopt);
+			void renderMetaballs(std::shared_ptr<util::camera::CameraBase> camera);
 
 			//
 			// Initialization Helpers
@@ -109,6 +110,8 @@ namespace sim
 			float waterShadingDUDVScale_;
 			float waterDUDVOffset_;
 			float waterDUDVOffsetVelocity_;
+			float waterShineDamper_;
+			float waterReflectivity_;
 		};
 	}
 }
