@@ -28,17 +28,11 @@ namespace sim
 				glm::vec3(1.f, 1.f, 1.f), // Specular
 				glm::vec3(1.f, -1.f, 0.f)) // Direction
 			, skybox_(nullptr)
-			, waterSurface_(nullptr)
+			, lakeSurface_(nullptr)
 			, projMatrix_(glm::perspective(glm::radians(45.f), 128.f / 72.f, 0.1f, 1000.0f))
 			, textures_({})
 			, waterReflectionFramebuffer_(nullptr)
 			, waterRefractionFramebuffer_(nullptr)
-			, waterShadingTilingMultiplier_(0.05f)
-			, waterShadingDUDVScale_(0.02f)
-			, waterDUDVOffset_(0.f)
-			, waterDUDVOffsetVelocity_(0.05f)
-			, waterShineDamper_(20.f)
-			, waterReflectivity_(0.6f)
 		{
 			registerParser(parserFactory.floatParser());
 			registerParser(parserFactory.vec3Parser());
@@ -51,6 +45,7 @@ namespace sim
 		void LakeScene::update(float dt)
 		{
 			metaballGroupModel_->update(dt);
+			lakeSurface_->update(dt);
 
 			auto ng = glm::angle(skybox_->rot());
 			ng += 0.02f * dt;
@@ -64,12 +59,6 @@ namespace sim
 			}
 			auto ax = glm::vec3(0.f, 1.f, 0.f);
 			skybox_->rot(glm::angleAxis(ng, ax));
-
-			waterDUDVOffset_ += waterDUDVOffsetVelocity_ * dt;
-			while (waterDUDVOffset_ > 1.f)
-			{
-				waterDUDVOffset_ -= 1.f;
-			}
 
 			//
 			// Joystick things
@@ -219,22 +208,12 @@ namespace sim
 			glDisable(GL_BLEND);
 			if (waterSurfaceShader_->activate())
 			{
-				waterSurfaceShader_->setReflectionTexture(waterReflectionFramebuffer_);
-				waterSurfaceShader_->setRefractionTexture(waterRefractionFramebuffer_);
-				waterSurfaceShader_->setTilingStrength(waterShadingTilingMultiplier_);
-				waterSurfaceShader_->setNormalMap(textures_["lake-normal"]);
-				waterSurfaceShader_->setDUDVScaleFactor(waterShadingDUDVScale_);
-				waterSurfaceShader_->setDUDVMap(textures_["lake-dudv"]);
 				waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
 				waterSurfaceShader_->setProjMatrix(projMatrix_);
-				waterSurfaceShader_->setDUDVSampleOffset(waterDUDVOffset_);
 				waterSurfaceShader_->setCameraPosition(mainCamera_->pos());
 				waterSurfaceShader_->setLight(sunlight_);
-				waterSurfaceShader_->setWaterSurfaceOrientation(waterSurfaceModel_->rot());
-				waterSurfaceShader_->setReflectivity(waterReflectivity_);
-				waterSurfaceShader_->setShineDamper(waterShineDamper_);
 
-				waterSurface_->render(waterSurfaceShader_);
+				lakeSurface_->render(waterSurfaceShader_, waterReflectionFramebuffer_, waterRefractionFramebuffer_);
 			}
 			else
 			{
@@ -383,10 +362,28 @@ namespace sim
 					500.f, 500.f
 				)
 			);
-			waterSurface_ = std::shared_ptr<view::special::watersurface::Rectangle>(
-				new view::special::watersurface::Rectangle(waterSurfaceModel_)
+			/*
+			, waterShadingTilingMultiplier_(0.05f)
+			, waterShadingDUDVScale_(0.02f)
+			, waterDUDVOffset_(0.f)
+			, waterDUDVOffsetVelocity_(0.05f)
+			, waterShineDamper_(20.f)
+			, waterReflectivity_(0.6f)
+			*/
+			lakeSurface_ = std::shared_ptr<view::special::watersurface::FlatSurface>(
+				new view::special::watersurface::FlatSurface(
+					waterSurfaceModel_,
+					textures_["lake-normal"],
+					textures_["lake-dudv"],
+					0.05f, // Tiling multiplier
+					0.02f, // DUDV scale
+					0.f, // DUDV offset
+					0.05f, // DUDV offset velocity
+					20.f, // Shine damper
+					0.6f // Reflectivity
+				)
 			);
-			if (!waterSurface_ || !waterSurface_->prepare(waterSurfaceShader_, pso_))
+			if (!lakeSurface_ || !lakeSurface_->prepare(waterSurfaceShader_, pso_))
 			{
 				log.error << "Failed to initialize water surface" << util::endl;
 				return false;
@@ -429,10 +426,9 @@ namespace sim
 				skybox_ = nullptr;
 			}
 
-			if (waterSurface_)
+			if (lakeSurface_)
 			{
-				waterSurface_->release();
-				waterSurface_ = nullptr;
+				lakeSurface_ = nullptr;
 			}
 
 			if (waterReflectionFramebuffer_)
@@ -463,36 +459,11 @@ namespace sim
 		bool LakeScene::initializeProperties()
 		{
 			// This is a wee bit awkward, eh?
-			registerProperty("camera", util::command::StaticCameraParser::uuid,
-				std::static_pointer_cast<void>(mainCamera_)
-			);
-			registerProperty("terrain_base", util::command::WithWorldTransformParser::uuid,
-				std::static_pointer_cast<void>(terrain_)
-			);
-			registerProperty("sunlight", util::command::DirectionalLightParser::uuid,
-				std::shared_ptr<void>(&sunlight_, [](void*) {})
-			);
-			registerProperty("skybox", util::command::WithWorldTransformParser::uuid,
-				std::static_pointer_cast<void>(skybox_)
-			);
-			registerProperty("water_surface", util::command::WithWorldTransformParser::uuid,
-				std::static_pointer_cast<void>(waterSurfaceModel_)
-			);
-			registerProperty("lake_surface_tiling", util::command::FloatParser::uuid_,
-				std::shared_ptr<void>(&waterShadingTilingMultiplier_, [](void*) {})
-			);
-			registerProperty("lake_surface_dudv_scale", util::command::FloatParser::uuid_,
-				std::shared_ptr<void>(&waterShadingDUDVScale_, [](void*) {})
-			);
-			registerProperty("lake_surface_velocity", util::command::FloatParser::uuid_,
-				std::shared_ptr<void>(&waterDUDVOffsetVelocity_, [](void*) {})
-			);
-			registerProperty("lake_surface_shine_damper", util::command::FloatParser::uuid_,
-				std::shared_ptr<void>(&waterShineDamper_, [](void*) {})
-			);
-			registerProperty("lake_surface_reflectivity", util::command::FloatParser::uuid_,
-				std::shared_ptr<void>(&waterReflectivity_, [](void*) {})
-			);
+			// TODO SESS: Make a parser for the water surface as well
+			registerProperty("camera", util::command::StaticCameraParser::uuid, std::static_pointer_cast<void>(mainCamera_));
+			registerProperty("terrain_base", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(terrain_));
+			registerProperty("sunlight", util::command::DirectionalLightParser::uuid, std::shared_ptr<void>(&sunlight_, [](void*) {}));
+			registerProperty("skybox", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(skybox_));
 
 			return true;
 		}
@@ -503,10 +474,6 @@ namespace sim
 			unregisterProperty("terrain_base");
 			unregisterProperty("sunlight");
 			unregisterProperty("skybox");
-			unregisterProperty("water_surface");
-			unregisterProperty("lake_surface_tiling");
-			unregisterProperty("lake_surface_dudv_scale");
-			unregisterProperty("lake_surface_velocity");
 			return true;
 		}
 

@@ -288,6 +288,9 @@
     <ClCompile Include="src\util\camera\flightcamera.cpp">
       <Filter>Source Files\util\camera</Filter>
     </ClCompile>
+    <ClCompile Include="src\view\special\watersurface\flatsurface.cpp">
+      <Filter>Source Files\view\special\watersurface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -448,6 +451,9 @@
     </ClInclude>
     <ClInclude Include="include\util\camera\flightcamera.h">
       <Filter>Header Files\util\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\special\watersurface\flatsurface.h">
+      <Filter>Header Files\view\special\watersurface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

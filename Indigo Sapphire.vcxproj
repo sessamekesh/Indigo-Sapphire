@@ -177,6 +177,7 @@
     <ClCompile Include="src\view\special\metaball\phongshader.cpp" />
     <ClCompile Include="src\view\special\skyboxshader.cpp" />
     <ClCompile Include="src\view\special\skybox\daylight.cpp" />
+    <ClCompile Include="src\view\special\watersurface\flatsurface.cpp" />
     <ClCompile Include="src\view\special\watersurface\rectangle.cpp" />
     <ClCompile Include="src\view\special\watersurface\watersurfaceshader.cpp" />
     <ClCompile Include="src\view\terrainshader\assets\importedgeo.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="include\view\special\metaball\phongshader.h" />
     <ClInclude Include="include\view\special\skyboxshader.h" />
     <ClInclude Include="include\view\special\skybox\daylight.h" />
+    <ClInclude Include="include\view\special\watersurface\flatsurface.h" />
     <ClInclude Include="include\view\special\watersurface\rectangle.h" />
     <ClInclude Include="include\view\special\watersurface\watersurfaceshader.h" />
     <ClInclude Include="include\view\terrainshader\assets\importedgeo.h" />

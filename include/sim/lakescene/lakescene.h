@@ -10,6 +10,7 @@
 #include <model/light/directionallight.h>
 #include <view/special/skybox/daylight.h>
 #include <view/special/watersurface/rectangle.h>
+#include <view/special/watersurface/flatsurface.h>
 #include <view/framebuffer.h>
 #include <util/camera/planarreflectioncamera.h>
 #include <util/camera/flightcamera.h>
@@ -87,7 +88,7 @@ namespace sim
 			std::shared_ptr<util::camera::PlanarReflectionCamera> waterReflectionCamera_;
 			model::light::DirectionalLight sunlight_;
 			std::shared_ptr<view::special::skybox::DaylightSkybox> skybox_;
-			std::shared_ptr<view::special::watersurface::Rectangle> waterSurface_;
+			std::shared_ptr<view::special::watersurface::FlatSurface> lakeSurface_;
 			
 			glm::mat4 projMatrix_;
 
@@ -107,12 +108,6 @@ namespace sim
 			// Properties
 			//
 		private:
-			float waterShadingTilingMultiplier_;
-			float waterShadingDUDVScale_;
-			float waterDUDVOffset_;
-			float waterDUDVOffsetVelocity_;
-			float waterShineDamper_;
-			float waterReflectivity_;
 		};
 	}
 }
