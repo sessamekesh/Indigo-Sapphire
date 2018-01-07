@@ -153,6 +153,7 @@
     <ClCompile Include="src\sim\scene.cpp" />
     <ClCompile Include="src\sim\TestScene.cpp" />
     <ClCompile Include="src\util\camera\camerabase.cpp" />
+    <ClCompile Include="src\util\camera\flightcamera.cpp" />
     <ClCompile Include="src\util\camera\planarreflectioncamera.cpp" />
     <ClCompile Include="src\util\camera\StaticCamera.cpp" />
     <ClCompile Include="src\util\command\directionallightparser.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="src\view\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\input\joystick.h" />
     <ClInclude Include="include\lodepng.h" />
     <ClInclude Include="include\model\geo\grid.h" />
     <ClInclude Include="include\model\geo\Line.h" />
@@ -203,6 +205,7 @@
     <ClInclude Include="include\sim\scene.h" />
     <ClInclude Include="include\sim\TestScene.h" />
     <ClInclude Include="include\util\camera\camerabase.h" />
+    <ClInclude Include="include\util\camera\flightcamera.h" />
     <ClInclude Include="include\util\camera\planarreflectioncamera.h" />
     <ClInclude Include="include\util\camera\StaticCamera.h" />
     <ClInclude Include="include\util\command\directionallightparser.h" />

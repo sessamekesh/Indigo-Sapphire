@@ -45,10 +45,6 @@ namespace util
 
 		glm::vec3 PlanarReflectionCamera::up() const
 		{
-			// Take the source up vector, and reflect directly against the plane. 
-			//auto srcUp = srcCamera_->up();
-			//auto dist = 2.f * glm::dot(srcUp, reflectionPlane_.normal());
-			//return srcUp - reflectionPlane_.normal() * dist
 			return srcCamera_->up();
 		}
 

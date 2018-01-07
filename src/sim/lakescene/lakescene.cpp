@@ -70,6 +70,29 @@ namespace sim
 			{
 				waterDUDVOffset_ -= 1.f;
 			}
+
+			//
+			// Joystick things
+			//
+			float rotSpeed = 0.05f;
+			float moveSpeed = 2.f;
+			if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GLFW_TRUE)
+			{
+				int count;
+				const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &count);
+				if (count >= 4)
+				{
+					// Adjust angle first
+					mainCamera_->rotateRight(-rotSpeed * axes[2]);
+					mainCamera_->rotateUp(-rotSpeed * axes[3]);
+
+					auto dir = glm::normalize(mainCamera_->lookAt() - mainCamera_->pos());
+					auto right = glm::normalize(glm::cross(dir, mainCamera_->up()));
+					mainCamera_->pos(
+						mainCamera_->pos() + moveSpeed * (dir * axes[1] + right * axes[0])
+					);
+				}
+			}
 		}
 
 		void LakeScene::renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::optional<glm::vec3> clipNormal, std::optional<glm::vec3> clipOrigin)
@@ -273,10 +296,12 @@ namespace sim
 
 		bool LakeScene::initializeResources()
 		{
-			mainCamera_ = std::shared_ptr<util::camera::StaticCamera>(new util::camera::StaticCamera(
-				glm::vec3(0.f, 15.f, -75.f),
-				glm::vec3(0.f, 0.f, 5.f),
-				glm::vec3(0.f, 1.f, 0.f)));
+			mainCamera_ = std::shared_ptr<util::camera::FlightCamera>(new util::camera::FlightCamera(
+				glm::vec3(0.f, 0.f, -75.f),
+				glm::vec3(0.f, 1.f, 0.f),
+				glm::vec3(0.f, 0.f, 1.f),
+				0.f, 0.f
+			));
 			waterReflectionCamera_ = std::shared_ptr<util::camera::PlanarReflectionCamera>(new util::camera::PlanarReflectionCamera(
 				mainCamera_,
 				model::geo::Plane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f })
@@ -305,7 +330,7 @@ namespace sim
 					125.f
 				)
 			);
-			if (!metaballGroup_ || !metaballGroup_->preparePhong(mainCamera_->pos(), mainCamera_->lookDir(), mainCamera_->up()))
+			if (!metaballGroup_ || !metaballGroup_->preparePhong(mainCamera_->pos(), glm::normalize(mainCamera_->lookAt() - mainCamera_->pos()), mainCamera_->up()))
 			{
 				log.error << "Failed to initialize metaball group object" << util::endl;
 				return false;

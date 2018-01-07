@@ -12,6 +12,7 @@
 #include <view/special/watersurface/rectangle.h>
 #include <view/framebuffer.h>
 #include <util/camera/planarreflectioncamera.h>
+#include <util/camera/flightcamera.h>
 
 // TODO SESS: start working on the water surface!
 // After that, you can start working on the rocks
@@ -82,7 +83,7 @@ namespace sim
 		private:
 			std::shared_ptr<view::special::metaball::MetaballGroup> metaballGroup_;
 			std::shared_ptr<view::terrainshader::assets::ImportedGeo> terrain_;
-			std::shared_ptr<util::camera::StaticCamera> mainCamera_;
+			std::shared_ptr<util::camera::FlightCamera> mainCamera_;
 			std::shared_ptr<util::camera::PlanarReflectionCamera> waterReflectionCamera_;
 			model::light::DirectionalLight sunlight_;
 			std::shared_ptr<view::special::skybox::DaylightSkybox> skybox_;
