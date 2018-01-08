@@ -76,6 +76,66 @@ namespace view
 
 				rectView_->render(shader);
 			}
+
+			float FlatSurface::tilingMultiplier() const
+			{
+				return tilingMultiplier_;
+			}
+
+			void FlatSurface::tilingMultiplier(float nv)
+			{
+				if (nv > 0.f)
+				{
+					tilingMultiplier_ = nv;
+				}
+			}
+
+			float FlatSurface::dudvScale() const
+			{
+				return dudvScale_;
+			}
+
+			void FlatSurface::dudvScale(float nv)
+			{
+				if (nv > 0.f)
+				{
+					dudvScale_ = nv;
+				}
+			}
+
+			float FlatSurface::dudvOffsetVelocity() const
+			{
+				return dudvOffsetVelocity_;
+			}
+
+			void FlatSurface::dudvOffsetVelocity(float nv)
+			{
+				dudvOffsetVelocity_ = nv;
+			}
+
+			float FlatSurface::shineDamper() const
+			{
+				return shineDamper_;
+			}
+
+			void FlatSurface::shineDamper(float nv)
+			{
+				if (nv > 0.f) shineDamper_ = nv;
+			}
+
+			float FlatSurface::reflectivity() const
+			{
+				return reflectivity_;
+			}
+
+			void FlatSurface::reflectivity(float nv)
+			{
+				if (nv > 0.f) reflectivity_ = nv;
+			}
+			std::shared_ptr<model::geo::Rectangle> FlatSurface::model() const
+			{
+				return rectModel_;
+			}
 		}
 	}
 }

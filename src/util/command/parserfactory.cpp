@@ -72,5 +72,14 @@ namespace util
 
 			return directionalLight_;
 		}
+		std::shared_ptr<WaterFlatSurface> ParserFactory::waterFlatSurfaceParser()
+		{
+			if (waterFlatSurface_ == nullptr)
+			{
+				waterFlatSurface_ = std::make_shared<WaterFlatSurface>(*withWorldTransformParser(), *floatParser());
+			}
+
+			return waterFlatSurface_;
+		}
 	}
 }

@@ -35,6 +35,23 @@ namespace view
 					std::shared_ptr<view::Framebuffer> refractionFBO
 				);
 
+				float tilingMultiplier() const;
+				void tilingMultiplier(float nv);
+
+				float dudvScale() const;
+				void dudvScale(float nv);
+
+				float dudvOffsetVelocity() const;
+				void dudvOffsetVelocity(float nv);
+
+				float shineDamper() const;
+				void shineDamper(float nv);
+
+				float reflectivity() const;
+				void reflectivity(float nv);
+
+				std::shared_ptr<model::geo::Rectangle> model() const;
+
 			protected:
 				std::shared_ptr<model::geo::Rectangle> rectModel_;
 				std::shared_ptr<view::special::watersurface::Rectangle> rectView_;

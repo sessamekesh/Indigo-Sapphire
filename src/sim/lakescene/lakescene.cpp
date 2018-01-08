@@ -40,6 +40,7 @@ namespace sim
 			registerParser(parserFactory.quaternionParser());
 			registerParser(parserFactory.withWorldTransformParser());
 			registerParser(parserFactory.directionalLightParser());
+			registerParser(parserFactory.waterFlatSurfaceParser());
 		}
 
 		void LakeScene::update(float dt)
@@ -362,14 +363,7 @@ namespace sim
 					500.f, 500.f
 				)
 			);
-			/*
-			, waterShadingTilingMultiplier_(0.05f)
-			, waterShadingDUDVScale_(0.02f)
-			, waterDUDVOffset_(0.f)
-			, waterDUDVOffsetVelocity_(0.05f)
-			, waterShineDamper_(20.f)
-			, waterReflectivity_(0.6f)
-			*/
+
 			lakeSurface_ = std::shared_ptr<view::special::watersurface::FlatSurface>(
 				new view::special::watersurface::FlatSurface(
 					waterSurfaceModel_,
@@ -464,16 +458,18 @@ namespace sim
 			registerProperty("terrain_base", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(terrain_));
 			registerProperty("sunlight", util::command::DirectionalLightParser::uuid, std::shared_ptr<void>(&sunlight_, [](void*) {}));
 			registerProperty("skybox", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(skybox_));
+			registerProperty("water", util::command::WaterFlatSurface::uuid, std::static_pointer_cast<void>(lakeSurface_));
 
 			return true;
 		}
 
 		bool LakeScene::teardownProperties()
 		{
-			unregisterProperty("camera");
-			unregisterProperty("terrain_base");
-			unregisterProperty("sunlight");
+			unregisterProperty("water");
 			unregisterProperty("skybox");
+			unregisterProperty("sunlight");
+			unregisterProperty("terrain_base");
+			unregisterProperty("camera");
 			return true;
 		}
 

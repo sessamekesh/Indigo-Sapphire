@@ -162,6 +162,7 @@
     <ClCompile Include="src\util\command\quaternion.cpp" />
     <ClCompile Include="src\util\command\staticcameraparser.cpp" />
     <ClCompile Include="src\util\command\vec3parser.cpp" />
+    <ClCompile Include="src\util\command\waterflatsurface.cpp" />
     <ClCompile Include="src\util\command\withworldtransformparser.cpp" />
     <ClCompile Include="src\util\io.cpp" />
     <ClCompile Include="src\util\Logger.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="include\util\command\quaternion.h" />
     <ClInclude Include="include\util\command\staticcameraparser.h" />
     <ClInclude Include="include\util\command\vec3parser.h" />
+    <ClInclude Include="include\util\command\waterflatsurface.h" />
     <ClInclude Include="include\util\command\withworldtransformparser.h" />
     <ClInclude Include="include\util\io.h" />
     <ClInclude Include="include\util\Logger.h" />
