@@ -168,6 +168,8 @@
     <ClCompile Include="src\util\Logger.cpp" />
     <ClCompile Include="src\view\cubemap.cpp" />
     <ClCompile Include="src\view\framebuffer.cpp" />
+    <ClCompile Include="src\view\mappedphong\assimpgeo.cpp" />
+    <ClCompile Include="src\view\mappedphong\mappedphongshader.cpp" />
     <ClCompile Include="src\view\shader.cpp" />
     <ClCompile Include="src\view\solidshader\assets\computermonitor.cpp" />
     <ClCompile Include="src\view\solidshader\assets\importedgeo.cpp" />
@@ -225,6 +227,8 @@
     <ClInclude Include="include\util\pipelinestate.h" />
     <ClInclude Include="include\view\cubemap.h" />
     <ClInclude Include="include\view\framebuffer.h" />
+    <ClInclude Include="include\view\mappedphong\assimpgeo.h" />
+    <ClInclude Include="include\view\mappedphong\mappedphongshader.h" />
     <ClInclude Include="include\view\shader.h" />
     <ClInclude Include="include\view\solidshader\assets\computermonitor.h" />
     <ClInclude Include="include\view\solidshader\assets\importedgeo.h" />
@@ -243,6 +247,8 @@
     <ClInclude Include="include\view\texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\mappedphong.frag" />
+    <None Include="shaders\mappedphong.vert" />
     <None Include="shaders\metaball-phong.frag" />
     <None Include="shaders\metaball-phong.vert" />
     <None Include="shaders\skybox.frag" />

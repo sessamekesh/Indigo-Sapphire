@@ -29,7 +29,7 @@ namespace sim
 				glm::vec3(1.f, -1.f, 0.f)) // Direction
 			, skybox_(nullptr)
 			, lakeSurface_(nullptr)
-			, projMatrix_(glm::perspective(glm::radians(45.f), 128.f / 72.f, 0.1f, 1000.0f))
+			, projMatrix_(glm::perspective(glm::radians(45.f), 128.f / 72.f, 0.1f, 10000.0f))
 			, textures_({})
 			, waterReflectionFramebuffer_(nullptr)
 			, waterRefractionFramebuffer_(nullptr)
@@ -384,14 +384,14 @@ namespace sim
 			}
 
 			waterReflectionFramebuffer_ = std::make_shared<view::Framebuffer>();
-			if (!waterReflectionFramebuffer_ || !waterReflectionFramebuffer_->init(512, 512))
+			if (!waterReflectionFramebuffer_ || !waterReflectionFramebuffer_->init(1024, 1024))
 			{
 				log.error << "Failed to initialize water reflection framebuffer" << util::endl;
 				return false;
 			}
 
 			waterRefractionFramebuffer_ = std::make_shared<view::Framebuffer>();
-			if (!waterRefractionFramebuffer_ || !waterRefractionFramebuffer_->init(512, 512))
+			if (!waterRefractionFramebuffer_ || !waterRefractionFramebuffer_->init(1024, 1024))
 			{
 				log.error << "Failed to initialize water refraction framebuffer" << util::endl;
 				return false;
@@ -521,9 +521,7 @@ namespace sim
 
 		bool LakeScene::teardownTextures()
 		{
-			textures_.erase("dry-grass");
-			textures_.erase("lake-dudv");
-			textures_.erase("lake-normal");
+			textures_.clear();
 
 			return true;
 		}

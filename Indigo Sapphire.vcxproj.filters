@@ -145,6 +145,12 @@
     <Filter Include="Header Files\input">
       <UniqueIdentifier>{ef5ebfb2-01e1-4bd2-840e-f84228815b32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\view\mappedphong">
+      <UniqueIdentifier>{9e18834a-5f64-428b-82d0-7ff07d33249c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\mappedphong">
+      <UniqueIdentifier>{209dfefd-2e94-4bf4-8d15-46f65a0e3701}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -293,6 +299,12 @@
     </ClCompile>
     <ClCompile Include="src\util\command\waterflatsurface.cpp">
       <Filter>Source Files\util\command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\mappedphong\mappedphongshader.cpp">
+      <Filter>Source Files\view\mappedphong</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\mappedphong\assimpgeo.cpp">
+      <Filter>Source Files\view\mappedphong</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -461,6 +473,12 @@
     <ClInclude Include="include\util\command\waterflatsurface.h">
       <Filter>Header Files\util\command</Filter>
     </ClInclude>
+    <ClInclude Include="include\view\mappedphong\mappedphongshader.h">
+      <Filter>Header Files\view\mappedphong</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\mappedphong\assimpgeo.h">
+      <Filter>Header Files\view\mappedphong</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\metaball-phong.frag">
@@ -491,6 +509,12 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shaders\watersurface.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\mappedphong.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\mappedphong.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

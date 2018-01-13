@@ -15,8 +15,7 @@
 #include <util/camera/planarreflectioncamera.h>
 #include <util/camera/flightcamera.h>
 
-// TODO SESS: start working on the water surface!
-// After that, you can start working on the rocks
+// TODO SESS: start working on the rocks
 // After that, you can start working on the trees
 // After that, you can start working on the waterbender effect
 // After that, you can start working on the characters
