@@ -195,7 +195,7 @@ namespace sim
 
 		void LakeScene::render()
 		{
-			glClearColor(0x36 / 255.f, 0x45 / 255.f, 0x4f / 255.f, 1.f);
+			glClearColor(0.f, 0.f, 0.f, 1.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			int width, height;
 			glfwGetWindowSize(window_, &width, &height);
@@ -206,7 +206,7 @@ namespace sim
 			//
 			auto waterOrigin = waterSurfaceModel_->pos();
 			auto waterNormal = glm::rotate(waterSurfaceModel_->rot(), glm::vec3(0.f, 1.f, 0.f));
-			glDisable(GL_CLIP_DISTANCE0);
+			glEnable(GL_CLIP_DISTANCE0);
 			waterReflectionCamera_->reflectionPlane(model::geo::Plane(waterOrigin, waterNormal));
 			waterReflectionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -428,9 +428,11 @@ namespace sim
 			}
 
 			boulderTest_ = std::shared_ptr<view::mappedphong::AssimpGeo>(new view::mappedphong::AssimpGeo(
-				glm::vec3(-232.896f, 10.0739f, -184.748f),
-				glm::angleAxis(-glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)),
-				glm::vec3(25.f, 25.f, 25.f),
+				glm::vec3(-180.f, -30.f, -184.f),
+				glm::angleAxis(0.2f, glm::vec3(1.f, 0.f, 0.f)) *
+					glm::angleAxis(glm::pi<float>(), glm::vec3(0.f, 1.f, 0.f)) *
+					glm::angleAxis(-glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)),
+				glm::vec3(65.f, 65.f, 65.f),
 				"BoulderTest",
 				textures_["boulder-normal"],
 				textures_["boulder-diffuse"],
