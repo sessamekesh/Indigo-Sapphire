@@ -14,6 +14,8 @@
 #include <view/framebuffer.h>
 #include <util/camera/planarreflectioncamera.h>
 #include <util/camera/flightcamera.h>
+#include <view/mappedphong/mappedphongshader.h>
+#include <view/mappedphong/assimpgeo.h>
 
 // TODO SESS: start working on the rocks
 // After that, you can start working on the trees
@@ -69,6 +71,7 @@ namespace sim
 			std::shared_ptr<view::special::SkyboxShader> skyboxShader_;
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
+			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
 
 			//
 			// Models
@@ -88,7 +91,8 @@ namespace sim
 			model::light::DirectionalLight sunlight_;
 			std::shared_ptr<view::special::skybox::DaylightSkybox> skybox_;
 			std::shared_ptr<view::special::watersurface::FlatSurface> lakeSurface_;
-			
+			std::shared_ptr<view::mappedphong::AssimpGeo> boulderTest_;
+
 			glm::mat4 projMatrix_;
 
 			//

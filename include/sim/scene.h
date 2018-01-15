@@ -7,10 +7,13 @@
 #include <view/shader.h>
 #include <GLFW/glfw3.h>
 #include <mutex>
+#include <model/imagedata.h>
 
 #include <vector>
 #include <map>
 #include <chrono>
+
+#include <optional>
 
 // Base scene object. Contains a lot of the overhead that will be shared among
 //  many scenes, including command parsing from CLI, etc.
@@ -20,10 +23,28 @@ namespace sim
 	class Scene
 	{
 	public:
+		enum SCENE_LOAD_TYPE
+		{
+			DEBUG,
+			WRITE_FRAME_IMAGES,
+			RUN_SCRIPT
+		};
+
+		struct SceneWriteData
+		{
+			std::string imageBasePath;
+			int startFrame;
+			int frameCt;
+			float frameTime;
+		};
+
+	public:
 		Scene(
 			const std::string& sceneName,
 			unsigned int windowWidth = 1920u,
-			unsigned int windowHeight = 1080u
+			unsigned int windowHeight = 1080u,
+			SCENE_LOAD_TYPE sceneType = DEBUG,
+			std::optional<SceneWriteData> writeData = std::nullopt
 		);
 		~Scene();
 		Scene(const Scene&) = delete;
@@ -92,6 +113,11 @@ namespace sim
 		std::chrono::time_point<std::chrono::high_resolution_clock> lastFrameTime_;
 		bool exit_;
 		bool isRunning_;
+		SCENE_LOAD_TYPE sceneType_;
+		std::optional<SceneWriteData> writeData_;
+		model::ImageData pixelBuffer_;
+		std::uint32_t frameIdx_;
+		std::uint8_t nDigitsInFrameCt_;
 
 		//
 		// Command queue

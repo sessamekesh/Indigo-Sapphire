@@ -3,13 +3,17 @@
 #include <util/io.h>
 #include <fstream>
 #include <resources.h>
+#include <sstream>
+#include <iomanip>
 
 namespace sim
 {
 	Scene::Scene(
 		const std::string& sceneName,
 		unsigned int windowWidth,
-		unsigned int windowHeight
+		unsigned int windowHeight,
+		SCENE_LOAD_TYPE sceneType,
+		std::optional<SceneWriteData> writeData
 	)
 		: parsers_()
 		, properties_()
@@ -27,6 +31,11 @@ namespace sim
 		, lastFrameTime_(std::chrono::high_resolution_clock::now())
 		, exit_(false)
 		, isRunning_(false)
+		, sceneType_(sceneType)
+		, writeData_(writeData)
+		, pixelBuffer_({ {}, windowWidth, windowHeight })
+		, frameIdx_(0u)
+		, nDigitsInFrameCt_(0u)
 		, cq_mutex_()
 		, cq_(0u)
 	{}
@@ -88,6 +97,17 @@ namespace sim
 			return false;
 		}
 
+		if (sceneType_ == WRITE_FRAME_IMAGES && writeData_)
+		{
+			pixelBuffer_.pixels.resize(windowWidth_ * windowHeight_ * 4u);
+			std::uint32_t r = writeData_->frameCt;
+			while (r > 0)
+			{
+				r /= 10;
+				nDigitsInFrameCt_++;
+			}
+		}
+
 		isInitialized_ = true;
 		log.info << "Scene initialized." << util::endl;
 
@@ -96,6 +116,8 @@ namespace sim
 
 	bool Scene::Shutdown()
 	{
+		pixelBuffer_.pixels.resize(0u);
+
 		if (propertiesReady_)
 		{
 			if (!teardownProperties())
@@ -184,10 +206,44 @@ namespace sim
 			{
 				float dt = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastFrameTime_).count() / 1000.f;
 				lastFrameTime_ = std::chrono::high_resolution_clock::now();
-				update(dt);
+
+				if (sceneType_ == WRITE_FRAME_IMAGES && writeData_)
+				{
+					update(writeData_->frameTime);
+				}
+				else
+				{
+					update(dt);
+				}
 			}
 
 			render();
+			
+			// Check saving frames...
+			if (sceneType_ == WRITE_FRAME_IMAGES && writeData_)
+			{
+				if (writeData_->startFrame > 0)
+				{
+					writeData_->startFrame--;
+				}
+				else if (writeData_->frameCt > 0)
+				{
+					// Read and save pixels
+					writeData_->frameCt--;
+					glReadPixels(0, 0, windowWidth_, windowHeight_, GL_RGBA, GL_UNSIGNED_BYTE, &pixelBuffer_.pixels[0]);
+					log.warn << "Writing frame " << frameIdx_ << "..." << util::endl;
+					std::stringstream ss;
+					ss << writeData_->imageBasePath;
+					ss << std::setw(nDigitsInFrameCt_);
+					ss << std::setfill('0');
+					ss << std::right;
+					ss << frameIdx_++;
+					ss << std::setw(0);
+					ss << ".png";
+					model::flip(pixelBuffer_);
+					model::writePNG(pixelBuffer_, ss.str());
+				}
+			}
 
 			// Present...
 			glfwSwapBuffers(window_);

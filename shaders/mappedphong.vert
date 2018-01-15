@@ -40,7 +40,7 @@ void main()
 	 tang.z, bitang.z, norm.z
    );
 
-   toLight = matTangent * (modelViewMatrix * vec4(-lightDirection, 0.0)).xyz;
+   toLight = matTangent * (matView * vec4(-lightDirection, 0.0)).xyz;
    toCamera = matTangent * (matView * vec4(cameraPosition - worldPos.xyz, 0.0)).xyz;
 
    gl_Position = matProj * matView * worldPos;

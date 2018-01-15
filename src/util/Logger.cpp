@@ -56,6 +56,18 @@ namespace util
 		}
 	}
 
+	Logger::InternalLogger& Logger::operator<<(std::uint32_t msg)
+	{
+		switch (_defaultLevel)
+		{
+		case INFO: info << msg; return info;
+		case DEBUG: debug << msg; return debug;
+		case WARN: warn << msg; return warn;
+		case ERR: error << msg; return error;
+		default: case PANIC: panic << msg; return panic;
+		}
+	}
+
 	Logger::InternalLogger::InternalLogger(std::string prefix)
 		: _out(true)
 		, _shouldPrefix(true)
@@ -92,6 +104,23 @@ namespace util
 	Logger::InternalLogger& Logger::InternalLogger::operator<<(const std::string& msg)
 	{
 		return this->operator<<(msg.c_str());
+	}
+
+	Logger::InternalLogger& Logger::InternalLogger::operator<<(std::uint32_t t)
+	{
+		if (!_out)
+		{
+			return *this;
+		}
+
+		if (_shouldPrefix)
+		{
+			std::cout << prefix_;
+			_shouldPrefix = false;
+		}
+
+		std::cout << t;
+		return *this;
 	}
 
 	void Logger::InternalLogger::setActive(bool isOn)

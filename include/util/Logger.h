@@ -25,6 +25,7 @@ namespace util
 			InternalLogger(std::string prefix);
 			InternalLogger& operator<<(const char* msg);
 			InternalLogger& operator<<(const std::string& msg);
+			InternalLogger& operator<<(std::uint32_t t);
 
 			void setActive(bool isOn);
 		private:
@@ -40,6 +41,7 @@ namespace util
 		
 		InternalLogger& operator<<(const char* msg);
 		InternalLogger& operator<<(const std::string& msg);
+		InternalLogger& operator<<(std::uint32_t t);
 		
 		InternalLogger info;
 		InternalLogger debug;

@@ -118,7 +118,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>assimp-vc140-mt.lib;glm_static.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlibstatic.lib;assimp-vc140-mt.lib;glm_static.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,6 +138,7 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\lodepng.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\model\event\eventbase.cpp" />
     <ClCompile Include="src\model\geo\Line.cpp" />
     <ClCompile Include="src\model\geo\plane.cpp" />
     <ClCompile Include="src\model\geo\rectangle.cpp" />
@@ -190,6 +191,7 @@
   <ItemGroup>
     <ClInclude Include="include\input\joystick.h" />
     <ClInclude Include="include\lodepng.h" />
+    <ClInclude Include="include\model\event\eventbase.h" />
     <ClInclude Include="include\model\geo\grid.h" />
     <ClInclude Include="include\model\geo\Line.h" />
     <ClInclude Include="include\model\geo\plane.h" />

@@ -3,6 +3,11 @@
 #include <resources.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+// TODO SESS:
+// - Model the rock they'll be sitting on
+// - Put the XBOT character on the rock
+// - Start setting up the actual sequence! (camera, arrows, all that jazz)
+
 namespace sim
 {
 	namespace lake
@@ -16,9 +21,11 @@ namespace sim
 			, skyboxShader_(nullptr)
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
+			, mappedPhongShader_(nullptr)
 			, metaballGroupModel_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, metaballGroup_(nullptr)
+			, boulderTest_(nullptr)
 			, terrain_(nullptr)
 			, mainCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
@@ -131,6 +138,22 @@ namespace sim
 			else
 			{
 				log.warn << "Failed to activate terrain shader, not drawing terrain" << util::endl;
+			}
+
+			if (mappedPhongShader_->activate())
+			{
+				if (clipOrigin && clipNormal)
+				{
+					mappedPhongShader_->setClipPlane(model::geo::Plane(*clipOrigin, *clipNormal));
+				}
+
+				mappedPhongShader_->setViewMatrix(camera->getViewTransform());
+				mappedPhongShader_->setProjMatrix(projMatrix_);
+				mappedPhongShader_->setLight(sunlight_);
+				mappedPhongShader_->setShininess(200.f);
+				mappedPhongShader_->setCameraPosition(camera->pos());
+				
+				boulderTest_->render(mappedPhongShader_);
 			}
 		}
 
@@ -257,6 +280,13 @@ namespace sim
 			if (!waterSurfaceShader_ || !waterSurfaceShader_->initialize())
 			{
 				log.error << "Failed to create water surface shader" << util::endl;
+				return false;
+			}
+
+			mappedPhongShader_ = std::make_shared<view::mappedphong::MappedPhongShader>();
+			if (!mappedPhongShader_ || !mappedPhongShader_->initialize())
+			{
+				log.error << "Failed to create mapped phong shader" << util::endl;
 				return false;
 			}
 
@@ -397,6 +427,21 @@ namespace sim
 				return false;
 			}
 
+			boulderTest_ = std::shared_ptr<view::mappedphong::AssimpGeo>(new view::mappedphong::AssimpGeo(
+				glm::vec3(-232.896, 25.0739, -184.748),
+				glm::angleAxis(glm::half_pi<float>(), glm::vec3(0.f, 0.f, 1.f)),
+				glm::vec3(25.f, 25.f, 25.f),
+				"BoulderTest",
+				textures_["boulder-normal"],
+				textures_["boulder-diffuse"],
+				textures_["boulder-specular"]
+			));
+			if (!boulderTest_ || !boulderTest_->prepare(ASSET_PATH("environment/boulder/boulder.fbx"), mappedPhongShader_, pso_))
+			{
+				log.error << "Failed to initialize test boulder" << util::endl;
+				return false;
+			}
+
 			return true;
 		}
 
@@ -459,12 +504,14 @@ namespace sim
 			registerProperty("sunlight", util::command::DirectionalLightParser::uuid, std::shared_ptr<void>(&sunlight_, [](void*) {}));
 			registerProperty("skybox", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(skybox_));
 			registerProperty("water", util::command::WaterFlatSurface::uuid, std::static_pointer_cast<void>(lakeSurface_));
+			registerProperty("boulder", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(boulderTest_));
 
 			return true;
 		}
 
 		bool LakeScene::teardownProperties()
 		{
+			unregisterProperty("boulder");
 			unregisterProperty("water");
 			unregisterProperty("skybox");
 			unregisterProperty("sunlight");
@@ -515,6 +562,9 @@ namespace sim
 			if (!loadSingleTexture("dry-grass", ASSET_PATH("texture/dry-grass.png"))) return false;
 			if (!loadSingleTexture("lake-dudv", ASSET_PATH("texture/water-dudv.png"))) return false;
 			if (!loadSingleTexture("lake-normal", ASSET_PATH("texture/water-normal.png"))) return false;
+			if (!loadSingleTexture("boulder-normal", ASSET_PATH("environment/boulder/NormalMap.png"))) return false;
+			if (!loadSingleTexture("boulder-specular", ASSET_PATH("environment/boulder/SpecularMap.png"))) return false;
+			if (!loadSingleTexture("boulder-diffuse", ASSET_PATH("environment/boulder/DiffuseMap.png"))) return false;
 
 			return true;
 		}

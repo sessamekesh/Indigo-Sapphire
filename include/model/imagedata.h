@@ -13,4 +13,6 @@ namespace model
 	};
 
 	std::optional<ImageData> readPNG(std::string fName);
+	bool writePNG(const ImageData& image, std::string fName);
+	void flip(ImageData& image);
 }

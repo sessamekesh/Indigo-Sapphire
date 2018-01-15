@@ -65,6 +65,8 @@ namespace util
 			{
 				return false;
 			}
+
+			return true;
 		}
 
 		std::vector<PropertyCommand> DirectionalLightParser::serializeValue(std::shared_ptr<void> ptr)

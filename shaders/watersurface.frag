@@ -46,7 +46,7 @@ void main()
    vec4 refractColor = texture(refractionTexture, refractUV);
 
    vec3 toCamera = normalize(cameraPosition - fWorldPos);
-   float refractiveFactor = dot(toCamera, vec3(0.0, 1.0, 0.0)); // TODO SESS: Use water normal here instead!
+   float refractiveFactor = pow(dot(toCamera, vec3(0.0, 1.0, 0.0)), 0.65); // TODO SESS: Use water normal here instead!
 
    vec4 rrColor = mix(reflectColor, refractColor, refractiveFactor);
 

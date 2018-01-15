@@ -151,6 +151,12 @@
     <Filter Include="Source Files\view\mappedphong">
       <UniqueIdentifier>{209dfefd-2e94-4bf4-8d15-46f65a0e3701}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\model\event">
+      <UniqueIdentifier>{57fe117d-4144-420f-b520-c563f9205ba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\event">
+      <UniqueIdentifier>{2916d91e-ef05-4475-9855-aeadd89ba6a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -305,6 +311,9 @@
     </ClCompile>
     <ClCompile Include="src\view\mappedphong\assimpgeo.cpp">
       <Filter>Source Files\view\mappedphong</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\event\eventbase.cpp">
+      <Filter>Source Files\model\event</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -478,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="include\view\mappedphong\assimpgeo.h">
       <Filter>Header Files\view\mappedphong</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\event\eventbase.h">
+      <Filter>Header Files\model\event</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
