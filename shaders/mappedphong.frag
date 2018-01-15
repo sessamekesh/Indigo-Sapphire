@@ -30,7 +30,7 @@ void main()
    vec3 sampledNormal = texture(normalMap, uv).xyz;
    sampledNormal.xyz = sampledNormal.xyz * 2.0 - 1.0;
 
-   vec3 normal = normalize((matWorld * vec4(sampledNormal, 0.0)).xyz);
+   vec3 normal = normalize(sampledNormal);
    vec3 nToLight = normalize(toLight);
    vec3 nToCamera = normalize(toCamera);
 
@@ -47,7 +47,7 @@ void main()
    partialColor += diffuseFactor * lightDiffuse * matDiffuse;
    partialColor += specFactor * lightSpecular * matSpecular;
 
-   //color = vec4(matDiffuse, 1.0);
+   //color = vec4(normal, 1.0);
    color = vec4(partialColor, 1.0);
    //color = vec4(1.0, 0.0, 0.0, 1.0);
 }

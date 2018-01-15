@@ -428,8 +428,8 @@ namespace sim
 			}
 
 			boulderTest_ = std::shared_ptr<view::mappedphong::AssimpGeo>(new view::mappedphong::AssimpGeo(
-				glm::vec3(-232.896, 25.0739, -184.748),
-				glm::angleAxis(glm::half_pi<float>(), glm::vec3(0.f, 0.f, 1.f)),
+				glm::vec3(-232.896f, 10.0739f, -184.748f),
+				glm::angleAxis(-glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)),
 				glm::vec3(25.f, 25.f, 25.f),
 				"BoulderTest",
 				textures_["boulder-normal"],
