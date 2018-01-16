@@ -113,6 +113,9 @@ namespace view
 				glResources_[meshName] = glr;
 			}
 
+			aiReleaseImport(scene);
+			scene = nullptr;
+
 			isReady_ = true;
 			return true;
 		}

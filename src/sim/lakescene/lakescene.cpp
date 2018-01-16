@@ -22,11 +22,14 @@ namespace sim
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
 			, mappedPhongShader_(nullptr)
+			, treeShader_(nullptr)
 			, metaballGroupModel_(nullptr)
 			, waterSurfaceModel_(nullptr)
+			, testTreeModel_(nullptr)
 			, metaballGroup_(nullptr)
 			, boulderTest_(nullptr)
 			, terrain_(nullptr)
+			, testTreeEntity_(nullptr)
 			, mainCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
 			, sunlight_(
@@ -36,7 +39,7 @@ namespace sim
 				glm::vec3(1.f, -1.f, 0.f)) // Direction
 			, skybox_(nullptr)
 			, lakeSurface_(nullptr)
-			, projMatrix_(glm::perspective(glm::radians(45.f), 128.f / 72.f, 0.1f, 10000.0f))
+			, projMatrix_(glm::perspective(glm::radians(45.f), 128.f / 72.f, 0.1f, 15000.0f))
 			, textures_({})
 			, waterReflectionFramebuffer_(nullptr)
 			, waterRefractionFramebuffer_(nullptr)
@@ -94,10 +97,10 @@ namespace sim
 
 		void LakeScene::renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::optional<glm::vec3> clipNormal, std::optional<glm::vec3> clipOrigin)
 		{
+			// TODO SESS: Things like depth test, etc., should be handled in the PSO (to avoid setting redundant state)
 			// Skybox before all else
 			glDepthMask(GL_FALSE);
 			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_CULL_FACE);
 			glDisable(GL_BLEND);
 			if (skyboxShader_->activate())
 			{
@@ -119,7 +122,6 @@ namespace sim
 			//
 			// Opaque shading first
 			//
-			glEnable(GL_CULL_FACE);
 			glEnable(GL_DEPTH_TEST);
 			glDepthMask(GL_TRUE);
 			if (terrainShader_->activate())
@@ -154,6 +156,23 @@ namespace sim
 				mappedPhongShader_->setCameraPosition(camera->pos());
 				
 				boulderTest_->render(mappedPhongShader_);
+			}
+
+			//
+			// Transparency
+			//
+			if (treeShader_->activate())
+			{
+				if (clipOrigin && clipNormal)
+				{
+					treeShader_->setClipPlane(model::geo::Plane(*clipOrigin, *clipNormal));
+				}
+
+				treeShader_->setViewMatrix(camera->getViewTransform());
+				treeShader_->setProjMatrix(projMatrix_);
+				treeShader_->setLight(sunlight_);
+				
+				testTreeEntity_->render(testTreeModel_, treeShader_);
 			}
 		}
 
@@ -290,6 +309,13 @@ namespace sim
 				return false;
 			}
 
+			treeShader_ = std::make_shared<sim::lake::TreeShader>();
+			if (!treeShader_ || !treeShader_->initialize())
+			{
+				log.error << "Failed to create tree shader" << util::endl;
+				return false;
+			}
+
 			return true;
 		}
 
@@ -300,6 +326,7 @@ namespace sim
 			skyboxShader_ = nullptr;
 			solidShader_ = nullptr;
 			waterSurfaceShader_ = nullptr;
+			treeShader_ = nullptr;
 
 			return true;
 		}
@@ -376,8 +403,9 @@ namespace sim
 
 			skybox_ = std::shared_ptr<view::special::skybox::DaylightSkybox>(
 				new view::special::skybox::DaylightSkybox(
+					glm::vec3(0.f, -300.f, 0.f),
 					glm::angleAxis(0.01f, glm::vec3(0.f, 1.f, 0.f)),
-					glm::vec3(40.f, 40.f, 40.f)
+					glm::vec3(700.f, 700.f, 700.f)
 				)
 			);
 			if (!skybox_ || !skybox_->prepare(skyboxShader_, pso_))
@@ -444,6 +472,21 @@ namespace sim
 				return false;
 			}
 
+			testTreeModel_ = std::shared_ptr<sim::lake::TreeModel>(new sim::lake::TreeModel(
+				sim::lake::TreeModel::TREE_TYPE_0,
+				glm::vec3(200.f, -2.f, 50.f),
+				glm::angleAxis(-glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)),
+				glm::vec3(20.f, 20.f, 20.f)
+			));
+			testTreeEntity_ = std::shared_ptr<sim::lake::TreeEntity>(new sim::lake::TreeEntity(
+				TreeModel::TREE_TYPE_0
+			));
+			if (!testTreeEntity_ || !testTreeEntity_->prepare(treeShader_, pso_))
+			{
+				log.error << "Failed to initialize test tree entity" << util::endl;
+				return false;
+			}
+
 			return true;
 		}
 
@@ -507,6 +550,7 @@ namespace sim
 			registerProperty("skybox", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(skybox_));
 			registerProperty("water", util::command::WaterFlatSurface::uuid, std::static_pointer_cast<void>(lakeSurface_));
 			registerProperty("boulder", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(boulderTest_));
+			registerProperty("tree", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(testTreeModel_));
 
 			return true;
 		}

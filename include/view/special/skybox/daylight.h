@@ -16,6 +16,7 @@ namespace view
 			{
 			public:
 				DaylightSkybox(
+					const glm::vec3& pos,
 					const glm::quat& rotation,
 					const glm::vec3& scl
 				);

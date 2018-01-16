@@ -157,6 +157,24 @@
     <Filter Include="Source Files\model\event">
       <UniqueIdentifier>{2916d91e-ef05-4475-9855-aeadd89ba6a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\sim\lakescene\shaders">
+      <UniqueIdentifier>{5735888b-eadc-4cab-8e90-722c3d861c68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sim\lakescene\shaders">
+      <UniqueIdentifier>{3f3e6191-8fba-408b-937e-173a4871cee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sim\lakescene\models">
+      <UniqueIdentifier>{8521375a-7772-44db-b0d8-0922545ea8da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sim\lakescene\entities">
+      <UniqueIdentifier>{69abffc2-f18d-409c-b371-6c52cdc81592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sim\lakescene\models">
+      <UniqueIdentifier>{aec669d9-ebbb-4b11-90fb-ad0a87a91744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sim\lakescene\entities">
+      <UniqueIdentifier>{5a66a094-373b-444c-b548-96a74dc363d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -314,6 +332,18 @@
     </ClCompile>
     <ClCompile Include="src\model\event\eventbase.cpp">
       <Filter>Source Files\model\event</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\lakescene\shaders\tree.cpp">
+      <Filter>Source Files\sim\lakescene\shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\lakescene\model\tree.cpp">
+      <Filter>Source Files\sim\lakescene\models</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\lakescene\entities\treeloader.cpp">
+      <Filter>Source Files\sim\lakescene\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\lakescene\entities\tree.cpp">
+      <Filter>Source Files\sim\lakescene\entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -491,6 +521,18 @@
     <ClInclude Include="include\model\event\eventbase.h">
       <Filter>Header Files\model\event</Filter>
     </ClInclude>
+    <ClInclude Include="include\sim\lakescene\shaders\tree.h">
+      <Filter>Header Files\sim\lakescene\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\model\tree.h">
+      <Filter>Header Files\sim\lakescene\models</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\entities\treeloader.h">
+      <Filter>Header Files\sim\lakescene\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\entities\tree.h">
+      <Filter>Header Files\sim\lakescene\entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\metaball-phong.frag">
@@ -527,6 +569,12 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shaders\mappedphong.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\tree.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\tree.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

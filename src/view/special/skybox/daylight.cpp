@@ -53,10 +53,11 @@ namespace view
 			};
 
 			DaylightSkybox::DaylightSkybox(
+				const glm::vec3& pos,
 				const glm::quat& rotation,
 				const glm::vec3& scl
 			)
-				: WithWorldTransform(glm::vec3(0.f, 0.f, 0.f), rotation, scl)
+				: WithWorldTransform(pos, rotation, scl)
 				, isReady_(false)
 				, vertexBuffer_(0u)
 				, vao_(0u)

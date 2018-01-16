@@ -17,8 +17,14 @@
 #include <view/mappedphong/mappedphongshader.h>
 #include <view/mappedphong/assimpgeo.h>
 
-// TODO SESS: start working on the rocks
-// After that, you can start working on the trees
+#include <sim/lakescene/entities/tree.h>
+
+// TODO SESS: Fix the TREE. Something is SEVERELY BROKEN.
+// TODO SESS: Also, loading times are high enough that THREADING is a thing to consider on CPU-side stuff
+//  (especially loading things from Assimp, and processing the vertices)
+// http://assimp.sourceforge.net/lib_html/class_assimp_1_1_importer.html - individual importers are not thread-safe
+//  Create a MODEL for each thing you'll be using, as well as an ENTITY
+//  This is how you should probably organize things moving forward.
 // After that, you can start working on the waterbender effect
 // After that, you can start working on the characters
 
@@ -72,6 +78,7 @@ namespace sim
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
+			std::shared_ptr<sim::lake::TreeShader> treeShader_;
 
 			//
 			// Models
@@ -79,6 +86,7 @@ namespace sim
 		private:
 			std::shared_ptr<model::specialgeo::metaball::MetaballGroup> metaballGroupModel_;
 			std::shared_ptr<model::geo::Rectangle> waterSurfaceModel_;
+			std::shared_ptr<sim::lake::TreeModel> testTreeModel_;
 
 			//
 			// Resources
@@ -92,6 +100,7 @@ namespace sim
 			std::shared_ptr<view::special::skybox::DaylightSkybox> skybox_;
 			std::shared_ptr<view::special::watersurface::FlatSurface> lakeSurface_;
 			std::shared_ptr<view::mappedphong::AssimpGeo> boulderTest_;
+			std::shared_ptr<sim::lake::TreeEntity> testTreeEntity_;
 
 			glm::mat4 projMatrix_;
 
