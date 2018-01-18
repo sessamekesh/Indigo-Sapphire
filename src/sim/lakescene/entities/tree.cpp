@@ -66,55 +66,21 @@ namespace sim
 			// Trunk
 			{
 				auto trunkRawMesh = (*rawEntity)["branches23"];
-				auto trunkVBData = shader->getVertexBuffer(trunkRawMesh.vertices);
-				glCreateVertexArrays(1, &trunkVao_);
-				glBindVertexArray(trunkVao_);
-
-				glGenBuffers(1, &trunkVB_);
-				glBindBuffer(GL_ARRAY_BUFFER, trunkVB_);
-				glBufferStorage(
-					GL_ARRAY_BUFFER,
-					trunkVBData.size(),
-					&trunkVBData[0],
-					0x00
-				);
-				glGenBuffers(1, &trunkIB_);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trunkIB_);
-				glBufferStorage(
-					GL_ELEMENT_ARRAY_BUFFER,
-					trunkRawMesh.indices.size() * sizeof(std::uint32_t),
-					&trunkRawMesh.indices[0],
-					0x00
-				);
-				trunkNumIndices_ = trunkRawMesh.indices.size();
-				shader->setVertexAttribPointers(pso);
+				if (!prepareInternal(trunkRawMesh, shader, pso, trunkVao_, trunkVB_, trunkIB_, trunkNumIndices_))
+				{
+					log.error << "Failed to prepare trunk mesh" << util::endl;
+					return false;
+				}
 			}
 
 			// Leaves
 			{
 				auto leavesRawMesh = (*rawEntity)["leaf21"];
-				auto leavesVBData = shader->getVertexBuffer(leavesRawMesh.vertices);
-				glCreateVertexArrays(1, &leavesVao_);
-				glBindVertexArray(leavesVao_);
-
-				glGenBuffers(1, &leavesVB_);
-				glBindBuffer(GL_ARRAY_BUFFER, leavesVB_);
-				glBufferStorage(
-					GL_ARRAY_BUFFER,
-					leavesVBData.size(),
-					&leavesVBData[0],
-					0x00
-				);
-				glGenBuffers(1, &leavesIB_);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, leavesIB_);
-				glBufferStorage(
-					GL_ELEMENT_ARRAY_BUFFER,
-					leavesRawMesh.indices.size() * sizeof(std::uint32_t),
-					&leavesRawMesh.indices[0],
-					0x00
-				);
-				leavesNumIndices_ = leavesRawMesh.indices.size();
-				shader->setVertexAttribPointers(pso);
+				if (!prepareInternal(leavesRawMesh, shader, pso, leavesVao_, leavesVB_, leavesIB_, leavesNumIndices_))
+				{
+					log.error << "Failed to prepare trunk mesh" << util::endl;
+					return false;
+				}
 			}
 
 			isReady_ = true;

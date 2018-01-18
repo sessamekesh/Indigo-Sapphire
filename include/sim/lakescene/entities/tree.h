@@ -8,7 +8,7 @@ namespace sim
 {
 	namespace lake
 	{
-		class TreeEntity// : public view::Entity<sim::lake::TreeShader>
+		class TreeEntity : public view::Entity<sim::lake::TreeShader>
 		{
 		public:
 			TreeEntity(
@@ -17,8 +17,8 @@ namespace sim
 			~TreeEntity();
 			TreeEntity(const TreeEntity&) = delete;
 
-			bool prepare(std::shared_ptr<std::map<std::string, view::GenericMesh>> rawEntity, std::shared_ptr<sim::lake::TreeShader> shader, util::PipelineState& pso);// override;
-			bool release();// override;
+			bool prepare(std::shared_ptr<std::map<std::string, view::GenericMesh>> rawEntity, std::shared_ptr<sim::lake::TreeShader> shader, util::PipelineState& pso) override;
+			bool release() override;
 
 			void setTrunkDiffuseMap(std::shared_ptr<view::Texture> diffuseMap);
 			void setLeavesDiffuseMap(std::shared_ptr<view::Texture> diffuseMap);
