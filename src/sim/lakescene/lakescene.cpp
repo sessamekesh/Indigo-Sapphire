@@ -3,6 +3,8 @@
 #include <resources.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <view/genericassmiploader.h>
+
 // TODO SESS:
 // - Model the rock they'll be sitting on
 // - Put the XBOT character on the rock
@@ -481,11 +483,14 @@ namespace sim
 			testTreeEntity_ = std::shared_ptr<sim::lake::TreeEntity>(new sim::lake::TreeEntity(
 				TreeModel::TREE_TYPE_0
 			));
-			if (!testTreeEntity_ || !testTreeEntity_->prepare(treeShader_, pso_))
+			auto treeRawEntity = view::loadFromScene(ASSET_PATH("environment/trees/pine0/first.dae"), log);
+			if (!testTreeEntity_ || !testTreeEntity_->prepare(treeRawEntity, treeShader_, pso_))
 			{
 				log.error << "Failed to initialize test tree entity" << util::endl;
 				return false;
 			}
+			testTreeEntity_->setTrunkDiffuseMap(textures_["tree0-bark"]);
+			testTreeEntity_->setLeavesDiffuseMap(textures_["tree0-leaves"]);
 
 			return true;
 		}
@@ -611,6 +616,8 @@ namespace sim
 			if (!loadSingleTexture("boulder-normal", ASSET_PATH("environment/boulder/NormalMap.png"))) return false;
 			if (!loadSingleTexture("boulder-specular", ASSET_PATH("environment/boulder/SpecularMap.png"))) return false;
 			if (!loadSingleTexture("boulder-diffuse", ASSET_PATH("environment/boulder/DiffuseMap.png"))) return false;
+			if (!loadSingleTexture("tree0-bark", ASSET_PATH("environment/trees/pine0/Red_Pine_Bark_diffuse.png"))) return false;
+			if (!loadSingleTexture("tree0-leaves", ASSET_PATH("environment/trees/pine0/Pine_Large_diffuse.PNG"))) return false;
 
 			return true;
 		}

@@ -47,6 +47,8 @@ namespace view
 				void setShineDamper(float s);
 				void setReflectivity(float v);
 
+				virtual std::vector<std::uint8_t> getVertexBuffer(const std::vector<view::GenericVertex>& genericVertices) override;
+
 			private:
 				virtual void setVertexAttribPointersInternal() override;
 				virtual unsigned int getNumVertexAttribPointers() override;

@@ -19,7 +19,6 @@
 
 #include <sim/lakescene/entities/tree.h>
 
-// TODO SESS: Fix the TREE. Something is SEVERELY BROKEN.
 // TODO SESS: Also, loading times are high enough that THREADING is a thing to consider on CPU-side stuff
 //  (especially loading things from Assimp, and processing the vertices)
 // http://assimp.sourceforge.net/lib_html/class_assimp_1_1_importer.html - individual importers are not thread-safe

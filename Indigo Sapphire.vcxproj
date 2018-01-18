@@ -173,6 +173,7 @@
     <ClCompile Include="src\util\Logger.cpp" />
     <ClCompile Include="src\view\cubemap.cpp" />
     <ClCompile Include="src\view\framebuffer.cpp" />
+    <ClCompile Include="src\view\genericassimploader.cpp" />
     <ClCompile Include="src\view\mappedphong\assimpgeo.cpp" />
     <ClCompile Include="src\view\mappedphong\mappedphongshader.cpp" />
     <ClCompile Include="src\view\shader.cpp" />
@@ -236,7 +237,10 @@
     <ClInclude Include="include\util\Logger.h" />
     <ClInclude Include="include\util\pipelinestate.h" />
     <ClInclude Include="include\view\cubemap.h" />
+    <ClInclude Include="include\view\entity.h" />
     <ClInclude Include="include\view\framebuffer.h" />
+    <ClInclude Include="include\view\genericassmiploader.h" />
+    <ClInclude Include="include\view\GenericVertex.h" />
     <ClInclude Include="include\view\mappedphong\assimpgeo.h" />
     <ClInclude Include="include\view\mappedphong\mappedphongshader.h" />
     <ClInclude Include="include\view\shader.h" />

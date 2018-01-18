@@ -345,6 +345,9 @@
     <ClCompile Include="src\sim\lakescene\entities\tree.cpp">
       <Filter>Source Files\sim\lakescene\entities</Filter>
     </ClCompile>
+    <ClCompile Include="src\view\genericassimploader.cpp">
+      <Filter>Source Files\view</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -532,6 +535,15 @@
     </ClInclude>
     <ClInclude Include="include\sim\lakescene\entities\tree.h">
       <Filter>Header Files\sim\lakescene\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\GenericVertex.h">
+      <Filter>Header Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\genericassmiploader.h">
+      <Filter>Header Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\entity.h">
+      <Filter>Header Files\view</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <util/Logger.h>
 #include <util/pipelinestate.h>
+#include <vector>
+#include <view/GenericVertex.h>
 
 namespace view
 {
@@ -20,6 +22,8 @@ namespace view
 		bool initialize();
 		bool activate();
 		void setVertexAttribPointers(util::PipelineState& pso);
+
+		virtual std::vector<std::uint8_t> getVertexBuffer(const std::vector<view::GenericVertex>& genericVertices) = 0;
 
 	protected:
 		virtual void setVertexAttribPointersInternal() = 0;

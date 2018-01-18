@@ -33,6 +33,8 @@ namespace sim
 			void setDiffuseMap(std::shared_ptr<view::Texture> tex);
 			void setLight(const model::light::DirectionalLight& light);
 
+			virtual std::vector<std::uint8_t> getVertexBuffer(const std::vector<view::GenericVertex>& genericVertices) override;
+
 			//
 			// Shader overrides
 			//

@@ -2,12 +2,13 @@
 
 #include <sim/lakescene/model/tree.h>
 #include <sim/lakescene/shaders/tree.h>
+#include <view/entity.h>
 
 namespace sim
 {
 	namespace lake
 	{
-		class TreeEntity
+		class TreeEntity// : public view::Entity<sim::lake::TreeShader>
 		{
 		public:
 			TreeEntity(
@@ -16,8 +17,11 @@ namespace sim
 			~TreeEntity();
 			TreeEntity(const TreeEntity&) = delete;
 
-			bool prepare(std::shared_ptr<sim::lake::TreeShader> shader, util::PipelineState& pso);
-			bool release();
+			bool prepare(std::shared_ptr<std::map<std::string, view::GenericMesh>> rawEntity, std::shared_ptr<sim::lake::TreeShader> shader, util::PipelineState& pso);// override;
+			bool release();// override;
+
+			void setTrunkDiffuseMap(std::shared_ptr<view::Texture> diffuseMap);
+			void setLeavesDiffuseMap(std::shared_ptr<view::Texture> diffuseMap);
 
 			// This could also be accomplished with indexing in a f'reals game engine
 			//  For here, we're just going to swallow the extra draw calls.
