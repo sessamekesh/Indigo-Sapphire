@@ -16,12 +16,6 @@ namespace model
 			class MetaballGroup : public WithWorldTransform
 			{
 			public:
-				// TODO SESS: A metaball group contains a group of metaballs,
-				//  and has methods for finding a billboard that can be raytraced
-				//  (given the position of an observer, and assuming orthographic projection)
-				//  The depth will be at the nearest point of all charges to camera,
-				//  and it will be an AABB of all charges (w/radii) projected onto that billboard
-				// This will be used for now to render raytraced things with minimal frag passes
 				MetaballGroup(
 					const glm::vec3& pos,
 					const glm::quat& orientation,
