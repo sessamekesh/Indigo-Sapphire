@@ -518,9 +518,6 @@
     <ClInclude Include="include\model\specialgeo\water\ripple.h">
       <Filter>Header Files\model\specialgeo\water</Filter>
     </ClInclude>
-    <ClInclude Include="include\input\joystick.h">
-      <Filter>Header Files\input</Filter>
-    </ClInclude>
     <ClInclude Include="include\util\camera\flightcamera.h">
       <Filter>Header Files\util\camera</Filter>
     </ClInclude>

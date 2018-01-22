@@ -7,6 +7,7 @@
 #include <vector>
 #include <memory>
 #include <view/texture.h>
+#include <model/geo/plane.h>
 #include <model/light/directionallight.h>
 
 namespace view
@@ -40,7 +41,7 @@ namespace view
 			void setTexture(const std::shared_ptr<Texture>& tex);
 			void setLight(const model::light::DirectionalLight& light);
 
-			void setClipPlane(const glm::vec3& origin, const glm::vec3& normal);
+			void setClipPlane(const model::geo::Plane& plane);
 
 		private:
 			virtual void setVertexAttribPointersInternal() override;

@@ -2,8 +2,6 @@
 
 #include <sim/scene.h>
 
-#include <model/specialgeo/metaball/metaballgroup.h>
-#include <view/special/metaball/metaballgroup.h>
 #include <view/terrainshader/assets/importedgeo.h>
 #include <util/camera/StaticCamera.h>
 #include <util/command/parserfactory.h>
@@ -16,8 +14,6 @@
 #include <util/camera/flightcamera.h>
 #include <view/mappedphong/mappedphongshader.h>
 #include <view/mappedphong/assimpgeo.h>
-
-#include <sim/lakescene/entities/tree.h>
 
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
@@ -59,8 +55,7 @@ namespace sim
 			//
 			// Rendering Organization
 			//
-			void renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::optional<glm::vec3> clipNormal = std::nullopt, std::optional<glm::vec3> clipOrigin = std::nullopt);
-			void renderMetaballs(std::shared_ptr<util::camera::CameraBase> camera);
+			void renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, const std::optional<model::geo::Plane>& clipPlane = {});
 
 			//
 			// Initialization Helpers
@@ -74,28 +69,23 @@ namespace sim
 			// Shaders
 			//
 		private:
-			std::shared_ptr<view::special::metaball::PhongShader> metaballPhongShader_;
 			std::shared_ptr<view::terrainshader::TerrainShader> terrainShader_;
 			std::shared_ptr<view::special::SkyboxShader> skyboxShader_;
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
-			std::shared_ptr<sim::lake::TreeShader> treeShader_;
 
 			//
 			// Models
 			//
 		private:
-			std::shared_ptr<model::specialgeo::metaball::MetaballGroup> metaballGroupModel_;
 			std::shared_ptr<model::geo::Rectangle> waterSurfaceModel_;
-			std::shared_ptr<sim::lake::TreeModel> testTreeModel_;
 			std::shared_ptr<Proctree::Tree> testProctreeModel_;
 
 			//
 			// Resources
 			//
 		private:
-			std::shared_ptr<view::special::metaball::MetaballGroup> metaballGroup_;
 			std::shared_ptr<view::terrainshader::assets::ImportedGeo> terrain_;
 			std::shared_ptr<util::camera::FlightCamera> mainCamera_;
 			std::shared_ptr<util::camera::PlanarReflectionCamera> waterReflectionCamera_;
@@ -103,7 +93,6 @@ namespace sim
 			std::shared_ptr<view::special::skybox::DaylightSkybox> skybox_;
 			std::shared_ptr<view::special::watersurface::FlatSurface> lakeSurface_;
 			std::shared_ptr<view::mappedphong::AssimpGeo> boulderTest_;
-			std::shared_ptr<sim::lake::TreeEntity> testTreeEntity_;
 			std::shared_ptr<view::solidshader::GenericSolidEntity> testProctreeEntity_;
 
 			glm::mat4 projMatrix_;

@@ -1,5 +1,4 @@
 #include <sim/lakescene/lakescene.h>
-#include <model/specialgeo/metaball/debugmetaballgroup.h>
 #include <resources.h>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -19,21 +18,15 @@ namespace sim
 			util::command::ParserFactory& parserFactory
 		)
 			: Scene("Lake Scene", 1920u, 1080u)
-			, metaballPhongShader_(nullptr)
 			, terrainShader_(nullptr)
 			, skyboxShader_(nullptr)
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
 			, mappedPhongShader_(nullptr)
-			, treeShader_(nullptr)
-			, metaballGroupModel_(nullptr)
 			, waterSurfaceModel_(nullptr)
-			, testTreeModel_(nullptr)
 			, testProctreeModel_(nullptr)
-			, metaballGroup_(nullptr)
 			, boulderTest_(nullptr)
 			, terrain_(nullptr)
-			, testTreeEntity_(nullptr)
 			, testProctreeEntity_(nullptr)
 			, mainCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
@@ -60,7 +53,6 @@ namespace sim
 
 		void LakeScene::update(float dt)
 		{
-			metaballGroupModel_->update(dt);
 			lakeSurface_->update(dt);
 
 			auto ng = glm::angle(skybox_->rot());
@@ -100,7 +92,7 @@ namespace sim
 			}
 		}
 
-		void LakeScene::renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::optional<glm::vec3> clipNormal, std::optional<glm::vec3> clipOrigin)
+		void LakeScene::renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, const std::optional<model::geo::Plane>& clipPlane)
 		{
 			// TODO SESS: Things like depth test, etc., should be handled in the PSO (to avoid setting redundant state)
 			// Skybox before all else
@@ -109,9 +101,9 @@ namespace sim
 			glDisable(GL_BLEND);
 			if (skyboxShader_->activate())
 			{
-				if (clipOrigin && clipNormal)
+				if (clipPlane)
 				{
-					skyboxShader_->setClipPlane(*clipOrigin, *clipNormal);
+					skyboxShader_->setClipPlane(*clipPlane);
 				}
 
 				skyboxShader_->setProjMatrix(projMatrix_);
@@ -131,9 +123,9 @@ namespace sim
 			glDepthMask(GL_TRUE);
 			if (terrainShader_->activate())
 			{
-				if (clipOrigin && clipNormal)
+				if (clipPlane)
 				{
-					terrainShader_->setClipPlane(*clipOrigin, *clipNormal);
+					terrainShader_->setClipPlane(*clipPlane);
 				}
 
 				terrainShader_->setViewMatrix(camera->getViewTransform());
@@ -149,9 +141,9 @@ namespace sim
 
 			if (mappedPhongShader_->activate())
 			{
-				if (clipOrigin && clipNormal)
+				if (clipPlane)
 				{
-					mappedPhongShader_->setClipPlane(model::geo::Plane(*clipOrigin, *clipNormal));
+					mappedPhongShader_->setClipPlane(*clipPlane);
 				}
 
 				mappedPhongShader_->setViewMatrix(camera->getViewTransform());
@@ -165,67 +157,14 @@ namespace sim
 
 			if (solidShader_->activate())
 			{
-				if (clipOrigin && clipNormal)
+				if (clipPlane)
 				{
-					solidShader_->setClipPlane(model::geo::Plane(*clipOrigin, *clipNormal));
+					solidShader_->setClipPlane(*clipPlane);
 				}
 
 				solidShader_->setViewMatrix(camera->getViewTransform());
 				solidShader_->setProjMatrix(projMatrix_);
 				testProctreeEntity_->render(solidShader_);
-			}
-
-			//
-			// Transparency
-			//
-			if (treeShader_->activate())
-			{
-				if (clipOrigin && clipNormal)
-				{
-					treeShader_->setClipPlane(model::geo::Plane(*clipOrigin, *clipNormal));
-				}
-
-				treeShader_->setViewMatrix(camera->getViewTransform());
-				treeShader_->setProjMatrix(projMatrix_);
-				treeShader_->setLight(sunlight_);
-				
-				testTreeEntity_->render(testTreeModel_, treeShader_);
-			}
-		}
-
-		void LakeScene::renderMetaballs(std::shared_ptr<util::camera::CameraBase> camera)
-		{
-			//
-			// After all opaque calls are finished, do transparent calls
-			//
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			if (metaballPhongShader_->activate())
-			{
-				metaballPhongShader_->setViewMatrix(camera->getViewTransform());
-				metaballPhongShader_->setCameraPos(camera->pos());
-				metaballPhongShader_->setProjMatrix(projMatrix_);
-				metaballPhongShader_->setStepSize(0.15f);
-				metaballPhongShader_->setLight(
-					glm::vec3(0.1f, 0.1f, 0.1f),
-					glm::vec3(0.5f, 0.5f, 0.5f),
-					glm::vec3(1.f, 1.f, 1.f)
-				);
-				metaballPhongShader_->setLightDir(
-					glm::normalize(glm::vec3(1.f, -2.f, 3.f))
-				);
-
-				if (metaballGroup_->preparePhong(
-					camera->pos(),
-					glm::normalize(camera->lookAt() - camera->pos()),
-					camera->up()
-				)) {
-					metaballGroup_->renderPhong(metaballPhongShader_);
-				}
-			}
-			else
-			{
-				log.warn << "Failed to activate metaball shader, not drawing metaballs" << util::endl;
 			}
 		}
 
@@ -242,16 +181,17 @@ namespace sim
 			//
 			auto waterOrigin = waterSurfaceModel_->pos();
 			auto waterNormal = glm::rotate(waterSurfaceModel_->rot(), glm::vec3(0.f, 1.f, 0.f));
+			auto waterReflectionPlane = model::geo::Plane(waterOrigin, waterNormal);
+			auto waterRefractionPlane = model::geo::Plane(waterOrigin, -waterNormal);
+
 			glEnable(GL_CLIP_DISTANCE0);
-			waterReflectionCamera_->reflectionPlane(model::geo::Plane(waterOrigin, waterNormal));
+			waterReflectionCamera_->reflectionPlane(waterReflectionPlane);
 			waterReflectionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			renderEnvironment(waterReflectionCamera_, waterNormal, waterOrigin);
-			renderMetaballs(waterReflectionCamera_);
+			renderEnvironment(waterReflectionCamera_, waterReflectionPlane);
 			waterRefractionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			renderEnvironment(mainCamera_, -waterNormal, waterOrigin);
-			renderMetaballs(mainCamera_);
+			renderEnvironment(mainCamera_, waterRefractionPlane);
 			view::Framebuffer::bindDefaultFramebuffer();
 			glViewport(0, 0, width, height);
 
@@ -279,18 +219,10 @@ namespace sim
 			{
 				log.warn << "Failed to activate water surface shader, not drawing water" << util::endl;
 			}
-
-			renderMetaballs(mainCamera_);
 		}
 
 		bool LakeScene::initializeShaders()
 		{
-			metaballPhongShader_ = std::make_shared<view::special::metaball::PhongShader>();
-			if (!metaballPhongShader_ || !metaballPhongShader_->initialize())
-			{
-				log.error << "Failed to create metaball phong shader" << util::endl;
-				return false;
-			}
 
 			terrainShader_ = std::make_shared<view::terrainshader::TerrainShader>();
 			if (!terrainShader_ || !terrainShader_->initialize())
@@ -326,24 +258,15 @@ namespace sim
 				return false;
 			}
 
-			treeShader_ = std::make_shared<sim::lake::TreeShader>();
-			if (!treeShader_ || !treeShader_->initialize())
-			{
-				log.error << "Failed to create tree shader" << util::endl;
-				return false;
-			}
-
 			return true;
 		}
 
 		bool LakeScene::teardownShaders()
 		{
-			metaballPhongShader_ = nullptr;
 			terrainShader_ = nullptr;
 			skyboxShader_ = nullptr;
 			solidShader_ = nullptr;
 			waterSurfaceShader_ = nullptr;
-			treeShader_ = nullptr;
 
 			return true;
 		}
@@ -362,31 +285,6 @@ namespace sim
 			));
 			if (!setupTextures())
 			{
-				return false;
-			}
-
-			metaballGroupModel_ = std::shared_ptr<model::specialgeo::metaball::MetaballGroup>(
-				new model::specialgeo::metaball::DebugMetaballGroup(
-					glm::vec3(0.f, -7.5f, 10.f),
-					glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
-					glm::vec3(1.f, 1.f, 1.f),
-					glm::vec3(-25.f, -5.f, -1.f),
-					glm::vec3(25.f, 5.f, 3.f),
-					25u,
-					5.f
-				)
-			);
-			metaballGroup_ = std::shared_ptr<view::special::metaball::MetaballGroup>(
-				new view::special::metaball::MetaballGroup(
-					metaballGroupModel_,
-					glm::vec3(0.f, 0.f, 1.f),
-					glm::vec3(1.f, 1.f, 1.f),
-					125.f
-				)
-			);
-			if (!metaballGroup_ || !metaballGroup_->preparePhong(mainCamera_->pos(), glm::normalize(mainCamera_->lookAt() - mainCamera_->pos()), mainCamera_->up()))
-			{
-				log.error << "Failed to initialize metaball group object" << util::endl;
 				return false;
 			}
 
@@ -489,29 +387,12 @@ namespace sim
 				return false;
 			}
 
-			testTreeModel_ = std::shared_ptr<sim::lake::TreeModel>(new sim::lake::TreeModel(
-				sim::lake::TreeModel::TREE_TYPE_0,
-				glm::vec3(200.f, -2.f, 50.f),
-				glm::angleAxis(-glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)),
-				glm::vec3(20.f, 20.f, 20.f)
-			));
-			testTreeEntity_ = std::shared_ptr<sim::lake::TreeEntity>(new sim::lake::TreeEntity(
-				TreeModel::TREE_TYPE_0
-			));
-			if (!testTreeEntity_ || !testTreeEntity_->prepare(treeShader_, pso_))
-			{
-				log.error << "Failed to initialize test tree entity" << util::endl;
-				return false;
-			}
-			testTreeEntity_->setTrunkDiffuseMap(textures_["tree0-bark"]);
-			testTreeEntity_->setLeavesDiffuseMap(textures_["tree0-leaves"]);
-
 			{
 				testProctreeModel_ = std::make_shared<Proctree::Tree>();
 				testProctreeModel_->mProperties.mSeed = 262;
 				testProctreeModel_->mProperties.mLevels = 5;
 				testProctreeModel_->mProperties.mVMultiplier = 2.36f;
-				testProctreeModel_->mProperties.mTwigScale = 0.39f;
+				testProctreeModel_->mProperties.mTwigScale = 0.239f;
 				testProctreeModel_->mProperties.mInitialBranchLength = 0.49f;
 				testProctreeModel_->mProperties.mLengthFalloffFactor = 0.85f;
 				testProctreeModel_->mProperties.mLengthFalloffPower = 0.99f;
@@ -540,9 +421,9 @@ namespace sim
 					return false;
 				}
 				testProctreeEntity_ = std::make_shared<view::solidshader::GenericSolidEntity>(
-					glm::vec3(0.f, 40.f, 0.f),
+					glm::vec3(-295.f, 0.f, -280.f),
 					glm::angleAxis(0.f, glm::vec3(0.f, 0.f, 1.f)),
-					glm::vec3(1.f, 1.f, 1.f)
+					glm::vec3(35.f, 35.f, 35.f)
 				);
 				testProctreeEntity_->addMesh(tree, glm::vec4(1.f, 0.f, 0.f, 1.f));
 				testProctreeEntity_->addMesh(branches, glm::vec4(0.f, 0.f, 1.f, 1.f));
@@ -558,12 +439,6 @@ namespace sim
 
 		bool LakeScene::teardownResources()
 		{
-			if (metaballGroup_)
-			{
-				metaballGroup_->release();
-				metaballGroup_ = nullptr;
-			}
-
 			if (terrain_)
 			{
 				terrain_->release();
@@ -616,13 +491,14 @@ namespace sim
 			registerProperty("skybox", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(skybox_));
 			registerProperty("water", util::command::WaterFlatSurface::uuid, std::static_pointer_cast<void>(lakeSurface_));
 			registerProperty("boulder", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(boulderTest_));
-			registerProperty("tree", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(testTreeModel_));
+			registerProperty("tree", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(testProctreeEntity_));
 
 			return true;
 		}
 
 		bool LakeScene::teardownProperties()
 		{
+			unregisterProperty("tree");
 			unregisterProperty("boulder");
 			unregisterProperty("water");
 			unregisterProperty("skybox");

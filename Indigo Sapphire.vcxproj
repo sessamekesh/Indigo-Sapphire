@@ -196,7 +196,6 @@
     <ClCompile Include="src\view\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\input\joystick.h" />
     <ClInclude Include="include\lodepng.h" />
     <ClInclude Include="include\model\event\eventbase.h" />
     <ClInclude Include="include\model\geo\grid.h" />

@@ -54,10 +54,10 @@ namespace view
 			return 1u;
 		}
 
-		void SkyboxShader::setClipPlane(const glm::vec3& origin, const glm::vec3& normal)
+		void SkyboxShader::setClipPlane(const model::geo::Plane& clipPlane)
 		{
-			glUniform3fv(uniformLocations_.clipPlaneNormal, 1, glm::value_ptr(normal));
-			glUniform3fv(uniformLocations_.clipPlaneOrigin, 1, glm::value_ptr(origin));
+			glUniform3fv(uniformLocations_.clipPlaneNormal, 1, glm::value_ptr(clipPlane.normal()));
+			glUniform3fv(uniformLocations_.clipPlaneOrigin, 1, glm::value_ptr(clipPlane.origin()));
 		}
 
 		bool SkyboxShader::getUniformLocations()
