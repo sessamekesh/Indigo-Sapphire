@@ -42,8 +42,6 @@ namespace view
 
 			void setClipPlane(const glm::vec3& origin, const glm::vec3& normal);
 
-			virtual std::vector<std::uint8_t> getVertexBuffer(const std::vector<view::GenericVertex>& genericVertices) override;
-
 		private:
 			virtual void setVertexAttribPointersInternal() override;
 			virtual unsigned int getNumVertexAttribPointers() override;

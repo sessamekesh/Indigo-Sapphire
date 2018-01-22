@@ -39,35 +39,41 @@ namespace sim
 			release();
 		}
 
-		bool TreeEntity::prepare(std::shared_ptr<std::map<std::string, view::GenericMesh>> rawEntity, std::shared_ptr<sim::lake::TreeShader> shader, util::PipelineState& pso)
+		bool TreeEntity::prepare(std::shared_ptr<sim::lake::TreeShader> shader, util::PipelineState& pso)
 		{
 			if (isReady_)
 			{
 				release();
 			}
 
-			if (rawEntity == nullptr)
+			// TODO SESS: You should use an ExternalFileCache, with promises instead that you can get results from.
+			auto treeRawEntity = view::loadFromScene(ASSET_PATH("environment/trees/pine0/first.dae"), log);
+
+			if (treeRawEntity == nullptr)
 			{
 				return false;
 			}
 
 			// TODO SESS: This is wrong, and specific to individual trees
-			if (rawEntity->size() < 2u)
+			if (treeRawEntity->size() < 2u)
 			{
 				log.error << "Failed to load tree - not enough meshes present" << util::endl;
 				return false;
 			}
 
-			if (rawEntity->size() > 2u)
+			if (treeRawEntity->size() > 2u)
 			{
 				log.warn << "Too many meshes present in tree - loading, but behavior may be unexpected" << util::endl;
 			}
 
 			// Trunk
 			{
-				auto trunkRawMesh = (*rawEntity)["branches23"];
-				if (!prepareInternal(trunkRawMesh, shader, pso, trunkVao_, trunkVB_, trunkIB_, trunkNumIndices_))
-				{
+				auto trunkRawMesh = (*treeRawEntity)["branches23"];
+				if (!prepareInternal(
+					sim::lake::TreeShader::processGenericVertices(trunkRawMesh.vertices),
+					trunkRawMesh.indices, shader, pso,
+					trunkVao_, trunkVB_, trunkIB_, trunkNumIndices_
+				)) {
 					log.error << "Failed to prepare trunk mesh" << util::endl;
 					return false;
 				}
@@ -75,9 +81,12 @@ namespace sim
 
 			// Leaves
 			{
-				auto leavesRawMesh = (*rawEntity)["leaf21"];
-				if (!prepareInternal(leavesRawMesh, shader, pso, leavesVao_, leavesVB_, leavesIB_, leavesNumIndices_))
-				{
+				auto leavesRawMesh = (*treeRawEntity)["leaf21"];
+				if (!prepareInternal(
+					sim::lake::TreeShader::processGenericVertices(leavesRawMesh.vertices),
+					leavesRawMesh.indices, shader, pso,
+					leavesVao_, leavesVB_, leavesIB_, leavesNumIndices_
+				)) {
 					log.error << "Failed to prepare trunk mesh" << util::endl;
 					return false;
 				}

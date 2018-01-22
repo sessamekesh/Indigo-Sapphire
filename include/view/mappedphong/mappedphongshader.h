@@ -40,8 +40,6 @@ namespace view
 			void setCameraPosition(const glm::vec3& cameraPos);
 			void setShininess(float shininess);
 
-			virtual std::vector<std::uint8_t> getVertexBuffer(const std::vector<view::GenericVertex>& genericVertices) override;
-
 			//
 			// Shader overrides
 			//

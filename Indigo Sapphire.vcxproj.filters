@@ -175,6 +175,18 @@
     <Filter Include="Header Files\sim\lakescene\entities">
       <UniqueIdentifier>{5a66a094-373b-444c-b548-96a74dc363d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\model\proctree">
+      <UniqueIdentifier>{33a16965-360f-4bfc-85ab-6d9700e88fe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\proctree">
+      <UniqueIdentifier>{92dbf74e-20dc-4e6d-8f68-20259bbd9d61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\view\rawentities">
+      <UniqueIdentifier>{03a5b596-31fb-4b4e-9277-c4b390a5cbfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\rawentity">
+      <UniqueIdentifier>{4386af04-6882-4f71-92b4-a3f2e2963adf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -194,9 +206,6 @@
     </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sim\TestScene.cpp">
-      <Filter>Source Files\sim</Filter>
     </ClCompile>
     <ClCompile Include="src\util\Logger.cpp">
       <Filter>Source Files\util</Filter>
@@ -348,6 +357,15 @@
     <ClCompile Include="src\view\genericassimploader.cpp">
       <Filter>Source Files\view</Filter>
     </ClCompile>
+    <ClCompile Include="src\model\proctree\proctree.cpp">
+      <Filter>Source Files\model\proctree</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\rawentities\proctree.cpp">
+      <Filter>Source Files\view\rawentity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\solidshader\genericsolidentity.cpp">
+      <Filter>Source Files\view\solidshader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -364,9 +382,6 @@
     </ClInclude>
     <ClInclude Include="include\util\io.h">
       <Filter>Header Files\util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\sim\TestScene.h">
-      <Filter>Header Files\sim</Filter>
     </ClInclude>
     <ClInclude Include="include\util\Logger.h">
       <Filter>Header Files\util</Filter>
@@ -544,6 +559,15 @@
     </ClInclude>
     <ClInclude Include="include\view\entity.h">
       <Filter>Header Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\proctree\proctree.h">
+      <Filter>Header Files\model\proctree</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\rawentities\proctree.h">
+      <Filter>Header Files\view\rawentities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\solidshader\genericsolidentity.h">
+      <Filter>Header Files\view\solidshader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

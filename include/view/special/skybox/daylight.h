@@ -28,8 +28,6 @@ namespace view
 
 				void render(std::shared_ptr<view::special::SkyboxShader> shader, util::PipelineState& pso);
 
-				void render(std::shared_ptr < view::solidshader::SolidShader> ss);
-
 			protected:
 				bool isReady_;
 				GLuint vao_;

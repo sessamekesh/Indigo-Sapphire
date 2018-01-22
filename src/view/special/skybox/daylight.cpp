@@ -142,15 +142,6 @@ namespace view
 				shader->setCubemap(texture_);
 				glDrawArrays(GL_TRIANGLES, 0, 108);
 			}
-			void DaylightSkybox::render(std::shared_ptr<view::solidshader::SolidShader> ss)
-			{
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_);
-				//shader->setWorldMatrix(worldTransform());
-				ss->setWorldMatrix(glm::mat4(1.f));
-				view::solidshader::setVertexAttribPointers();
-				//shader->setCubemap(texture_);
-				glDrawArrays(GL_TRIANGLES, 0, 108);
-			}
 		}
 	}
 }

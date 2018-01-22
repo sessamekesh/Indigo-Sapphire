@@ -19,6 +19,9 @@
 
 #include <sim/lakescene/entities/tree.h>
 
+#include <view/solidshader/genericsolidentity.h>
+#include <model/proctree/proctree.h>
+
 // TODO SESS: Also, loading times are high enough that THREADING is a thing to consider on CPU-side stuff
 //  (especially loading things from Assimp, and processing the vertices)
 // http://assimp.sourceforge.net/lib_html/class_assimp_1_1_importer.html - individual importers are not thread-safe
@@ -86,6 +89,7 @@ namespace sim
 			std::shared_ptr<model::specialgeo::metaball::MetaballGroup> metaballGroupModel_;
 			std::shared_ptr<model::geo::Rectangle> waterSurfaceModel_;
 			std::shared_ptr<sim::lake::TreeModel> testTreeModel_;
+			std::shared_ptr<Proctree::Tree> testProctreeModel_;
 
 			//
 			// Resources
@@ -100,6 +104,7 @@ namespace sim
 			std::shared_ptr<view::special::watersurface::FlatSurface> lakeSurface_;
 			std::shared_ptr<view::mappedphong::AssimpGeo> boulderTest_;
 			std::shared_ptr<sim::lake::TreeEntity> testTreeEntity_;
+			std::shared_ptr<view::solidshader::GenericSolidEntity> testProctreeEntity_;
 
 			glm::mat4 projMatrix_;
 

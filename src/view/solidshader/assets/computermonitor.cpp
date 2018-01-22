@@ -33,7 +33,7 @@ namespace view
 				}
 			}
 
-			bool ComputerMonitor::prepare()
+			bool ComputerMonitor::prepare(std::shared_ptr<view::solidshader::SolidShader> shader, util::PipelineState& pso)
 			{
 				if (!isReady_)
 				{
@@ -66,7 +66,7 @@ namespace view
 						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glr.indexBuffer);
 						glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, geo.second.indices_.size() * sizeof(std::uint32_t), &geo.second.indices_[0], 0x00);
 
-						view::solidshader::setVertexAttribPointers();
+						shader->setVertexAttribPointers(pso);
 
 						glr.numIndices = geo.second.indices_.size();
 

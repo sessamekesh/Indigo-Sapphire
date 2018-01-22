@@ -144,6 +144,7 @@
     <ClCompile Include="src\model\geo\rectangle.cpp" />
     <ClCompile Include="src\model\imagedata.cpp" />
     <ClCompile Include="src\model\light\directionallight.cpp" />
+    <ClCompile Include="src\model\proctree\proctree.cpp" />
     <ClCompile Include="src\model\simplegeo\grid.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\boxboundedmetaballpath.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\debugmetaballgroup.cpp" />
@@ -156,7 +157,6 @@
     <ClCompile Include="src\sim\lakescene\model\tree.cpp" />
     <ClCompile Include="src\sim\lakescene\shaders\tree.cpp" />
     <ClCompile Include="src\sim\scene.cpp" />
-    <ClCompile Include="src\sim\TestScene.cpp" />
     <ClCompile Include="src\util\camera\camerabase.cpp" />
     <ClCompile Include="src\util\camera\flightcamera.cpp" />
     <ClCompile Include="src\util\camera\planarreflectioncamera.cpp" />
@@ -176,9 +176,11 @@
     <ClCompile Include="src\view\genericassimploader.cpp" />
     <ClCompile Include="src\view\mappedphong\assimpgeo.cpp" />
     <ClCompile Include="src\view\mappedphong\mappedphongshader.cpp" />
+    <ClCompile Include="src\view\rawentities\proctree.cpp" />
     <ClCompile Include="src\view\shader.cpp" />
     <ClCompile Include="src\view\solidshader\assets\computermonitor.cpp" />
     <ClCompile Include="src\view\solidshader\assets\importedgeo.cpp" />
+    <ClCompile Include="src\view\solidshader\genericsolidentity.cpp" />
     <ClCompile Include="src\view\solidshader\geo\grid.cpp" />
     <ClCompile Include="src\view\solidshader\geo\Line.cpp" />
     <ClCompile Include="src\view\solidshader\solidshader.cpp" />
@@ -203,6 +205,7 @@
     <ClInclude Include="include\model\geo\rectangle.h" />
     <ClInclude Include="include\model\imagedata.h" />
     <ClInclude Include="include\model\light\directionallight.h" />
+    <ClInclude Include="include\model\proctree\proctree.h" />
     <ClInclude Include="include\model\specialgeo\metaball\boxboundedmetaballpath.h" />
     <ClInclude Include="include\model\specialgeo\metaball\charge.h" />
     <ClInclude Include="include\model\specialgeo\metaball\debugmetaballgroup.h" />
@@ -218,7 +221,6 @@
     <ClInclude Include="include\sim\lakescene\model\tree.h" />
     <ClInclude Include="include\sim\lakescene\shaders\tree.h" />
     <ClInclude Include="include\sim\scene.h" />
-    <ClInclude Include="include\sim\TestScene.h" />
     <ClInclude Include="include\util\camera\camerabase.h" />
     <ClInclude Include="include\util\camera\flightcamera.h" />
     <ClInclude Include="include\util\camera\planarreflectioncamera.h" />
@@ -243,9 +245,11 @@
     <ClInclude Include="include\view\GenericVertex.h" />
     <ClInclude Include="include\view\mappedphong\assimpgeo.h" />
     <ClInclude Include="include\view\mappedphong\mappedphongshader.h" />
+    <ClInclude Include="include\view\rawentities\proctree.h" />
     <ClInclude Include="include\view\shader.h" />
     <ClInclude Include="include\view\solidshader\assets\computermonitor.h" />
     <ClInclude Include="include\view\solidshader\assets\importedgeo.h" />
+    <ClInclude Include="include\view\solidshader\genericsolidentity.h" />
     <ClInclude Include="include\view\solidshader\geo\grid.h" />
     <ClInclude Include="include\view\solidshader\geo\Line.h" />
     <ClInclude Include="include\view\solidshader\solidshader.h" />

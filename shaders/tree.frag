@@ -21,10 +21,10 @@ void main()
 
    float diffuseFactor = max(dot(-lightDirection, normalize(fNorm)), 0.0);
 
-   //gl_FragColor =
-   //   vec4(lightAmbient, 1.0) * cDiffuse
-	  //+ vec4(lightDiffuse, 1.0) * cDiffuse * diffuseFactor;
-	gl_FragColor = cDiffuse;
+   gl_FragColor =
+      vec4(lightAmbient, 1.0) * cDiffuse
+	  + vec4(lightDiffuse, 1.0) * cDiffuse * diffuseFactor;
+	//gl_FragColor = cDiffuse;
 
    if (gl_FragColor.a < 0.2)
    {

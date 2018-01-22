@@ -23,8 +23,6 @@ namespace view
 		bool activate();
 		void setVertexAttribPointers(util::PipelineState& pso);
 
-		virtual std::vector<std::uint8_t> getVertexBuffer(const std::vector<view::GenericVertex>& genericVertices) = 0;
-
 	protected:
 		virtual void setVertexAttribPointersInternal() = 0;
 		virtual unsigned int getNumVertexAttribPointers() = 0;

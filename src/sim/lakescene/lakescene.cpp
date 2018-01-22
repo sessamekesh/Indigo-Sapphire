@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <view/genericassmiploader.h>
+#include <view/rawentities/proctree.h>
 
 // TODO SESS:
 // - Model the rock they'll be sitting on
@@ -28,10 +29,12 @@ namespace sim
 			, metaballGroupModel_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, testTreeModel_(nullptr)
+			, testProctreeModel_(nullptr)
 			, metaballGroup_(nullptr)
 			, boulderTest_(nullptr)
 			, terrain_(nullptr)
 			, testTreeEntity_(nullptr)
+			, testProctreeEntity_(nullptr)
 			, mainCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
 			, sunlight_(
@@ -158,6 +161,18 @@ namespace sim
 				mappedPhongShader_->setCameraPosition(camera->pos());
 				
 				boulderTest_->render(mappedPhongShader_);
+			}
+
+			if (solidShader_->activate())
+			{
+				if (clipOrigin && clipNormal)
+				{
+					solidShader_->setClipPlane(model::geo::Plane(*clipOrigin, *clipNormal));
+				}
+
+				solidShader_->setViewMatrix(camera->getViewTransform());
+				solidShader_->setProjMatrix(projMatrix_);
+				testProctreeEntity_->render(solidShader_);
 			}
 
 			//
@@ -483,14 +498,60 @@ namespace sim
 			testTreeEntity_ = std::shared_ptr<sim::lake::TreeEntity>(new sim::lake::TreeEntity(
 				TreeModel::TREE_TYPE_0
 			));
-			auto treeRawEntity = view::loadFromScene(ASSET_PATH("environment/trees/pine0/first.dae"), log);
-			if (!testTreeEntity_ || !testTreeEntity_->prepare(treeRawEntity, treeShader_, pso_))
+			if (!testTreeEntity_ || !testTreeEntity_->prepare(treeShader_, pso_))
 			{
 				log.error << "Failed to initialize test tree entity" << util::endl;
 				return false;
 			}
 			testTreeEntity_->setTrunkDiffuseMap(textures_["tree0-bark"]);
 			testTreeEntity_->setLeavesDiffuseMap(textures_["tree0-leaves"]);
+
+			{
+				testProctreeModel_ = std::make_shared<Proctree::Tree>();
+				testProctreeModel_->mProperties.mSeed = 262;
+				testProctreeModel_->mProperties.mLevels = 5;
+				testProctreeModel_->mProperties.mVMultiplier = 2.36f;
+				testProctreeModel_->mProperties.mTwigScale = 0.39f;
+				testProctreeModel_->mProperties.mInitialBranchLength = 0.49f;
+				testProctreeModel_->mProperties.mLengthFalloffFactor = 0.85f;
+				testProctreeModel_->mProperties.mLengthFalloffPower = 0.99f;
+				testProctreeModel_->mProperties.mClumpMax = 0.454f;
+				testProctreeModel_->mProperties.mClumpMin = 0.404f;
+				testProctreeModel_->mProperties.mBranchFactor = 2.45f;
+				testProctreeModel_->mProperties.mDropAmount = -0.1f;
+				testProctreeModel_->mProperties.mGrowAmount = 0.235f;
+				testProctreeModel_->mProperties.mSweepAmount = 0.01f;
+				testProctreeModel_->mProperties.mMaxRadius = 0.139f;
+				testProctreeModel_->mProperties.mClimbRate = 0.371f;
+				testProctreeModel_->mProperties.mTrunkKink = 0.093f;
+				testProctreeModel_->mProperties.mTreeSteps = 5;
+				testProctreeModel_->mProperties.mTaperRate = 0.947f;
+				testProctreeModel_->mProperties.mRadiusFalloffRate = 0.73f;
+				testProctreeModel_->mProperties.mTwistRate = 3.02f;
+				testProctreeModel_->mProperties.mTrunkLength = 2.4f;
+				testProctreeModel_->generate();
+
+				std::shared_ptr<view::GenericMesh> tree = std::make_shared<view::GenericMesh>();
+				std::shared_ptr<view::GenericMesh> branches = std::make_shared<view::GenericMesh>();
+				auto t = view::raw::getProcTreeMesh(testProctreeModel_, this->log, *tree, *branches);
+				if (!t)
+				{
+					log.error << "Failed to generate generic proctree models" << util::endl;
+					return false;
+				}
+				testProctreeEntity_ = std::make_shared<view::solidshader::GenericSolidEntity>(
+					glm::vec3(0.f, 40.f, 0.f),
+					glm::angleAxis(0.f, glm::vec3(0.f, 0.f, 1.f)),
+					glm::vec3(1.f, 1.f, 1.f)
+				);
+				testProctreeEntity_->addMesh(tree, glm::vec4(1.f, 0.f, 0.f, 1.f));
+				testProctreeEntity_->addMesh(branches, glm::vec4(0.f, 0.f, 1.f, 1.f));
+				if (!testProctreeEntity_->prepare(solidShader_, pso_))
+				{
+					log.error << "Failed to prepare teset proctree entity" << util::endl;
+					return false;
+				}
+			}
 
 			return true;
 		}

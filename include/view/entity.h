@@ -3,22 +3,41 @@
 #include <view/GenericVertex.h>
 #include <memory>
 #include <map>
+#include <view/shader.h>
 
 namespace view
 {
-	template <typename ShaderType>
+	template <typename ShaderType, typename VertexType>
 	class Entity
 	{
 		static_assert(std::is_base_of<view::Shader, ShaderType>::value, "ShaderType must be a base class of view::Shader");
 	public:
 
-		virtual bool prepare(std::shared_ptr<std::map<std::string, view::GenericMesh>> rawEntity, std::shared_ptr<ShaderType> shader, util::PipelineState& pso) = 0;
-		virtual bool release() = 0;
-
-		bool prepareInternal(view::GenericMesh gm, std::shared_ptr<ShaderType> shader, util::PipelineState& pso, GLuint& o_VAO, GLuint& o_VB, GLuint& o_IB, std::uint32_t& o_numIndices)
+		bool releaseInternal(GLuint& o_VAO, GLuint& o_VB, GLuint& o_IB)
 		{
-			std::vector<std::uint8_t> vbData = shader->getVertexBuffer(gm.vertices);
+			if (o_IB)
+			{
+				glDeleteBuffers(1, &o_IB);
+				o_IB = 0u;
+			}
 
+			if (o_VB)
+			{
+				glDeleteBuffers(1, &o_VB);
+				o_VB = 0u;
+			}
+
+			if (o_VAO)
+			{
+				glDeleteVertexArrays(1, &o_VAO);
+				o_VAO = 0u;
+			}
+
+			return true;
+		}
+
+		bool prepareInternal(const std::vector<VertexType> vertices, const std::vector<std::uint32_t> indices, std::shared_ptr<ShaderType> shader, util::PipelineState& pso, GLuint& o_VAO, GLuint& o_VB, GLuint& o_IB, std::uint32_t& o_numIndices)
+		{
 			glCreateVertexArrays(1, &o_VAO);
 			glBindVertexArray(o_VAO);
 			
@@ -26,19 +45,19 @@ namespace view
 			glBindBuffer(GL_ARRAY_BUFFER, o_VB);
 			glBufferStorage(
 				GL_ARRAY_BUFFER,
-				vbData.size(),
-				&vbData[0],
+				vertices.size() * sizeof(VertexType),
+				&vertices[0],
 				0x00
 			);
 			glGenBuffers(1, &o_IB);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, o_IB);
 			glBufferStorage(
 				GL_ELEMENT_ARRAY_BUFFER,
-				gm.indices.size() * sizeof(std::uint32_t),
-				&gm.indices[0],
+				indices.size() * sizeof(std::uint32_t),
+				&indices[0],
 				0x00
 			);
-			o_numIndices = gm.indices.size();
+			o_numIndices = indices.size();
 			shader->setVertexAttribPointers(pso);
 
 			return true;

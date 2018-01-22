@@ -19,7 +19,7 @@ namespace view
 			public:
 				Grid(std::shared_ptr<model::geo::Grid> gridModel, std::uint8_t lineSubdivisions, const glm::vec4& color);
 				~Grid();
-				bool prepare();
+				bool prepare(std::shared_ptr<view::solidshader::SolidShader> shader, util::PipelineState& pso);
 				bool release();
 
 				void render(std::shared_ptr<view::solidshader::SolidShader> shader);

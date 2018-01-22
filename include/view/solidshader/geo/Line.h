@@ -18,7 +18,7 @@ namespace view
 				Line(std::shared_ptr<model::geo::Line> line, std::uint8_t nSubdivisions, const glm::vec4& color);
 				~Line();
 
-				bool prepare();
+				bool prepare(std::shared_ptr<view::solidshader::SolidShader> shader, util::PipelineState& pso);
 				bool release();
 
 				void render(std::shared_ptr<view::solidshader::SolidShader> shader);

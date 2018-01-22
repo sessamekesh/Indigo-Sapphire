@@ -73,21 +73,19 @@ namespace sim
 			return true;
 		}
 
-		std::vector<std::uint8_t> TreeShader::getVertexBuffer(const std::vector<view::GenericVertex>& genericVertices)
+		std::vector<TreeShader::Vertex> TreeShader::processGenericVertices(const std::vector<view::GenericVertex>& genericVertices)
 		{
-			std::vector<std::uint8_t> tr;
-
-			std::vector<TreeShader::Vertex> parsedVerts;
-			parsedVerts.reserve(genericVertices.size());
+			std::vector<TreeShader::Vertex> tr;
+			tr.reserve(genericVertices.size());
 
 			for (auto&& gv : genericVertices)
 			{
-				parsedVerts.push_back({ gv.position, gv.normal, gv.uv });
+				tr.push_back({
+					gv.position,
+					gv.normal,
+					gv.uv
+				});
 			}
-
-			std::size_t byteSize = genericVertices.size() * sizeof(TreeShader::Vertex);
-			tr.resize(byteSize);
-			memcpy_s(&tr[0], byteSize, &parsedVerts[0], byteSize);
 
 			return tr;
 		}

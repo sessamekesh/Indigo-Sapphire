@@ -25,7 +25,7 @@ namespace view
 				release();
 			}
 
-			bool Line::prepare()
+			bool Line::prepare(std::shared_ptr<view::solidshader::SolidShader> shader, util::PipelineState& pso)
 			{
 				if (!isReady_)
 				{
@@ -37,7 +37,7 @@ namespace view
 					auto&& verts = getVertices();
 					glBufferStorage(GL_ARRAY_BUFFER, verts.size() * sizeof(view::solidshader::SolidShaderVertex), &verts[0], 0x00);
 
-					view::solidshader::setVertexAttribPointers();
+					shader->setVertexAttribPointers(pso);
 
 					glGenBuffers(1, &indexBuffer_);
 					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer_);
