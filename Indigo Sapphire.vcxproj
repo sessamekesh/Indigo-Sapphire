@@ -146,6 +146,7 @@
     <ClCompile Include="src\model\light\directionallight.cpp" />
     <ClCompile Include="src\model\proctree\proctree.cpp" />
     <ClCompile Include="src\model\simplegeo\grid.cpp" />
+    <ClCompile Include="src\model\specialgeo\heightfield.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\boxboundedmetaballpath.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\debugmetaballgroup.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\metaball.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="src\view\genericassimploader.cpp" />
     <ClCompile Include="src\view\mappedphong\assimpgeo.cpp" />
     <ClCompile Include="src\view\mappedphong\mappedphongshader.cpp" />
+    <ClCompile Include="src\view\rawentities\heightmapterrain.cpp" />
     <ClCompile Include="src\view\rawentities\proctree.cpp" />
     <ClCompile Include="src\view\shader.cpp" />
     <ClCompile Include="src\view\solidshader\assets\computermonitor.cpp" />
@@ -191,7 +193,9 @@
     <ClCompile Include="src\view\special\watersurface\flatsurface.cpp" />
     <ClCompile Include="src\view\special\watersurface\rectangle.cpp" />
     <ClCompile Include="src\view\special\watersurface\watersurfaceshader.cpp" />
+    <ClCompile Include="src\view\terrainshader\assets\genericblendedterrainentity.cpp" />
     <ClCompile Include="src\view\terrainshader\assets\importedgeo.cpp" />
+    <ClCompile Include="src\view\terrainshader\blendedterrainshader.cpp" />
     <ClCompile Include="src\view\terrainshader\terrainshader.cpp" />
     <ClCompile Include="src\view\texture.cpp" />
   </ItemGroup>
@@ -205,6 +209,7 @@
     <ClInclude Include="include\model\imagedata.h" />
     <ClInclude Include="include\model\light\directionallight.h" />
     <ClInclude Include="include\model\proctree\proctree.h" />
+    <ClInclude Include="include\model\specialgeo\heightfield.h" />
     <ClInclude Include="include\model\specialgeo\metaball\boxboundedmetaballpath.h" />
     <ClInclude Include="include\model\specialgeo\metaball\charge.h" />
     <ClInclude Include="include\model\specialgeo\metaball\debugmetaballgroup.h" />
@@ -244,6 +249,7 @@
     <ClInclude Include="include\view\GenericVertex.h" />
     <ClInclude Include="include\view\mappedphong\assimpgeo.h" />
     <ClInclude Include="include\view\mappedphong\mappedphongshader.h" />
+    <ClInclude Include="include\view\rawentities\heightmapterrain.h" />
     <ClInclude Include="include\view\rawentities\proctree.h" />
     <ClInclude Include="include\view\shader.h" />
     <ClInclude Include="include\view\solidshader\assets\computermonitor.h" />
@@ -259,11 +265,15 @@
     <ClInclude Include="include\view\special\watersurface\flatsurface.h" />
     <ClInclude Include="include\view\special\watersurface\rectangle.h" />
     <ClInclude Include="include\view\special\watersurface\watersurfaceshader.h" />
+    <ClInclude Include="include\view\terrainshader\assets\genericblendedterrainentity.h" />
     <ClInclude Include="include\view\terrainshader\assets\importedgeo.h" />
+    <ClInclude Include="include\view\terrainshader\blendedterrainshader.h" />
     <ClInclude Include="include\view\terrainshader\terrainshader.h" />
     <ClInclude Include="include\view\texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\blendedterrain.frag" />
+    <None Include="shaders\blendedterrain.vert" />
     <None Include="shaders\mappedphong.frag" />
     <None Include="shaders\mappedphong.vert" />
     <None Include="shaders\metaball-phong.frag" />

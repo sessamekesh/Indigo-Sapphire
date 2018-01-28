@@ -62,7 +62,5 @@ namespace view
 				GLuint lightDir;
 			} uniformLocations_;
 		};
-		// TODO SESS: Continue with making terrain shader, and then
-		//  terrainobject (which loads from Assimp file)
 	}
 }

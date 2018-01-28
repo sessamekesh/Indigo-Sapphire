@@ -5,7 +5,13 @@
 #include <view/genericassmiploader.h>
 #include <view/rawentities/proctree.h>
 
-// TODO SESS:
+// TODO SESS: Start collecting footage of you actually programming/working on this for buzz reel
+
+// TODO SESS: Revamp terrain shader
+// - Create terrain blended shader (remember to set uv scaling up high for sampling tiled textures)
+// - Render heightmap with terrain blended shader
+
+// TODO SESS: Next steps
 // - Model the rock they'll be sitting on
 // - Put the XBOT character on the rock
 // - Start setting up the actual sequence! (camera, arrows, all that jazz)
@@ -18,7 +24,7 @@ namespace sim
 			util::command::ParserFactory& parserFactory
 		)
 			: Scene("Lake Scene", 1920u, 1080u)
-			, terrainShader_(nullptr)
+			, blendedTerrainShader_(nullptr)
 			, skyboxShader_(nullptr)
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
@@ -26,8 +32,9 @@ namespace sim
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
 			, boulderTest_(nullptr)
-			, terrain_(nullptr)
 			, testProctreeEntity_(nullptr)
+			, heightMapTerrainRawEntity_(nullptr)
+			, blendedTerrainEntity_(nullptr)
 			, mainCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
 			, sunlight_(
@@ -39,6 +46,7 @@ namespace sim
 			, lakeSurface_(nullptr)
 			, projMatrix_(glm::perspective(glm::radians(45.f), 128.f / 72.f, 0.1f, 15000.0f))
 			, textures_({})
+			, terrainHeightmap_(nullptr)
 			, waterReflectionFramebuffer_(nullptr)
 			, waterRefractionFramebuffer_(nullptr)
 		{
@@ -71,8 +79,8 @@ namespace sim
 			//
 			// Joystick things
 			//
-			float rotSpeed = 0.05f;
-			float moveSpeed = 2.f;
+			float rotSpeed = 1.8f;
+			float moveSpeed = 4.4f;
 			if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GLFW_TRUE)
 			{
 				int count;
@@ -80,13 +88,13 @@ namespace sim
 				if (count >= 4)
 				{
 					// Adjust angle first
-					mainCamera_->rotateRight(-rotSpeed * axes[2]);
-					mainCamera_->rotateUp(-rotSpeed * axes[3]);
+					mainCamera_->rotateRight(-rotSpeed * dt * axes[2]);
+					mainCamera_->rotateUp(-rotSpeed * dt * axes[3]);
 
 					auto dir = glm::normalize(mainCamera_->lookAt() - mainCamera_->pos());
 					auto right = glm::normalize(glm::cross(dir, mainCamera_->up()));
 					mainCamera_->pos(
-						mainCamera_->pos() + moveSpeed * (dir * axes[1] + right * axes[0])
+						mainCamera_->pos() + moveSpeed * dt * (dir * axes[1] + right * axes[0])
 					);
 				}
 			}
@@ -121,24 +129,6 @@ namespace sim
 			//
 			glEnable(GL_DEPTH_TEST);
 			glDepthMask(GL_TRUE);
-			if (terrainShader_->activate())
-			{
-				if (clipPlane)
-				{
-					terrainShader_->setClipPlane(*clipPlane);
-				}
-
-				terrainShader_->setViewMatrix(camera->getViewTransform());
-				terrainShader_->setProjMatrix(projMatrix_);
-				terrainShader_->setLight(sunlight_);
-
-				terrain_->render(terrainShader_);
-			}
-			else
-			{
-				log.warn << "Failed to activate terrain shader, not drawing terrain" << util::endl;
-			}
-
 			if (mappedPhongShader_->activate())
 			{
 				if (clipPlane)
@@ -155,6 +145,22 @@ namespace sim
 				boulderTest_->render(mappedPhongShader_);
 			}
 
+			// TODO SESS: Somewhere in here, we're leaking state. Not sure how. But it's bad.
+
+			if (blendedTerrainShader_->activate())
+			{
+				if (clipPlane)
+				{
+					blendedTerrainShader_->setClipPlane(*clipPlane);
+				}
+
+				blendedTerrainShader_->setViewMatrix(camera->getViewTransform());
+				blendedTerrainShader_->setProjMatrix(projMatrix_);
+				blendedTerrainShader_->setLight(sunlight_);
+
+				blendedTerrainEntity_->render(blendedTerrainShader_);
+			}
+
 			if (solidShader_->activate())
 			{
 				if (clipPlane)
@@ -165,6 +171,7 @@ namespace sim
 				solidShader_->setViewMatrix(camera->getViewTransform());
 				solidShader_->setProjMatrix(projMatrix_);
 				testProctreeEntity_->render(solidShader_);
+				//genericSolidTerrain_->render(solidShader_);
 			}
 		}
 
@@ -223,11 +230,10 @@ namespace sim
 
 		bool LakeScene::initializeShaders()
 		{
-
-			terrainShader_ = std::make_shared<view::terrainshader::TerrainShader>();
-			if (!terrainShader_ || !terrainShader_->initialize())
+			blendedTerrainShader_ = std::make_shared<view::terrainshader::BlendedTerrainShader>();
+			if (!blendedTerrainShader_ || !blendedTerrainShader_->initialize())
 			{
-				log.error << "Failed to create terrain shader" << util::endl;
+				log.error << "Failed to create blended terrain shader" << util::endl;
 				return false;
 			}
 
@@ -263,7 +269,7 @@ namespace sim
 
 		bool LakeScene::teardownShaders()
 		{
-			terrainShader_ = nullptr;
+			blendedTerrainShader_ = nullptr;
 			skyboxShader_ = nullptr;
 			solidShader_ = nullptr;
 			waterSurfaceShader_ = nullptr;
@@ -274,7 +280,7 @@ namespace sim
 		bool LakeScene::initializeResources()
 		{
 			mainCamera_ = std::shared_ptr<util::camera::FlightCamera>(new util::camera::FlightCamera(
-				glm::vec3(0.f, 0.f, -75.f),
+				glm::vec3(0.f, 2.f, 0.f),
 				glm::vec3(0.f, 1.f, 0.f),
 				glm::vec3(0.f, 0.f, 1.f),
 				0.f, 0.f
@@ -286,34 +292,6 @@ namespace sim
 			if (!setupTextures())
 			{
 				return false;
-			}
-
-			terrain_ = std::shared_ptr<view::terrainshader::assets::ImportedGeo>(
-				new view::terrainshader::assets::ImportedGeo(
-					glm::vec3(0.f, 5.f, 15.f),
-					glm::angleAxis(glm::quarter_pi<float>(), glm::vec3(0.f, 1.f, 0.f)) *
-						glm::angleAxis(glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)) *
-						glm::angleAxis(3.14f, glm::vec3(0.f, 1.f, 0.f)),
-					glm::vec3(41.f, 41.f, 41.f),
-					"TerrainBase"
-				)
-			);
-
-			{
-				std::map<std::string, std::shared_ptr<view::Texture>> terrainTextures;
-				terrainTextures["terrain_base"] = textures_["dry-grass"];
-				if (!terrain_
-					|| !terrain_->prepare(
-						ASSET_PATH("environment/terrain_base/terrain_base.fbx"),
-						{ "terrain_base" },
-						terrainTextures,
-						terrainShader_,
-						pso_
-					))
-				{
-					log.error << "Failed to initialize terrain geometry" << util::endl;
-					return false;
-				}
 			}
 
 			skybox_ = std::shared_ptr<view::special::skybox::DaylightSkybox>(
@@ -331,7 +309,7 @@ namespace sim
 
 			waterSurfaceModel_ = std::shared_ptr<model::geo::Rectangle>(
 				new model::geo::Rectangle(
-					glm::vec3(0.f, -15.f, 0.f),
+					glm::vec3(0.f, 0.f, 0.f),
 					glm::angleAxis(0.f, glm::vec3(0.f, 0.f, 0.f)),
 					500.f, 500.f
 				)
@@ -342,7 +320,7 @@ namespace sim
 					waterSurfaceModel_,
 					textures_["lake-normal"],
 					textures_["lake-dudv"],
-					0.05f, // Tiling multiplier
+					0.25f, // Tiling multiplier
 					0.02f, // DUDV scale
 					0.f, // DUDV offset
 					0.05f, // DUDV offset velocity
@@ -434,17 +412,43 @@ namespace sim
 				}
 			}
 
+			{
+				auto heightfield = std::shared_ptr<model::specialgeo::Heightfield>(
+					new model::specialgeo::Heightfield(terrainHeightmap_, 75.f, 75.f, 20.f)
+				);
+				heightMapTerrainRawEntity_ = std::make_shared<view::raw::HeightmapTerrainEntity>(heightfield);
+
+				blendedTerrainEntity_ = std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity>(new view::terrainshader::GenericBlendedTerrainEntity(
+					glm::vec3(0.f, -12.5f, 0.f),
+					glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
+					glm::vec3(1.f, 1.f, 1.f),
+					heightMapTerrainRawEntity_->getMeshData(80u, 80u, 1.f, true),
+					textures_["terrainBlendMap"],
+					textures_["terrainDirt"],
+					150.f,
+					textures_["terrainGrass"],
+					150.f,
+					textures_["terrainMud"],
+					150.f
+				));
+				if (!blendedTerrainEntity_ || !blendedTerrainEntity_->prepare(blendedTerrainShader_, pso_))
+				{
+					log.error << "Failed to generate blended terrain entity" << util::endl;
+					return false;
+				}
+			}
+
 			return true;
 		}
 
 		bool LakeScene::teardownResources()
 		{
-			if (terrain_)
+			if (blendedTerrainEntity_)
 			{
-				terrain_->release();
-				terrain_ = nullptr;
+				blendedTerrainEntity_->release();
+				blendedTerrainEntity_ = nullptr;
 			}
-
+			
 			if (skybox_)
 			{
 				skybox_->release();
@@ -486,7 +490,7 @@ namespace sim
 			// This is a wee bit awkward, eh?
 			// TODO SESS: Make a parser for the water surface as well
 			registerProperty("camera", util::command::StaticCameraParser::uuid, std::static_pointer_cast<void>(mainCamera_));
-			registerProperty("terrain_base", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(terrain_));
+			registerProperty("terrain_base", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(blendedTerrainEntity_));
 			registerProperty("sunlight", util::command::DirectionalLightParser::uuid, std::shared_ptr<void>(&sunlight_, [](void*) {}));
 			registerProperty("skybox", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(skybox_));
 			registerProperty("water", util::command::WaterFlatSurface::uuid, std::static_pointer_cast<void>(lakeSurface_));
@@ -547,7 +551,6 @@ namespace sim
 
 		bool LakeScene::setupTextures()
 		{
-			if (!loadSingleTexture("dry-grass", ASSET_PATH("texture/dry-grass.png"))) return false;
 			if (!loadSingleTexture("lake-dudv", ASSET_PATH("texture/water-dudv.png"))) return false;
 			if (!loadSingleTexture("lake-normal", ASSET_PATH("texture/water-normal.png"))) return false;
 			if (!loadSingleTexture("boulder-normal", ASSET_PATH("environment/boulder/NormalMap.png"))) return false;
@@ -555,6 +558,19 @@ namespace sim
 			if (!loadSingleTexture("boulder-diffuse", ASSET_PATH("environment/boulder/DiffuseMap.png"))) return false;
 			if (!loadSingleTexture("tree0-bark", ASSET_PATH("environment/trees/pine0/Red_Pine_Bark_diffuse.png"))) return false;
 			if (!loadSingleTexture("tree0-leaves", ASSET_PATH("environment/trees/pine0/Pine_Large_diffuse.PNG"))) return false;
+			if (!loadSingleTexture("terrainBlendMap", ASSET_PATH("environment/terrain_base/terraintypemap.png"))) return false;
+			if (!loadSingleTexture("terrainDirt", ASSET_PATH("texture/dry-grass.png"))) return false;
+			if (!loadSingleTexture("terrainGrass", ASSET_PATH("texture/grasstexture.png"))) return false;
+			if (!loadSingleTexture("terrainMud", ASSET_PATH("texture/road.png"))) return false;
+
+			auto opt = model::readGreyscalePNG(ASSET_PATH("environment/terrain_base/heightmap.png"));
+			if (!opt)
+			{
+				log.error << "Failed to load terrain heightmap" << util::endl;
+				return false;
+			}
+			terrainHeightmap_ = std::make_shared<model::GreyscaleImageData>();
+			*terrainHeightmap_ = *opt;
 
 			return true;
 		}

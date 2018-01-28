@@ -366,6 +366,18 @@
     <ClCompile Include="src\view\solidshader\genericsolidentity.cpp">
       <Filter>Source Files\view\solidshader</Filter>
     </ClCompile>
+    <ClCompile Include="src\model\specialgeo\heightfield.cpp">
+      <Filter>Source Files\model\specialgeo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\rawentities\heightmapterrain.cpp">
+      <Filter>Source Files\view\rawentity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\terrainshader\blendedterrainshader.cpp">
+      <Filter>Source Files\view\terrainshader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\terrainshader\assets\genericblendedterrainentity.cpp">
+      <Filter>Source Files\view\terrainshader\assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -566,6 +578,18 @@
     <ClInclude Include="include\view\solidshader\genericsolidentity.h">
       <Filter>Header Files\view\solidshader</Filter>
     </ClInclude>
+    <ClInclude Include="include\view\rawentities\heightmapterrain.h">
+      <Filter>Header Files\view\rawentities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\heightfield.h">
+      <Filter>Header Files\model\specialgeo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\terrainshader\blendedterrainshader.h">
+      <Filter>Header Files\view\terrainshader</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\terrainshader\assets\genericblendedterrainentity.h">
+      <Filter>Header Files\view\terrainshader\assets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\metaball-phong.frag">
@@ -608,6 +632,12 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shaders\tree.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\blendedterrain.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\blendedterrain.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

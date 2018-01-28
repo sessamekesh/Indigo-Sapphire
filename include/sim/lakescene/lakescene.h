@@ -2,7 +2,6 @@
 
 #include <sim/scene.h>
 
-#include <view/terrainshader/assets/importedgeo.h>
 #include <util/camera/StaticCamera.h>
 #include <util/command/parserfactory.h>
 #include <model/light/directionallight.h>
@@ -14,6 +13,9 @@
 #include <util/camera/flightcamera.h>
 #include <view/mappedphong/mappedphongshader.h>
 #include <view/mappedphong/assimpgeo.h>
+#include <view/rawentities/heightmapterrain.h>
+#include <view/terrainshader/blendedterrainshader.h>
+#include <view/terrainshader/assets/genericblendedterrainentity.h>
 
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
@@ -69,7 +71,7 @@ namespace sim
 			// Shaders
 			//
 		private:
-			std::shared_ptr<view::terrainshader::TerrainShader> terrainShader_;
+			std::shared_ptr<view::terrainshader::BlendedTerrainShader> blendedTerrainShader_;
 			std::shared_ptr<view::special::SkyboxShader> skyboxShader_;
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
@@ -86,7 +88,6 @@ namespace sim
 			// Resources
 			//
 		private:
-			std::shared_ptr<view::terrainshader::assets::ImportedGeo> terrain_;
 			std::shared_ptr<util::camera::FlightCamera> mainCamera_;
 			std::shared_ptr<util::camera::PlanarReflectionCamera> waterReflectionCamera_;
 			model::light::DirectionalLight sunlight_;
@@ -94,6 +95,8 @@ namespace sim
 			std::shared_ptr<view::special::watersurface::FlatSurface> lakeSurface_;
 			std::shared_ptr<view::mappedphong::AssimpGeo> boulderTest_;
 			std::shared_ptr<view::solidshader::GenericSolidEntity> testProctreeEntity_;
+			std::shared_ptr<view::raw::HeightmapTerrainEntity> heightMapTerrainRawEntity_;
+			std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity> blendedTerrainEntity_;
 
 			glm::mat4 projMatrix_;
 
@@ -102,6 +105,7 @@ namespace sim
 			//
 		private:
 			std::map<std::string, std::shared_ptr<view::Texture>> textures_;
+			std::shared_ptr<model::GreyscaleImageData> terrainHeightmap_;
 
 			//
 			// Framebuffers

@@ -31,7 +31,7 @@ namespace view
 		private:
 			struct GLResource
 			{
-				GLResource() : vao(0u), vb(0u), ib(0u) {}
+				GLResource() : vao(0u), vb(0u), ib(0u), numIndices(0u) {}
 
 				GLuint vao;
 				GLuint vb;
