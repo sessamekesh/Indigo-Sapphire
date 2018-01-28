@@ -135,7 +135,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\input\gamepadcameracontroller.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\input\gamepadcameracontroller.cpp" />
     <ClCompile Include="src\lodepng.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\model\event\eventbase.cpp" />
@@ -160,6 +162,7 @@
     <ClCompile Include="src\sim\scene.cpp" />
     <ClCompile Include="src\util\camera\camerabase.cpp" />
     <ClCompile Include="src\util\camera\flightcamera.cpp" />
+    <ClCompile Include="src\util\camera\heightmapcamera.cpp" />
     <ClCompile Include="src\util\camera\planarreflectioncamera.cpp" />
     <ClCompile Include="src\util\camera\StaticCamera.cpp" />
     <ClCompile Include="src\util\command\directionallightparser.cpp" />
@@ -200,6 +203,8 @@
     <ClCompile Include="src\view\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\input\cameracontrollerbase.h" />
+    <ClInclude Include="include\input\gamepadcameracontroller.h" />
     <ClInclude Include="include\lodepng.h" />
     <ClInclude Include="include\model\event\eventbase.h" />
     <ClInclude Include="include\model\geo\grid.h" />
@@ -227,6 +232,7 @@
     <ClInclude Include="include\sim\scene.h" />
     <ClInclude Include="include\util\camera\camerabase.h" />
     <ClInclude Include="include\util\camera\flightcamera.h" />
+    <ClInclude Include="include\util\camera\heightmapcamera.h" />
     <ClInclude Include="include\util\camera\planarreflectioncamera.h" />
     <ClInclude Include="include\util\camera\StaticCamera.h" />
     <ClInclude Include="include\util\command\directionallightparser.h" />

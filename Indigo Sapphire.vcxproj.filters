@@ -187,6 +187,9 @@
     <Filter Include="Source Files\view\rawentity">
       <UniqueIdentifier>{4386af04-6882-4f71-92b4-a3f2e2963adf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\input">
+      <UniqueIdentifier>{d171cb26-e353-4b07-9cde-a89a0fcf5064}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -377,6 +380,15 @@
     </ClCompile>
     <ClCompile Include="src\view\terrainshader\assets\genericblendedterrainentity.cpp">
       <Filter>Source Files\view\terrainshader\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="include\input\gamepadcameracontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\gamepadcameracontroller.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\camera\heightmapcamera.cpp">
+      <Filter>Source Files\util\camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -589,6 +601,15 @@
     </ClInclude>
     <ClInclude Include="include\view\terrainshader\assets\genericblendedterrainentity.h">
       <Filter>Header Files\view\terrainshader\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\camera\heightmapcamera.h">
+      <Filter>Header Files\util\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\cameracontrollerbase.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\gamepadcameracontroller.h">
+      <Filter>Header Files\input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

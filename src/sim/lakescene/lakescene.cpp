@@ -1,6 +1,7 @@
 #include <sim/lakescene/lakescene.h>
 #include <resources.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <input/gamepadcameracontroller.h>
 
 #include <view/genericassmiploader.h>
 #include <view/rawentities/proctree.h>
@@ -198,6 +199,7 @@ namespace sim
 			renderEnvironment(waterReflectionCamera_, waterReflectionPlane);
 			waterRefractionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			//renderEnvironment(mainCamera_, waterRefractionPlane);
 			renderEnvironment(mainCamera_, waterRefractionPlane);
 			view::Framebuffer::bindDefaultFramebuffer();
 			glViewport(0, 0, width, height);
@@ -206,6 +208,7 @@ namespace sim
 			// Render to main color/depth buffer
 			//
 			glDisable(GL_CLIP_DISTANCE0);
+			//renderEnvironment(mainCamera_);
 			renderEnvironment(mainCamera_);
 
 			//
@@ -215,8 +218,10 @@ namespace sim
 			glDisable(GL_BLEND);
 			if (waterSurfaceShader_->activate())
 			{
+				//waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
 				waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
 				waterSurfaceShader_->setProjMatrix(projMatrix_);
+				//waterSurfaceShader_->setCameraPosition(mainCamera_->pos());
 				waterSurfaceShader_->setCameraPosition(mainCamera_->pos());
 				waterSurfaceShader_->setLight(sunlight_);
 
@@ -279,20 +284,26 @@ namespace sim
 
 		bool LakeScene::initializeResources()
 		{
+			if (!setupTextures())
+			{
+				return false;
+			}
+
 			mainCamera_ = std::shared_ptr<util::camera::FlightCamera>(new util::camera::FlightCamera(
 				glm::vec3(0.f, 2.f, 0.f),
 				glm::vec3(0.f, 1.f, 0.f),
 				glm::vec3(0.f, 0.f, 1.f),
 				0.f, 0.f
 			));
+
+			auto heightfield = std::shared_ptr<model::specialgeo::Heightfield>(
+				new model::specialgeo::Heightfield(terrainHeightmap_, 75.f, 75.f, 20.f)
+			);
+
 			waterReflectionCamera_ = std::shared_ptr<util::camera::PlanarReflectionCamera>(new util::camera::PlanarReflectionCamera(
 				mainCamera_,
 				model::geo::Plane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f })
 			));
-			if (!setupTextures())
-			{
-				return false;
-			}
 
 			skybox_ = std::shared_ptr<view::special::skybox::DaylightSkybox>(
 				new view::special::skybox::DaylightSkybox(
@@ -413,9 +424,6 @@ namespace sim
 			}
 
 			{
-				auto heightfield = std::shared_ptr<model::specialgeo::Heightfield>(
-					new model::specialgeo::Heightfield(terrainHeightmap_, 75.f, 75.f, 20.f)
-				);
 				heightMapTerrainRawEntity_ = std::make_shared<view::raw::HeightmapTerrainEntity>(heightfield);
 
 				blendedTerrainEntity_ = std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity>(new view::terrainshader::GenericBlendedTerrainEntity(
