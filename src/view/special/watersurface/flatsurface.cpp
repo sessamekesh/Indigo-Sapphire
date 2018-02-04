@@ -52,10 +52,6 @@ namespace view
 			void FlatSurface::update(float dt)
 			{
 				dudvOffset_+= dudvOffsetVelocity_ * dt;
-				while (dudvOffset_ > 1.f)
-				{
-					dudvOffset_ -= 1.f;
-				}
 			}
 
 			void FlatSurface::render(

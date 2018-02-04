@@ -100,39 +100,39 @@ void main()
 		// Emit patch top left vertex
 		vec3 vTL = vGrassFieldPos - vBaseDirRotated * patchSize * 0.5f + vWindDirection * fWindPower;
 		vTL.y += fGrassPatchHeight;
-		gl_ClipDistance[0] = dot(vTL - clipPlaneOrigin, clipPlaneNormal);
 		gl_Position = mMVP * vec4(vTL, 1.0);
 		vTexCoord = vec2(fTCStartX, 1.0);
-		vWorldPos = vTL;
+		vWorldPos = (matWorld * vec4(vTL, 1.0)).xyz;
 		vEyeSpacePos = mMV * vec4(vTL, 1.0);
+		gl_ClipDistance[0] = dot(vWorldPos - clipPlaneOrigin, clipPlaneNormal);
 		EmitVertex();
 
 		// Emit patch bottom left vertex
 		vec3 vBL = vGrassFieldPos - vBaseDir[i] * patchSize * 0.5f;
-		gl_ClipDistance[0] = dot(vBL - clipPlaneOrigin, clipPlaneNormal);
 		gl_Position = mMVP * vec4(vBL, 1.0);
 		vTexCoord = vec2(fTCStartX, 0.0);
-		vWorldPos = vBL;
+		vWorldPos = (matWorld * vec4(vTL, 1.0)).xyz;
 		vEyeSpacePos = mMV * vec4(vBL, 1.0);
+		gl_ClipDistance[0] = dot(vWorldPos - clipPlaneOrigin, clipPlaneNormal);
 		EmitVertex();
 
 		// Grass patch top right vertex
 		vec3 vTR = vGrassFieldPos + vBaseDirRotated*patchSize*0.5f + vWindDirection*fWindPower;
 		vTR.y += fGrassPatchHeight;  
-		gl_ClipDistance[0] = dot(vTR - clipPlaneOrigin, clipPlaneNormal);
 		gl_Position = mMVP*vec4(vTR, 1.0);
 		vTexCoord = vec2(fTCEndX, 1.0);
-		vWorldPos = vTR;
+		vWorldPos = (matWorld * vec4(vTL, 1.0)).xyz;
 		vEyeSpacePos = mMV*vec4(vTR, 1.0);
+		gl_ClipDistance[0] = dot(vWorldPos - clipPlaneOrigin, clipPlaneNormal);
 		EmitVertex();
 		
 		// Grass patch bottom right vertex
 		vec3 vBR = vGrassFieldPos + vBaseDir[i]*patchSize*0.5f;  
-		gl_ClipDistance[0] = dot(vBR - clipPlaneOrigin, clipPlaneNormal);
 		gl_Position = mMVP*vec4(vBR, 1.0);
 		vTexCoord = vec2(fTCEndX, 0.0);
-		vWorldPos = vBR;
+		vWorldPos = (matWorld * vec4(vTL, 1.0)).xyz;
 		vEyeSpacePos = mMV*vec4(vBR, 1.0);
+		gl_ClipDistance[0] = dot(vWorldPos - clipPlaneOrigin, clipPlaneNormal);
 		EmitVertex();
 
 		EndPrimitive();
