@@ -1,6 +1,7 @@
 #include <model/specialgeo/heightfield.h>
 #include <glm/gtx/compatibility.hpp>
 #include <algorithm>
+#include <iostream>
 
 namespace model
 {

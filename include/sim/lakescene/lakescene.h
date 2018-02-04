@@ -16,9 +16,13 @@
 #include <view/rawentities/heightmapterrain.h>
 #include <view/terrainshader/blendedterrainshader.h>
 #include <view/terrainshader/assets/genericblendedterrainentity.h>
+#include <util/camera/heightmapcamera.h>
 
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
+
+#include <view/grass/GrassShader.h>
+#include <view/grass/GrassEntity.h>
 
 // TODO SESS: Also, loading times are high enough that THREADING is a thing to consider on CPU-side stuff
 //  (especially loading things from Assimp, and processing the vertices)
@@ -76,6 +80,7 @@ namespace sim
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
+			std::shared_ptr<view::grass::GrassShader> grassShader_;
 
 			//
 			// Models
@@ -89,6 +94,7 @@ namespace sim
 			//
 		private:
 			std::shared_ptr<util::camera::FlightCamera> mainCamera_;
+			std::shared_ptr<util::camera::HeightmapCamera> heightmapCamera_;
 			std::shared_ptr<util::camera::PlanarReflectionCamera> waterReflectionCamera_;
 			model::light::DirectionalLight sunlight_;
 			std::shared_ptr<view::special::skybox::DaylightSkybox> skybox_;
@@ -97,6 +103,7 @@ namespace sim
 			std::shared_ptr<view::solidshader::GenericSolidEntity> testProctreeEntity_;
 			std::shared_ptr<view::raw::HeightmapTerrainEntity> heightMapTerrainRawEntity_;
 			std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity> blendedTerrainEntity_;
+			std::shared_ptr<view::grass::GrassEntity> grassEntity_;
 
 			glm::mat4 projMatrix_;
 
@@ -116,6 +123,11 @@ namespace sim
 			//
 			// Properties
 			//
+
+			//
+			// I/O
+			//
+			std::shared_ptr<input::CameraControllerBase> cameraController_;
 		private:
 		};
 	}

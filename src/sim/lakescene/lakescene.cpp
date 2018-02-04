@@ -5,6 +5,7 @@
 
 #include <view/genericassmiploader.h>
 #include <view/rawentities/proctree.h>
+#include <util/surfacemask/allenabledmask.h>
 
 // TODO SESS: Start collecting footage of you actually programming/working on this for buzz reel
 
@@ -25,18 +26,22 @@ namespace sim
 			util::command::ParserFactory& parserFactory
 		)
 			: Scene("Lake Scene", 1920u, 1080u)
+			, cameraController_(nullptr)
 			, blendedTerrainShader_(nullptr)
 			, skyboxShader_(nullptr)
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
 			, mappedPhongShader_(nullptr)
+			, grassShader_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
 			, boulderTest_(nullptr)
 			, testProctreeEntity_(nullptr)
 			, heightMapTerrainRawEntity_(nullptr)
 			, blendedTerrainEntity_(nullptr)
+			, grassEntity_(nullptr)
 			, mainCamera_(nullptr)
+			, heightmapCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
 			, sunlight_(
 				glm::vec3(0.1f, 0.1f, 0.1f), // Ambient
@@ -63,6 +68,8 @@ namespace sim
 		void LakeScene::update(float dt)
 		{
 			lakeSurface_->update(dt);
+			grassEntity_->update(dt);
+			cameraController_->tick();
 
 			auto ng = glm::angle(skybox_->rot());
 			ng += 0.02f * dt;
@@ -76,6 +83,8 @@ namespace sim
 			}
 			auto ax = glm::vec3(0.f, 1.f, 0.f);
 			skybox_->rot(glm::angleAxis(ng, ax));
+
+			heightmapCamera_->update(dt);
 
 			//
 			// Joystick things
@@ -146,8 +155,6 @@ namespace sim
 				boulderTest_->render(mappedPhongShader_);
 			}
 
-			// TODO SESS: Somewhere in here, we're leaking state. Not sure how. But it's bad.
-
 			if (blendedTerrainShader_->activate())
 			{
 				if (clipPlane)
@@ -160,6 +167,19 @@ namespace sim
 				blendedTerrainShader_->setLight(sunlight_);
 
 				blendedTerrainEntity_->render(blendedTerrainShader_);
+			}
+
+			if (grassShader_->activate())
+			{
+				if (clipPlane)
+				{
+					grassShader_->setClipPlane(*clipPlane);
+				}
+
+				grassShader_->setViewMatrix(camera->getViewTransform());
+				grassShader_->setProjMatrix(projMatrix_);
+				grassShader_->setEyePos(camera->pos());
+				grassEntity_->render(grassShader_);
 			}
 
 			if (solidShader_->activate())
@@ -200,7 +220,7 @@ namespace sim
 			waterRefractionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			//renderEnvironment(mainCamera_, waterRefractionPlane);
-			renderEnvironment(mainCamera_, waterRefractionPlane);
+			renderEnvironment(heightmapCamera_, waterRefractionPlane);
 			view::Framebuffer::bindDefaultFramebuffer();
 			glViewport(0, 0, width, height);
 
@@ -209,7 +229,7 @@ namespace sim
 			//
 			glDisable(GL_CLIP_DISTANCE0);
 			//renderEnvironment(mainCamera_);
-			renderEnvironment(mainCamera_);
+			renderEnvironment(heightmapCamera_);
 
 			//
 			// Water surface
@@ -219,10 +239,10 @@ namespace sim
 			if (waterSurfaceShader_->activate())
 			{
 				//waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
-				waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
+				waterSurfaceShader_->setViewMatrix(heightmapCamera_->getViewTransform());
 				waterSurfaceShader_->setProjMatrix(projMatrix_);
 				//waterSurfaceShader_->setCameraPosition(mainCamera_->pos());
-				waterSurfaceShader_->setCameraPosition(mainCamera_->pos());
+				waterSurfaceShader_->setCameraPosition(heightmapCamera_->pos());
 				waterSurfaceShader_->setLight(sunlight_);
 
 				lakeSurface_->render(waterSurfaceShader_, waterReflectionFramebuffer_, waterRefractionFramebuffer_);
@@ -269,6 +289,13 @@ namespace sim
 				return false;
 			}
 
+			grassShader_ = std::make_shared<view::grass::GrassShader>();
+			if (!grassShader_ || !grassShader_->initialize())
+			{
+				log.error << "Failed to create grass shader" << util::endl;
+				return false;
+			}
+
 			return true;
 		}
 
@@ -300,8 +327,22 @@ namespace sim
 				new model::specialgeo::Heightfield(terrainHeightmap_, 75.f, 75.f, 20.f)
 			);
 
+			cameraController_ = std::make_shared<input::GamepadCameraController>(0);
+			// TODO SESS: The current heightfield causes height(point) to be a non-continuous function.
+			//  It REALLY REALLY needs to be continuous.
+			//  It doesn't need to be differentiable, though that would be a perk.
+			heightmapCamera_ = std::shared_ptr<util::camera::HeightmapCamera>(new util::camera::HeightmapCamera(
+				glm::vec3(0.f, 2.f, 0.f),
+				glm::vec3(0.f, 1.f, 0.f),
+				glm::vec3(0.f, 0.f, 1.f),
+				cameraController_,
+				heightfield,
+				-10.8f,
+				0.f, 0.f, 4.3f, 1.8f
+			));
+
 			waterReflectionCamera_ = std::shared_ptr<util::camera::PlanarReflectionCamera>(new util::camera::PlanarReflectionCamera(
-				mainCamera_,
+				heightmapCamera_,
 				model::geo::Plane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f })
 			));
 
@@ -430,7 +471,7 @@ namespace sim
 					glm::vec3(0.f, -12.5f, 0.f),
 					glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
 					glm::vec3(1.f, 1.f, 1.f),
-					heightMapTerrainRawEntity_->getMeshData(80u, 80u, 1.f, true),
+					heightMapTerrainRawEntity_->getMeshData(380u, 380u, 1.f, true),
 					textures_["terrainBlendMap"],
 					textures_["terrainDirt"],
 					150.f,
@@ -444,6 +485,22 @@ namespace sim
 					log.error << "Failed to generate blended terrain entity" << util::endl;
 					return false;
 				}
+			}
+
+			grassEntity_ = std::make_shared<view::grass::GrassEntity>(
+				glm::vec3(0.f, -12.5f, 0.f),
+				glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
+				glm::vec3(1.f, 1.f, 1.f)
+			);
+			if (!grassEntity_ || !grassEntity_->prepare(
+				grassShader_, pso_,
+				heightfield, textures_["grassPack"],
+				std::make_shared<util::AllEnabledMask>(), // TODO SESS: Instead, sample the shader for a grass value. Also, you can make three or four of these, for different values - simulate thicker grass (use different seeds)
+				1, 0.05f, 0.15f, 0.f
+			))
+			{
+				log.error << "Failed to generate grass entity" << util::endl;
+				return false;
 			}
 
 			return true;
@@ -570,6 +627,7 @@ namespace sim
 			if (!loadSingleTexture("terrainDirt", ASSET_PATH("texture/dry-grass.png"))) return false;
 			if (!loadSingleTexture("terrainGrass", ASSET_PATH("texture/grasstexture.png"))) return false;
 			if (!loadSingleTexture("terrainMud", ASSET_PATH("texture/road.png"))) return false;
+			if (!loadSingleTexture("grassPack", ASSET_PATH("texture/grassPack.png"))) return false;
 
 			auto opt = model::readGreyscalePNG(ASSET_PATH("environment/terrain_base/heightmap.png"));
 			if (!opt)

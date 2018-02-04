@@ -37,8 +37,6 @@ namespace util
 
 		void HeightmapCamera::update(float dt)
 		{
-			// TODO SESS: The controller shouldn't update here
-			controller_->tick();
 			if (!controller_->isActive())
 			{
 				return;
@@ -49,7 +47,7 @@ namespace util
 			
 			auto movement = (fwd * controller_->getY1Axis() + right * controller_->getX1Axis()) * movementSpeed_ * dt;
 			auto nextPos = pos() + movement;
-			nextPos.y = heightField_->heightAtPos(nextPos.x, nextPos.z, 0.f, false) + height_;
+			nextPos.y = heightField_->heightAtPos(nextPos.x, nextPos.z, 0.f, true) + height_;
 
 			pos(nextPos);
 			rotateRight(-rotationSpeed_ * dt * controller_->getX2Axis());

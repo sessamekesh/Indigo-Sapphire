@@ -190,6 +190,18 @@
     <Filter Include="Source Files\input">
       <UniqueIdentifier>{d171cb26-e353-4b07-9cde-a89a0fcf5064}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\view\grass">
+      <UniqueIdentifier>{67cb70a6-aec5-4bd0-8b03-9e6a039b1392}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util\surfacemask">
+      <UniqueIdentifier>{77fe3090-81b1-4d73-b8af-97b92d82c93b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\surfacemask">
+      <UniqueIdentifier>{b9e27c78-a452-41ac-92c2-76845e7ca4bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\grass">
+      <UniqueIdentifier>{811bcd22-ff84-4911-a2de-d59891dee200}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -389,6 +401,15 @@
     </ClCompile>
     <ClCompile Include="src\util\camera\heightmapcamera.cpp">
       <Filter>Source Files\util\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\surfacemask\allenabledmask.cpp">
+      <Filter>Source Files\util\surfacemask</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\grass\GrassEntity.cpp">
+      <Filter>Source Files\view\grass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\grass\GrassShader.cpp">
+      <Filter>Source Files\view\grass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -611,6 +632,18 @@
     <ClInclude Include="include\input\gamepadcameracontroller.h">
       <Filter>Header Files\input</Filter>
     </ClInclude>
+    <ClInclude Include="include\view\grass\GrassEntity.h">
+      <Filter>Header Files\view\grass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemaskbase.h">
+      <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemask\allenabledmask.h">
+      <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\grass\GrassShader.h">
+      <Filter>Header Files\view\grass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\metaball-phong.frag">
@@ -659,6 +692,15 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shaders\blendedterrain.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\grass.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\grass.geom">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\grass.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
