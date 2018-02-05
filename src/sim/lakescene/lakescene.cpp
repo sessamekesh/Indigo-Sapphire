@@ -6,6 +6,8 @@
 #include <view/genericassmiploader.h>
 #include <view/rawentities/proctree.h>
 #include <util/surfacemask/allenabledmask.h>
+#include <model/specialgeo/heightfield/heightmapheightfield.h>
+#include <model/specialgeo/heightfield/reducedheightfield.h>
 
 // TODO SESS: Start collecting footage of you actually programming/working on this for buzz reel
 
@@ -324,8 +326,11 @@ namespace sim
 			));
 
 			auto heightfield = std::shared_ptr<model::specialgeo::Heightfield>(
-				new model::specialgeo::Heightfield(terrainHeightmap_, 75.f, 75.f, 20.f)
+				new model::specialgeo::HeightmapHeightfield(terrainHeightmap_, 75.f, 75.f, 20.f)
 			);
+			auto reducedHeightfield = std::shared_ptr<model::specialgeo::Heightfield>(
+				new model::specialgeo::ReducedHeightfield(heightfield, 380u, 380u)
+				);
 
 			cameraController_ = std::make_shared<input::GamepadCameraController>(0);
 			// TODO SESS: The current heightfield causes height(point) to be a non-continuous function.
@@ -336,7 +341,7 @@ namespace sim
 				glm::vec3(0.f, 1.f, 0.f),
 				glm::vec3(0.f, 0.f, 1.f),
 				cameraController_,
-				heightfield,
+				reducedHeightfield,
 				-10.8f,
 				0.f, 0.f, 4.3f, 1.8f
 			));
@@ -494,7 +499,7 @@ namespace sim
 			);
 			if (!grassEntity_ || !grassEntity_->prepare(
 				grassShader_, pso_,
-				heightfield, textures_["grassPack"],
+				reducedHeightfield, textures_["grassPack"],
 				std::make_shared<util::AllEnabledMask>(), // TODO SESS: Instead, sample the shader for a grass value. Also, you can make three or four of these, for different values - simulate thicker grass (use different seeds)
 				1, 0.05f, 0.15f, 0.f
 			))

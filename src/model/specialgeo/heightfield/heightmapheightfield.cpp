@@ -1,13 +1,12 @@
-#include <model/specialgeo/heightfield.h>
+#include <model/specialgeo/heightfield/heightmapheightfield.h>
 #include <glm/gtx/compatibility.hpp>
 #include <algorithm>
-#include <iostream>
 
 namespace model
 {
 	namespace specialgeo
 	{
-		Heightfield::Heightfield(
+		HeightmapHeightfield::HeightmapHeightfield(
 			std::shared_ptr<model::GreyscaleImageData> heightField,
 			float worldWidth,
 			float worldDepth,
@@ -24,7 +23,7 @@ namespace model
 			return map.pixels[y * map.width + x] / 255.f;
 		}
 
-		float Heightfield::heightAtPos(float x, float z, float defaultHeight, bool blend) const
+		float HeightmapHeightfield::heightAtPos(float x, float z, float defaultHeight, bool blend) const
 		{
 			float u = (x + width_) / (2.f * width_);
 			float v = (z + depth_) / (2.f * depth_);
@@ -68,12 +67,12 @@ namespace model
 			}
 		}
 
-		float Heightfield::width() const
+		float HeightmapHeightfield::width() const
 		{
 			return width_;
 		}
 
-		float Heightfield::depth() const
+		float HeightmapHeightfield::depth() const
 		{
 			return depth_;
 		}

@@ -202,6 +202,12 @@
     <Filter Include="Source Files\view\grass">
       <UniqueIdentifier>{811bcd22-ff84-4911-a2de-d59891dee200}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\model\specialgeo\heightfield">
+      <UniqueIdentifier>{6317336e-9b21-40f4-aa26-0014f85fe20f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\specialgeo\heightfield">
+      <UniqueIdentifier>{2bd40b91-8e73-43a9-a231-2be1236d3402}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -381,9 +387,6 @@
     <ClCompile Include="src\view\solidshader\genericsolidentity.cpp">
       <Filter>Source Files\view\solidshader</Filter>
     </ClCompile>
-    <ClCompile Include="src\model\specialgeo\heightfield.cpp">
-      <Filter>Source Files\model\specialgeo</Filter>
-    </ClCompile>
     <ClCompile Include="src\view\rawentities\heightmapterrain.cpp">
       <Filter>Source Files\view\rawentity</Filter>
     </ClCompile>
@@ -410,6 +413,12 @@
     </ClCompile>
     <ClCompile Include="src\view\grass\GrassShader.cpp">
       <Filter>Source Files\view\grass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\specialgeo\heightfield\heightmapheightfield.cpp">
+      <Filter>Source Files\model\specialgeo\heightfield</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\specialgeo\heightfield\reducedheightfield.cpp">
+      <Filter>Source Files\model\specialgeo\heightfield</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -643,6 +652,12 @@
     </ClInclude>
     <ClInclude Include="include\view\grass\GrassShader.h">
       <Filter>Header Files\view\grass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\heightfield\heightmapheightfield.h">
+      <Filter>Header Files\model\specialgeo\heightfield</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\heightfield\reducedheightfield.h">
+      <Filter>Header Files\model\specialgeo\heightfield</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

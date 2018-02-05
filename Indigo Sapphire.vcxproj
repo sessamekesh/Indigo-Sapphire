@@ -148,7 +148,8 @@
     <ClCompile Include="src\model\light\directionallight.cpp" />
     <ClCompile Include="src\model\proctree\proctree.cpp" />
     <ClCompile Include="src\model\simplegeo\grid.cpp" />
-    <ClCompile Include="src\model\specialgeo\heightfield.cpp" />
+    <ClCompile Include="src\model\specialgeo\heightfield\heightmapheightfield.cpp" />
+    <ClCompile Include="src\model\specialgeo\heightfield\reducedheightfield.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\boxboundedmetaballpath.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\debugmetaballgroup.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\metaball.cpp" />
@@ -218,6 +219,8 @@
     <ClInclude Include="include\model\light\directionallight.h" />
     <ClInclude Include="include\model\proctree\proctree.h" />
     <ClInclude Include="include\model\specialgeo\heightfield.h" />
+    <ClInclude Include="include\model\specialgeo\heightfield\heightmapheightfield.h" />
+    <ClInclude Include="include\model\specialgeo\heightfield\reducedheightfield.h" />
     <ClInclude Include="include\model\specialgeo\metaball\boxboundedmetaballpath.h" />
     <ClInclude Include="include\model\specialgeo\metaball\charge.h" />
     <ClInclude Include="include\model\specialgeo\metaball\debugmetaballgroup.h" />
