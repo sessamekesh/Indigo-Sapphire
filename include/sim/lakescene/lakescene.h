@@ -70,6 +70,7 @@ namespace sim
 			bool setupTextures();
 			bool teardownTextures();
 			bool loadSingleTexture(std::string texName, std::string fName);
+			bool loadSingleTexture(std::string texName, std::shared_ptr<model::ImageData> imageData);
 
 			//
 			// Shaders
@@ -103,7 +104,8 @@ namespace sim
 			std::shared_ptr<view::solidshader::GenericSolidEntity> testProctreeEntity_;
 			std::shared_ptr<view::raw::HeightmapTerrainEntity> heightMapTerrainRawEntity_;
 			std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity> blendedTerrainEntity_;
-			std::shared_ptr<view::grass::GrassEntity> grassEntity_;
+			
+			std::vector<std::shared_ptr<view::grass::GrassEntity>> grassEntities_;
 
 			glm::mat4 projMatrix_;
 
@@ -113,6 +115,7 @@ namespace sim
 		private:
 			std::map<std::string, std::shared_ptr<view::Texture>> textures_;
 			std::shared_ptr<model::GreyscaleImageData> terrainHeightmap_;
+			std::shared_ptr<model::ImageData> terrainBlendMapImage_;
 
 			//
 			// Framebuffers

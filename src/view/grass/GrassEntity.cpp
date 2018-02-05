@@ -54,11 +54,14 @@ namespace view
 					float finalZ = z + ((std::rand() % 1000 - 500) * 0.001f * dz);
 
 					// Skip this one if it's not in the mask.
-					if (!mask->getMaskValue({ finalX, finalZ })) continue;
-
-					verts.push_back({ { finalX, heightfield->heightAtPos(finalX, finalZ, 1.f), finalZ} });
+					if (mask->getMaskValue({ finalX, finalZ }))
+					{
+						verts.push_back({ { finalX, heightfield->heightAtPos(finalX, finalZ, 1.f), finalZ} });
+					}
 				}
 			}
+
+			std::cout << "Number of vertices: " << verts.size() << std::endl;
 
 			glGenVertexArrays(1, &vao_);
 			glBindVertexArray(vao_);
@@ -110,8 +113,8 @@ namespace view
 			// TODO SESS: These should be configurable.
 			shader->setAlphaTest(0.25f, 1.5f);
 			shader->setColor(glm::vec4({ 1.f, 1.f, 1.f, 1.f }));
-			shader->setPatchSizeData(0.05f, 0.15f, 0.15f);
-			shader->setWind(0.25f);
+			shader->setPatchSizeData(0.15f, 0.35f, 0.15f);
+			shader->setWind(0.15f);
 
 			glBindVertexArray(vao_);
 			glDrawArrays(GL_POINTS, 0, numPoints_);

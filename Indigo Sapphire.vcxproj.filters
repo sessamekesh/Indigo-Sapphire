@@ -420,6 +420,9 @@
     <ClCompile Include="src\model\specialgeo\heightfield\reducedheightfield.cpp">
       <Filter>Source Files\model\specialgeo\heightfield</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\surfacemask\terrainmapcolormask.cpp">
+      <Filter>Source Files\util\surfacemask</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -658,6 +661,9 @@
     </ClInclude>
     <ClInclude Include="include\model\specialgeo\heightfield\reducedheightfield.h">
       <Filter>Header Files\model\specialgeo\heightfield</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemask\terrainmapcolormask.h">
+      <Filter>Header Files\util\surfacemask</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

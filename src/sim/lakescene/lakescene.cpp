@@ -5,7 +5,7 @@
 
 #include <view/genericassmiploader.h>
 #include <view/rawentities/proctree.h>
-#include <util/surfacemask/allenabledmask.h>
+#include <util/surfacemask/terrainmapcolormask.h>
 #include <model/specialgeo/heightfield/heightmapheightfield.h>
 #include <model/specialgeo/heightfield/reducedheightfield.h>
 
@@ -41,7 +41,7 @@ namespace sim
 			, testProctreeEntity_(nullptr)
 			, heightMapTerrainRawEntity_(nullptr)
 			, blendedTerrainEntity_(nullptr)
-			, grassEntity_(nullptr)
+			, grassEntities_(0u)
 			, mainCamera_(nullptr)
 			, heightmapCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
@@ -70,7 +70,10 @@ namespace sim
 		void LakeScene::update(float dt)
 		{
 			lakeSurface_->update(dt);
-			grassEntity_->update(dt);
+			for (auto&& ge : grassEntities_)
+			{
+				ge->update(dt);
+			}
 			cameraController_->tick();
 
 			auto ng = glm::angle(skybox_->rot());
@@ -181,7 +184,11 @@ namespace sim
 				grassShader_->setViewMatrix(camera->getViewTransform());
 				grassShader_->setProjMatrix(projMatrix_);
 				grassShader_->setEyePos(camera->pos());
-				grassEntity_->render(grassShader_);
+
+				for (auto&& ge : grassEntities_)
+				{
+					ge->render(grassShader_);
+				}
 			}
 
 			if (solidShader_->activate())
@@ -492,20 +499,46 @@ namespace sim
 				}
 			}
 
-			grassEntity_ = std::make_shared<view::grass::GrassEntity>(
-				glm::vec3(0.f, -12.5f, 0.f),
-				glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
-				glm::vec3(1.f, 1.f, 1.f)
-			);
-			if (!grassEntity_ || !grassEntity_->prepare(
-				grassShader_, pso_,
-				reducedHeightfield, textures_["grassPack"],
-				std::make_shared<util::AllEnabledMask>(), // TODO SESS: Instead, sample the shader for a grass value. Also, you can make three or four of these, for different values - simulate thicker grass (use different seeds)
-				1, 0.05f, 0.15f, 0.f
-			))
 			{
-				log.error << "Failed to generate grass entity" << util::endl;
-				return false;
+				std::vector<float> threshholds = { 0.2f, 0.4f, 0.7f, 0.95f };
+				std::vector<float> offsetMins = { 1.0f, 0.3f, 0.075f, 0.025f };
+				std::vector<float> offsetMaxs = { 2.6f, 0.5f, 0.25f, 0.075f };
+				std::vector<std::uint32_t> seeds = { 1, 2, 3, 4 };
+				grassEntities_.reserve(4u);
+				// TODO SESS:
+				// - Different types of vegetation, to give variety.
+				// - Combine with a "heightfield" sample, to make sure no grass grows below water
+				//   (That will also require a "combinationmask", to combine TerrainMapColorMask
+				//      and HeightfieldMask)
+				for (std::uint32_t idx = 0u; idx < threshholds.size(); idx++)
+				{
+					grassEntities_.push_back(
+						std::make_shared<view::grass::GrassEntity>(
+							glm::vec3(0.f, -12.5f, 0.f),
+							glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
+							glm::vec3(1.f, 1.f, 1.f)
+							)
+					);
+					if (!grassEntities_[idx] || !grassEntities_[idx]->prepare(
+						grassShader_, pso_,
+						reducedHeightfield, textures_["grassPack"],
+						std::shared_ptr<util::TerrainMapColorMask>(
+							new util::TerrainMapColorMask(
+								terrainBlendMapImage_,
+								75.f, 75.f, // TODO SESS: This really should be localized somewhere, instead of just remembering the width/depth
+								threshholds[idx],
+								{ util::COLOR_COMPONENT_G },
+								{ util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G, util::COLOR_COMPONENT_B },
+								false
+							)
+							), // TODO SESS: Instead, sample the shader for a grass value. Also, you can make three or four of these, for different values - simulate thicker grass (use different seeds)
+						seeds[idx], offsetMins[idx], offsetMaxs[idx], 1.05f
+					))
+					{
+						log.error << "Failed to generate grass entity " << idx << util::endl;
+						return false;
+					}
+				}
 			}
 
 			return true;
@@ -619,6 +652,26 @@ namespace sim
 			return true;
 		}
 
+		bool LakeScene::loadSingleTexture(std::string texName, std::shared_ptr<model::ImageData> imageData)
+		{
+			if (textures_.find(texName) != textures_.end())
+			{
+				log.error << "Texture " << texName << " already registered." << util::endl;
+				return false;
+			}
+
+			auto texture = std::make_shared<view::Texture>();
+			if (!texture->init(view::Texture::RGBA, *imageData))
+			{
+				log.error << "Failed to create texture: " << texName << util::endl;
+				return false;
+			}
+
+			textures_[texName] = texture;
+
+			return true;
+		}
+
 		bool LakeScene::setupTextures()
 		{
 			if (!loadSingleTexture("lake-dudv", ASSET_PATH("texture/water-dudv.png"))) return false;
@@ -628,21 +681,32 @@ namespace sim
 			if (!loadSingleTexture("boulder-diffuse", ASSET_PATH("environment/boulder/DiffuseMap.png"))) return false;
 			if (!loadSingleTexture("tree0-bark", ASSET_PATH("environment/trees/pine0/Red_Pine_Bark_diffuse.png"))) return false;
 			if (!loadSingleTexture("tree0-leaves", ASSET_PATH("environment/trees/pine0/Pine_Large_diffuse.PNG"))) return false;
-			if (!loadSingleTexture("terrainBlendMap", ASSET_PATH("environment/terrain_base/terraintypemap.png"))) return false;
 			if (!loadSingleTexture("terrainDirt", ASSET_PATH("texture/dry-grass.png"))) return false;
 			if (!loadSingleTexture("terrainGrass", ASSET_PATH("texture/grasstexture.png"))) return false;
 			if (!loadSingleTexture("terrainMud", ASSET_PATH("texture/road.png"))) return false;
 			if (!loadSingleTexture("grassPack", ASSET_PATH("texture/grassPack.png"))) return false;
 
-			auto opt = model::readGreyscalePNG(ASSET_PATH("environment/terrain_base/heightmap.png"));
-			if (!opt)
 			{
-				log.error << "Failed to load terrain heightmap" << util::endl;
-				return false;
+				auto opt = model::readGreyscalePNG(ASSET_PATH("environment/terrain_base/heightmap.png"));
+				if (!opt)
+				{
+					log.error << "Failed to load terrain heightmap" << util::endl;
+					return false;
+				}
+				terrainHeightmap_ = std::make_shared<model::GreyscaleImageData>();
+				*terrainHeightmap_ = *opt;
 			}
-			terrainHeightmap_ = std::make_shared<model::GreyscaleImageData>();
-			*terrainHeightmap_ = *opt;
 
+			{
+				auto opt = model::readPNG(ASSET_PATH("environment/terrain_base/terraintypemap.png"));
+				if (!opt)
+				{
+					log.error << "Failed to load terrain blend map" << util::endl;
+					return false;
+				}
+				terrainBlendMapImage_ = std::make_shared<model::ImageData>(*opt);
+			}
+			if (!loadSingleTexture("terrainBlendMap", terrainBlendMapImage_)) return false;
 			return true;
 		}
 

@@ -177,6 +177,7 @@
     <ClCompile Include="src\util\io.cpp" />
     <ClCompile Include="src\util\Logger.cpp" />
     <ClCompile Include="src\util\surfacemask\allenabledmask.cpp" />
+    <ClCompile Include="src\util\surfacemask\terrainmapcolormask.cpp" />
     <ClCompile Include="src\view\cubemap.cpp" />
     <ClCompile Include="src\view\framebuffer.cpp" />
     <ClCompile Include="src\view\genericassimploader.cpp" />
@@ -256,6 +257,7 @@
     <ClInclude Include="include\util\pipelinestate.h" />
     <ClInclude Include="include\util\surfacemaskbase.h" />
     <ClInclude Include="include\util\surfacemask\allenabledmask.h" />
+    <ClInclude Include="include\util\surfacemask\terrainmapcolormask.h" />
     <ClInclude Include="include\view\cubemap.h" />
     <ClInclude Include="include\view\entity.h" />
     <ClInclude Include="include\view\framebuffer.h" />
