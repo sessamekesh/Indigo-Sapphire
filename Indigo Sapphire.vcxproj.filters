@@ -423,6 +423,12 @@
     <ClCompile Include="src\util\surfacemask\terrainmapcolormask.cpp">
       <Filter>Source Files\util\surfacemask</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\surfacemask\heighgtmapmask.cpp">
+      <Filter>Source Files\util\surfacemask</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\surfacemask\combinationmask.cpp">
+      <Filter>Source Files\util\surfacemask</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -663,6 +669,12 @@
       <Filter>Header Files\model\specialgeo\heightfield</Filter>
     </ClInclude>
     <ClInclude Include="include\util\surfacemask\terrainmapcolormask.h">
+      <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemask\heightmapmask.h">
+      <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemask\combinationmask.h">
       <Filter>Header Files\util\surfacemask</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,6 +6,8 @@
 #include <view/genericassmiploader.h>
 #include <view/rawentities/proctree.h>
 #include <util/surfacemask/terrainmapcolormask.h>
+#include <util/surfacemask/combinationmask.h>
+#include <util/surfacemask/heightmapmask.h>
 #include <model/specialgeo/heightfield/heightmapheightfield.h>
 #include <model/specialgeo/heightfield/reducedheightfield.h>
 
@@ -500,9 +502,9 @@ namespace sim
 			}
 
 			{
-				std::vector<float> threshholds = { 0.2f, 0.4f, 0.7f, 0.95f };
-				std::vector<float> offsetMins = { 1.0f, 0.3f, 0.075f, 0.025f };
-				std::vector<float> offsetMaxs = { 2.6f, 0.5f, 0.25f, 0.075f };
+				std::vector<float> threshholds = { 0.2f, 0.4f, 0.85f, 0.995f };
+				std::vector<float> offsetMins = { 1.0f, 0.5f, 0.075f, 0.025f };
+				std::vector<float> offsetMaxs = { 2.6f, 0.9f, 0.25f, 0.075f };
 				std::vector<std::uint32_t> seeds = { 1, 2, 3, 4 };
 				grassEntities_.reserve(4u);
 				// TODO SESS:
@@ -510,6 +512,9 @@ namespace sim
 				// - Combine with a "heightfield" sample, to make sure no grass grows below water
 				//   (That will also require a "combinationmask", to combine TerrainMapColorMask
 				//      and HeightfieldMask)
+				auto heightfieldMask = std::shared_ptr<util::HeightmapMask>(
+					new util::HeightmapMask(heightfield, 12.5f, 1000.f)
+				);
 				for (std::uint32_t idx = 0u; idx < threshholds.size(); idx++)
 				{
 					grassEntities_.push_back(
@@ -519,19 +524,23 @@ namespace sim
 							glm::vec3(1.f, 1.f, 1.f)
 							)
 					);
+					auto terrainColorMask = std::shared_ptr<util::TerrainMapColorMask>(
+						new util::TerrainMapColorMask(
+							terrainBlendMapImage_,
+							75.f, 75.f, // TODO SESS: This really should be localized somewhere, instead of just remembering the width/depth
+							threshholds[idx],
+							{ util::COLOR_COMPONENT_G },
+							{ util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G, util::COLOR_COMPONENT_B },
+							true
+						)
+					);
+					auto combinedMask = std::shared_ptr<util::SurfaceMaskBase>(
+						new util::CombinationMask({ heightfieldMask, terrainColorMask })
+					);
 					if (!grassEntities_[idx] || !grassEntities_[idx]->prepare(
 						grassShader_, pso_,
 						reducedHeightfield, textures_["grassPack"],
-						std::shared_ptr<util::TerrainMapColorMask>(
-							new util::TerrainMapColorMask(
-								terrainBlendMapImage_,
-								75.f, 75.f, // TODO SESS: This really should be localized somewhere, instead of just remembering the width/depth
-								threshholds[idx],
-								{ util::COLOR_COMPONENT_G },
-								{ util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G, util::COLOR_COMPONENT_B },
-								false
-							)
-							), // TODO SESS: Instead, sample the shader for a grass value. Also, you can make three or four of these, for different values - simulate thicker grass (use different seeds)
+						combinedMask,
 						seeds[idx], offsetMins[idx], offsetMaxs[idx], 1.05f
 					))
 					{
