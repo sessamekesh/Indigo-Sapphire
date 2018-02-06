@@ -1,4 +1,4 @@
-#include <view/grass/GrassEntity.h>
+#include <view/grass/billboardgrassentity.h>
 #include <random>
 
 // Grass patches are drawn as a point list - a geometry shader is used to generate
@@ -8,23 +8,29 @@ namespace view
 {
 	namespace grass
 	{
-		GrassEntity::GrassEntity(glm::vec3 pos, glm::quat rot, glm::vec3 scl)
+		BillboardGrassEntity::BillboardGrassEntity(glm::vec3 pos, glm::quat rot, glm::vec3 scl)
 			: model::WithWorldTransform(pos, rot, scl)
 			, isReady_(false)
 			, vao_(NULL)
 			, vb_(NULL)
-			, log(util::DEBUG, util::DEBUG, "[GrassEntity ]")
+			, log(util::DEBUG, util::DEBUG, "[BillboardGrassEntity ]")
 			, timeElapsed_(0.f)
 			, numPoints_(0u)
+			, alphaTest_(0.f)
+			, alphaMultiplier_(0.f)
+			, minPatchHeight_(0.f)
+			, maxPatchHeight_(0.f)
+			, patchSize_(0.f)
+			, wind_(0.f)
 		{}
 
-		GrassEntity::~GrassEntity()
+		BillboardGrassEntity::~BillboardGrassEntity()
 		{
 			release();
 		}
 
-		bool GrassEntity::prepare(
-			std::shared_ptr<view::grass::GrassShader> shader,
+		bool BillboardGrassEntity::prepare(
+			std::shared_ptr<BillboardGrassShader> shader,
 			util::PipelineState& pso,
 			std::shared_ptr<model::specialgeo::Heightfield> heightfield,
 			std::shared_ptr<view::Texture> grassTexture,
@@ -32,7 +38,13 @@ namespace view
 			std::uint32_t seed,
 			float patchOffsetMin,
 			float patchOffsetMax,
-			float grassPatchHeight
+			float grassPatchHeight,
+			float alphaTest,
+			float alphaMultiplier,
+			float minPatchHeight,
+			float maxPatchHeight,
+			float patchSize,
+			float wind
 		) {
 			if (isReady_)
 			{
@@ -42,7 +54,7 @@ namespace view
 
 			std::srand(seed);
 
-			std::vector<GrassShader::Vertex> verts;
+			std::vector<BillboardGrassShader::Vertex> verts;
 			verts.reserve(1024u);
 			float dx = 5.f, dz = 5.f;
 			for (float x = -heightfield->width(); x < heightfield->width(); x += (dx = patchOffsetMin + (patchOffsetMax - patchOffsetMin) * float(std::rand() % 1000) * 0.001f))
@@ -61,60 +73,37 @@ namespace view
 				}
 			}
 
-			std::cout << "Number of vertices: " << verts.size() << std::endl;
-
-			glGenVertexArrays(1, &vao_);
-			glBindVertexArray(vao_);
-
-			glGenBuffers(1, &vb_);
-			glBindBuffer(GL_ARRAY_BUFFER, vb_);
-			glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(GrassShader::Vertex), &verts[0], GL_STATIC_DRAW);
-			numPoints_ = verts.size();
-
-			if (!shader->setVertexAttribs(pso))
-			{
-				return false;
-			}
-
 			tex_ = grassTexture;
+			alphaTest_ = alphaTest;
+			alphaMultiplier_ = alphaMultiplier;
+			minPatchHeight_ = minPatchHeight;
+			maxPatchHeight_ = maxPatchHeight;
+			patchSize_ = patchSize;
+			wind_ = wind;
 
-			glBindVertexArray(NULL);
-
-			isReady_ = true;
+			return prepareInternal(verts, shader, pso, vao_, vb_, numPoints_);
 		}
 
-		bool GrassEntity::release()
+		bool BillboardGrassEntity::release()
 		{
-			if (vb_ != NULL)
-			{
-				glDeleteBuffers(1, &vb_);
-				vb_ = NULL;
-			}
-
-			if (vao_ != NULL)
-			{
-				glDeleteVertexArrays(1, &vao_);
-				vao_ = NULL;
-			}
-
-			return true;
+			return releaseInternal(vao_, vb_);
 		}
 
-		void GrassEntity::update(float dt)
+		void BillboardGrassEntity::update(float dt)
 		{
 			timeElapsed_ += dt;
 		}
 
-		bool GrassEntity::render(std::shared_ptr<view::grass::GrassShader> shader)
+		bool BillboardGrassEntity::render(std::shared_ptr<BillboardGrassShader> shader)
 		{
 			shader->setWorldMatrix(worldTransform());
 			shader->setTimePassed(timeElapsed_);
 			shader->setTexture(tex_);
 			// TODO SESS: These should be configurable.
-			shader->setAlphaTest(0.25f, 1.5f);
+			shader->setAlphaTest(alphaTest_, alphaMultiplier_);
 			shader->setColor(glm::vec4({ 1.f, 1.f, 1.f, 1.f }));
-			shader->setPatchSizeData(0.15f, 0.35f, 0.15f);
-			shader->setWind(0.15f);
+			shader->setPatchSizeData(minPatchHeight_, maxPatchHeight_, patchSize_);
+			shader->setWind(wind_);
 
 			glBindVertexArray(vao_);
 			glDrawArrays(GL_POINTS, 0, numPoints_);

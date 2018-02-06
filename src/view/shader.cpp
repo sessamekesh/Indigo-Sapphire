@@ -6,13 +6,15 @@ namespace view
 	Shader::Shader(
 		std::string logName,
 		std::string vsFileName,
-		std::string fsFileName
+		std::string fsFileName,
+		std::optional<std::string> gsFileName
 	)
 		: isLoaded_(false)
 		, program_(0u)
 		, log(util::WARN, util::DEBUG, logName.c_str())
 		, vsFname_(vsFileName)
 		, fsFname_(fsFileName)
+		, gsFname_(gsFileName)
 	{}
 
 	Shader::~Shader()
@@ -35,6 +37,12 @@ namespace view
 
 		auto vsTextFuture = util::readFileAsync(vsFname_.c_str());
 		auto fsTextFuture = util::readFileAsync(fsFname_.c_str());
+		std::optional<std::future<std::string>> gsTextFutureOpt = {};
+
+		if (gsFname_)
+		{
+			gsTextFutureOpt = util::readFileAsync(gsFname_->c_str());
+		}
 
 		std::string vsText = vsTextFuture.get();
 		if (vsText.length() == 0)
@@ -76,7 +84,7 @@ namespace view
 		{
 			char* errLog = new char[Shader::MAX_INFO_LOG_LENGTH];
 			glGetShaderInfoLog(fs, Shader::MAX_INFO_LOG_LENGTH, nullptr, errLog);
-			log.error << "Failed to compile solid shader fragment shader! Error below\n=====BEGIN ERROR LOG=====\n";
+			log.error << "Failed to compile fragment shader! Error below\n=====BEGIN ERROR LOG=====\n";
 			log.error << errLog;
 			log.error << "\n======END ERROR LOG=====" << util::endl;
 			delete[] errLog;
@@ -86,9 +94,38 @@ namespace view
 			return false;
 		}
 
+		std::optional<std::string> gsText = gsTextFutureOpt.has_value() ? std::optional<std::string>(gsTextFutureOpt->get()) : std::nullopt;
+		GLuint gs = NULL;
+		if (gsText)
+		{
+			const char* ccGSText = gsText->c_str();
+			gs = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(gs, 1, &ccGSText, NULL);
+			glCompileShader(gs);
+			glGetShaderiv(gs, GL_COMPILE_STATUS, &success);
+			if (success == GL_FALSE)
+			{
+				char* errLog = new char[Shader::MAX_INFO_LOG_LENGTH];
+				glGetShaderInfoLog(gs, Shader::MAX_INFO_LOG_LENGTH, nullptr, errLog);
+				log.error << "Failed to compile geometry shader! Error below\n=====BEGIN ERROR LOG======\n";
+				log.error << errLog;
+				log.error << "\n=====END ERROR LOG=====" << util::endl;
+				delete[] errLog;
+				glDeleteShader(vs);
+				glDeleteShader(gs);
+				glDeleteShader(fs);
+
+				return false;
+			}
+		}
+
 		program_ = glCreateProgram();
 		glAttachShader(program_, vs);
 		glAttachShader(program_, fs);
+		if (gs)
+		{
+			glAttachShader(program_, gs);
+		}
 		glLinkProgram(program_);
 		glGetProgramiv(program_, GL_LINK_STATUS, &success);
 		if (success == GL_FALSE)

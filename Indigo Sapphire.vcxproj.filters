@@ -408,12 +408,6 @@
     <ClCompile Include="src\util\surfacemask\allenabledmask.cpp">
       <Filter>Source Files\util\surfacemask</Filter>
     </ClCompile>
-    <ClCompile Include="src\view\grass\GrassEntity.cpp">
-      <Filter>Source Files\view\grass</Filter>
-    </ClCompile>
-    <ClCompile Include="src\view\grass\GrassShader.cpp">
-      <Filter>Source Files\view\grass</Filter>
-    </ClCompile>
     <ClCompile Include="src\model\specialgeo\heightfield\heightmapheightfield.cpp">
       <Filter>Source Files\model\specialgeo\heightfield</Filter>
     </ClCompile>
@@ -428,6 +422,12 @@
     </ClCompile>
     <ClCompile Include="src\util\surfacemask\combinationmask.cpp">
       <Filter>Source Files\util\surfacemask</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\grass\billboardgrassshader.cpp">
+      <Filter>Source Files\view\grass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\grass\billboardgrassentity.cpp">
+      <Filter>Source Files\view\grass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -650,17 +650,11 @@
     <ClInclude Include="include\input\gamepadcameracontroller.h">
       <Filter>Header Files\input</Filter>
     </ClInclude>
-    <ClInclude Include="include\view\grass\GrassEntity.h">
-      <Filter>Header Files\view\grass</Filter>
-    </ClInclude>
     <ClInclude Include="include\util\surfacemaskbase.h">
       <Filter>Header Files\util\surfacemask</Filter>
     </ClInclude>
     <ClInclude Include="include\util\surfacemask\allenabledmask.h">
       <Filter>Header Files\util\surfacemask</Filter>
-    </ClInclude>
-    <ClInclude Include="include\view\grass\GrassShader.h">
-      <Filter>Header Files\view\grass</Filter>
     </ClInclude>
     <ClInclude Include="include\model\specialgeo\heightfield\heightmapheightfield.h">
       <Filter>Header Files\model\specialgeo\heightfield</Filter>
@@ -676,6 +670,12 @@
     </ClInclude>
     <ClInclude Include="include\util\surfacemask\combinationmask.h">
       <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\grass\billboardgrassshader.h">
+      <Filter>Header Files\view\grass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\grass\billboardgrassentity.h">
+      <Filter>Header Files\view\grass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -36,6 +36,23 @@ namespace view
 			return true;
 		}
 
+		bool releaseInternal(GLuint& o_VAO, GLuint& o_VB)
+		{
+			if (o_VB)
+			{
+				glDeleteBuffers(1, &o_VB);
+				o_VB = NULL;
+			}
+
+			if (o_VAO)
+			{
+				glDeleteVertexArrays(1, &o_VAO);
+				o_VAO = 0ull; // Did I just blow your mind?
+			}
+
+			return true;
+		}
+
 		bool prepareInternal(const std::vector<VertexType> vertices, const std::vector<std::uint32_t> indices, std::shared_ptr<ShaderType> shader, util::PipelineState& pso, GLuint& o_VAO, GLuint& o_VB, GLuint& o_IB, std::uint32_t& o_numIndices)
 		{
 			glCreateVertexArrays(1, &o_VAO);
@@ -58,6 +75,25 @@ namespace view
 				0x00
 			);
 			o_numIndices = indices.size();
+			shader->setVertexAttribPointers(pso);
+
+			return true;
+		}
+
+		bool prepareInternal(const std::vector<VertexType> vertices, std::shared_ptr<ShaderType> shader, util::PipelineState& pso, GLuint& o_VAO, GLuint& o_VB, std::uint32_t& o_numPoints)
+		{
+			glCreateVertexArrays(1, &o_VAO);
+			glBindVertexArray(o_VAO);
+
+			glGenBuffers(1, &o_VB);
+			glBindBuffer(GL_ARRAY_BUFFER, o_VB);
+			glBufferStorage(
+				GL_ARRAY_BUFFER,
+				vertices.size() * sizeof(VertexType),
+				&vertices[0],
+				0x00
+			);
+			o_numPoints = vertices.size();
 			shader->setVertexAttribPointers(pso);
 
 			return true;

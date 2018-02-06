@@ -7,12 +7,13 @@
 #include <view/texture.h>
 #include <memory>
 #include <model/geo/plane.h>
+#include <view/shader.h>
 
 namespace view
 {
 	namespace grass
 	{
-		class GrassShader
+		class BillboardGrassShader : public view::Shader
 		{
 		public:
 			struct Vertex
@@ -20,14 +21,9 @@ namespace view
 				glm::vec3 Pos;
 			};
 
-			GrassShader();
-			~GrassShader();
-			GrassShader(const GrassShader&) = delete;
-
-			bool initialize();
-			bool activate();
-
-			bool setVertexAttribs(util::PipelineState& pso);
+			BillboardGrassShader();
+			~BillboardGrassShader() = default;
+			BillboardGrassShader(const BillboardGrassShader&) = delete;
 
 			void setWorldMatrix(const glm::mat4& w);
 			void setViewMatrix(const glm::mat4& v);
@@ -42,15 +38,12 @@ namespace view
 			
 			void setClipPlane(const model::geo::Plane& plane);
 
-		private:
-			bool createShader(const std::string& shaderSource, GLuint shaderType, GLuint& out);
-			bool getUniformLocations();
+		protected:
+			bool getUniformLocations() override;
+			void setVertexAttribPointersInternal() override;
+			unsigned int getNumVertexAttribPointers() override;
 
 		private:
-			bool isPrepared_;
-
-			GLuint program_;
-
 			struct UniformLocations
 			{
 				GLuint matWorld;
@@ -69,8 +62,6 @@ namespace view
 				GLuint clipPlaneOrigin;
 				GLuint clipPlaneNormal;
 			} uniformLocations_;
-
-			util::Logger log;
 		};
 	}
 }

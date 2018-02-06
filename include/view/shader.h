@@ -5,6 +5,7 @@
 #include <util/pipelinestate.h>
 #include <vector>
 #include <view/GenericVertex.h>
+#include <optional>
 
 namespace view
 {
@@ -14,7 +15,8 @@ namespace view
 		Shader(
 			std::string logName,
 			std::string vsFileName,
-			std::string fsFileName
+			std::string fsFileName,
+			std::optional<std::string> gsFileName = {}
 		);
 		~Shader();
 		Shader(const Shader&) = delete;
@@ -36,5 +38,6 @@ namespace view
 
 		static const unsigned long MAX_INFO_LOG_LENGTH = 512l;
 		std::string vsFname_, fsFname_;
+		std::optional<std::string> gsFname_;
 	};
 }

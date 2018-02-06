@@ -300,7 +300,7 @@ namespace sim
 				return false;
 			}
 
-			grassShader_ = std::make_shared<view::grass::GrassShader>();
+			grassShader_ = std::make_shared<view::grass::BillboardGrassShader>();
 			if (!grassShader_ || !grassShader_->initialize())
 			{
 				log.error << "Failed to create grass shader" << util::endl;
@@ -518,7 +518,7 @@ namespace sim
 				for (std::uint32_t idx = 0u; idx < threshholds.size(); idx++)
 				{
 					grassEntities_.push_back(
-						std::make_shared<view::grass::GrassEntity>(
+						std::make_shared<view::grass::BillboardGrassEntity>(
 							glm::vec3(0.f, -12.5f, 0.f),
 							glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
 							glm::vec3(1.f, 1.f, 1.f)

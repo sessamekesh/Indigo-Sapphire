@@ -183,8 +183,8 @@
     <ClCompile Include="src\view\cubemap.cpp" />
     <ClCompile Include="src\view\framebuffer.cpp" />
     <ClCompile Include="src\view\genericassimploader.cpp" />
-    <ClCompile Include="src\view\grass\GrassEntity.cpp" />
-    <ClCompile Include="src\view\grass\GrassShader.cpp" />
+    <ClCompile Include="src\view\grass\billboardgrassentity.cpp" />
+    <ClCompile Include="src\view\grass\billboardgrassshader.cpp" />
     <ClCompile Include="src\view\mappedphong\assimpgeo.cpp" />
     <ClCompile Include="src\view\mappedphong\mappedphongshader.cpp" />
     <ClCompile Include="src\view\rawentities\heightmapterrain.cpp" />
@@ -267,8 +267,8 @@
     <ClInclude Include="include\view\framebuffer.h" />
     <ClInclude Include="include\view\genericassmiploader.h" />
     <ClInclude Include="include\view\GenericVertex.h" />
-    <ClInclude Include="include\view\grass\GrassEntity.h" />
-    <ClInclude Include="include\view\grass\GrassShader.h" />
+    <ClInclude Include="include\view\grass\billboardgrassentity.h" />
+    <ClInclude Include="include\view\grass\billboardgrassshader.h" />
     <ClInclude Include="include\view\mappedphong\assimpgeo.h" />
     <ClInclude Include="include\view\mappedphong\mappedphongshader.h" />
     <ClInclude Include="include\view\rawentities\heightmapterrain.h" />

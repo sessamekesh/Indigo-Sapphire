@@ -21,8 +21,8 @@
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
 
-#include <view/grass/GrassShader.h>
-#include <view/grass/GrassEntity.h>
+#include <view/grass/billboardgrassshader.h>
+#include <view/grass/billboardgrassentity.h>
 
 // TODO SESS: Also, loading times are high enough that THREADING is a thing to consider on CPU-side stuff
 //  (especially loading things from Assimp, and processing the vertices)
@@ -81,7 +81,7 @@ namespace sim
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
-			std::shared_ptr<view::grass::GrassShader> grassShader_;
+			std::shared_ptr<view::grass::BillboardGrassShader> grassShader_;
 
 			//
 			// Models
@@ -105,7 +105,7 @@ namespace sim
 			std::shared_ptr<view::raw::HeightmapTerrainEntity> heightMapTerrainRawEntity_;
 			std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity> blendedTerrainEntity_;
 			
-			std::vector<std::shared_ptr<view::grass::GrassEntity>> grassEntities_;
+			std::vector<std::shared_ptr<view::grass::BillboardGrassEntity>> grassEntities_;
 
 			glm::mat4 projMatrix_;
 
