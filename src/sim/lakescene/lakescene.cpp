@@ -37,12 +37,14 @@ namespace sim
 			, waterSurfaceShader_(nullptr)
 			, mappedPhongShader_(nullptr)
 			, grassShader_(nullptr)
+			, bladedGrassShader_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
 			, boulderTest_(nullptr)
 			, testProctreeEntity_(nullptr)
 			, heightMapTerrainRawEntity_(nullptr)
 			, blendedTerrainEntity_(nullptr)
+			, bladedGrassEntity_(nullptr)
 			, grassEntities_(0u)
 			, mainCamera_(nullptr)
 			, heightmapCamera_(nullptr)
@@ -72,6 +74,7 @@ namespace sim
 		void LakeScene::update(float dt)
 		{
 			lakeSurface_->update(dt);
+			bladedGrassEntity_->update(dt);
 			for (auto&& ge : grassEntities_)
 			{
 				ge->update(dt);
@@ -193,6 +196,21 @@ namespace sim
 				}
 			}
 
+			if (bladedGrassShader_->activate())
+			{
+				if (clipPlane)
+				{
+					bladedGrassShader_->setClipPlane(*clipPlane);
+				}
+
+				bladedGrassShader_->setViewMatrix(camera->getViewTransform());
+				bladedGrassShader_->setCameraPosition(camera->pos());
+				bladedGrassShader_->setProjMatrix(projMatrix_);
+				bladedGrassShader_->setLight(sunlight_);
+				
+				bladedGrassEntity_->render(bladedGrassShader_);
+			}
+
 			if (solidShader_->activate())
 			{
 				if (clipPlane)
@@ -304,6 +322,13 @@ namespace sim
 			if (!grassShader_ || !grassShader_->initialize())
 			{
 				log.error << "Failed to create grass shader" << util::endl;
+				return false;
+			}
+
+			bladedGrassShader_ = std::make_shared<view::grass::BladedGrassPatchShader>();
+			if (!bladedGrassShader_ || !bladedGrassShader_->initialize())
+			{
+				log.error << "Failed to create bladed grass shader" << util::endl;
 				return false;
 			}
 
@@ -548,6 +573,30 @@ namespace sim
 						return false;
 					}
 				}
+
+				bladedGrassEntity_ = std::make_shared<view::grass::BladedGrassPatchEntity>(
+					glm::vec3(0.f, -12.5f, 0.f),
+					glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
+					glm::vec3(1.f, 1.f, 1.f)
+				);
+				if (!bladedGrassEntity_ || !bladedGrassEntity_->prepare(
+					bladedGrassShader_, pso_,
+					reducedHeightfield,
+					textures_["grassBlade"],
+					heightfieldMask,
+					glm::vec2(5.f, 5.f), glm::vec2(80.f, 80.f),
+					0.1f, 0.2f,
+					0.03f, 0.05f,
+					0.1f, 0.15f,
+					0.f, 0.05f,
+					0.01f, 0.02f,
+					0.1f, 0.4f,
+					glm::vec4(0.2f, 0.2f, 0.2f, 1.f),
+					0.3f, 1u
+				)) {
+					log.error << "Failed to generate bladed grass entity" << util::endl;
+					return false;
+				}
 			}
 
 			return true;
@@ -694,6 +743,7 @@ namespace sim
 			if (!loadSingleTexture("terrainGrass", ASSET_PATH("texture/grasstexture.png"))) return false;
 			if (!loadSingleTexture("terrainMud", ASSET_PATH("texture/road.png"))) return false;
 			if (!loadSingleTexture("grassPack", ASSET_PATH("texture/grassPack.png"))) return false;
+			if (!loadSingleTexture("grassBlade", ASSET_PATH("texture/grassBlade.png"))) return false;
 
 			{
 				auto opt = model::readGreyscalePNG(ASSET_PATH("environment/terrain_base/heightmap.png"));

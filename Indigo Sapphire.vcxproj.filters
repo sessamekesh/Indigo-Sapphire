@@ -396,12 +396,6 @@
     <ClCompile Include="src\view\terrainshader\assets\genericblendedterrainentity.cpp">
       <Filter>Source Files\view\terrainshader\assets</Filter>
     </ClCompile>
-    <ClCompile Include="include\input\gamepadcameracontroller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\input\gamepadcameracontroller.cpp">
-      <Filter>Source Files\input</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\camera\heightmapcamera.cpp">
       <Filter>Source Files\util\camera</Filter>
     </ClCompile>
@@ -427,6 +421,21 @@
       <Filter>Source Files\view\grass</Filter>
     </ClCompile>
     <ClCompile Include="src\view\grass\billboardgrassentity.cpp">
+      <Filter>Source Files\view\grass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\geo\sphere.cpp">
+      <Filter>Source Files\model\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\geo\interaction.cpp">
+      <Filter>Source Files\model\geo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\grass\bladedgrasspatchshader.cpp">
+      <Filter>Source Files\view\grass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\gamepadcameracontroller.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\grass\bladedgrasspatchentity.cpp">
       <Filter>Source Files\view\grass</Filter>
     </ClCompile>
   </ItemGroup>
@@ -677,6 +686,24 @@
     <ClInclude Include="include\view\grass\billboardgrassentity.h">
       <Filter>Header Files\view\grass</Filter>
     </ClInclude>
+    <ClInclude Include="include\model\geo\sphere.h">
+      <Filter>Header Files\model\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\geo\interactions.h">
+      <Filter>Header Files\model\geo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\grass\bladedgrasspatchentity.h">
+      <Filter>Header Files\view\grass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\withboundingsphere.h">
+      <Filter>Header Files\model</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\grass\bladedgrasspatchshader.h">
+      <Filter>Header Files\view\grass</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\uniformblockobject.h">
+      <Filter>Header Files\view</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\metaball-phong.frag">
@@ -734,6 +761,15 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shaders\grass.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\bladedgrass.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\bladedgrass.geom">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\bladedgrass.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

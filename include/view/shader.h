@@ -30,6 +30,8 @@ namespace view
 		virtual unsigned int getNumVertexAttribPointers() = 0;
 		virtual bool getUniformLocations() = 0;
 
+		virtual bool initializeInternal() { return true; } // Can be overriden
+
 		GLuint program_;
 		util::Logger log;
 

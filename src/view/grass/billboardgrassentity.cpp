@@ -81,7 +81,15 @@ namespace view
 			patchSize_ = patchSize;
 			wind_ = wind;
 
-			return prepareInternal(verts, shader, pso, vao_, vb_, numPoints_);
+			if (verts.size() > 0u)
+			{
+				return prepareInternal(verts, shader, pso, vao_, vb_, numPoints_);
+			}
+			else
+			{
+				// TODO SESS: Gracefully handle the case where no points are generated
+				return true;
+			}
 		}
 
 		bool BillboardGrassEntity::release()

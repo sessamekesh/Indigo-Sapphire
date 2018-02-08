@@ -17,6 +17,8 @@
 #include <view/terrainshader/blendedterrainshader.h>
 #include <view/terrainshader/assets/genericblendedterrainentity.h>
 #include <util/camera/heightmapcamera.h>
+#include <view/grass/bladedgrasspatchshader.h>
+#include <view/grass/bladedgrasspatchentity.h>
 
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
@@ -82,6 +84,7 @@ namespace sim
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
 			std::shared_ptr<view::grass::BillboardGrassShader> grassShader_;
+			std::shared_ptr<view::grass::BladedGrassPatchShader> bladedGrassShader_;
 
 			//
 			// Models
@@ -104,6 +107,7 @@ namespace sim
 			std::shared_ptr<view::solidshader::GenericSolidEntity> testProctreeEntity_;
 			std::shared_ptr<view::raw::HeightmapTerrainEntity> heightMapTerrainRawEntity_;
 			std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity> blendedTerrainEntity_;
+			std::shared_ptr<view::grass::BladedGrassPatchEntity> bladedGrassEntity_;
 			
 			std::vector<std::shared_ptr<view::grass::BillboardGrassEntity>> grassEntities_;
 

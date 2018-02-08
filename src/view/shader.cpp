@@ -157,6 +157,14 @@ namespace view
 			log.error << "Error fetching uniform locations - shader may not work properly!" << util::endl;
 		}
 
+		if (!initializeInternal())
+		{
+			log.error << "Error performing internal initialization step!" << util::endl;
+			glDeleteProgram(program_);
+			program_ = NULL;
+			return false;
+		}
+
 		return true;
 	}
 

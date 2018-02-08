@@ -135,15 +135,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\input\gamepadcameracontroller.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\input\gamepadcameracontroller.cpp" />
     <ClCompile Include="src\lodepng.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\model\event\eventbase.cpp" />
+    <ClCompile Include="src\model\geo\interaction.cpp" />
     <ClCompile Include="src\model\geo\Line.cpp" />
     <ClCompile Include="src\model\geo\plane.cpp" />
     <ClCompile Include="src\model\geo\rectangle.cpp" />
+    <ClCompile Include="src\model\geo\sphere.cpp" />
     <ClCompile Include="src\model\imagedata.cpp" />
     <ClCompile Include="src\model\light\directionallight.cpp" />
     <ClCompile Include="src\model\proctree\proctree.cpp" />
@@ -185,6 +186,8 @@
     <ClCompile Include="src\view\genericassimploader.cpp" />
     <ClCompile Include="src\view\grass\billboardgrassentity.cpp" />
     <ClCompile Include="src\view\grass\billboardgrassshader.cpp" />
+    <ClCompile Include="src\view\grass\bladedgrasspatchentity.cpp" />
+    <ClCompile Include="src\view\grass\bladedgrasspatchshader.cpp" />
     <ClCompile Include="src\view\mappedphong\assimpgeo.cpp" />
     <ClCompile Include="src\view\mappedphong\mappedphongshader.cpp" />
     <ClCompile Include="src\view\rawentities\heightmapterrain.cpp" />
@@ -215,9 +218,11 @@
     <ClInclude Include="include\lodepng.h" />
     <ClInclude Include="include\model\event\eventbase.h" />
     <ClInclude Include="include\model\geo\grid.h" />
+    <ClInclude Include="include\model\geo\interactions.h" />
     <ClInclude Include="include\model\geo\Line.h" />
     <ClInclude Include="include\model\geo\plane.h" />
     <ClInclude Include="include\model\geo\rectangle.h" />
+    <ClInclude Include="include\model\geo\sphere.h" />
     <ClInclude Include="include\model\imagedata.h" />
     <ClInclude Include="include\model\light\directionallight.h" />
     <ClInclude Include="include\model\proctree\proctree.h" />
@@ -231,6 +236,7 @@
     <ClInclude Include="include\model\specialgeo\metaball\metaball.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaballgroup.h" />
     <ClInclude Include="include\model\specialgeo\water\ripple.h" />
+    <ClInclude Include="include\model\withboundingsphere.h" />
     <ClInclude Include="include\model\withworldtransform.h" />
     <ClInclude Include="include\resources.h" />
     <ClInclude Include="include\sim\lakescene\entities\tree.h" />
@@ -269,6 +275,8 @@
     <ClInclude Include="include\view\GenericVertex.h" />
     <ClInclude Include="include\view\grass\billboardgrassentity.h" />
     <ClInclude Include="include\view\grass\billboardgrassshader.h" />
+    <ClInclude Include="include\view\grass\bladedgrasspatchentity.h" />
+    <ClInclude Include="include\view\grass\bladedgrasspatchshader.h" />
     <ClInclude Include="include\view\mappedphong\assimpgeo.h" />
     <ClInclude Include="include\view\mappedphong\mappedphongshader.h" />
     <ClInclude Include="include\view\rawentities\heightmapterrain.h" />
@@ -292,8 +300,12 @@
     <ClInclude Include="include\view\terrainshader\blendedterrainshader.h" />
     <ClInclude Include="include\view\terrainshader\terrainshader.h" />
     <ClInclude Include="include\view\texture.h" />
+    <ClInclude Include="include\view\uniformblockobject.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\bladedgrass.frag" />
+    <None Include="shaders\bladedgrass.geom" />
+    <None Include="shaders\bladedgrass.vert" />
     <None Include="shaders\blendedterrain.frag" />
     <None Include="shaders\blendedterrain.vert" />
     <None Include="shaders\grass.frag" />
