@@ -36,10 +36,11 @@ namespace view
 			std::shared_ptr<BladedGrassPatchShader> shader,
 			util::PipelineState& pso,
 			std::shared_ptr<model::specialgeo::Heightfield> heightfield,
+			std::shared_ptr<util::SurfaceProbabilityFieldBase> bladeGenerationProbability,
 			std::shared_ptr<view::Texture> grassTexture,
 			std::shared_ptr<util::SurfaceMaskBase> surfaceMask,
 			const glm::vec2& minXZ, const glm::vec2& maxXZ,
-			float minDistance, float maxDistance,
+			std::uint32_t maxNumBlades,
 			float minBaseWidth, float maxBaseWidth,
 			float minHeight, float maxHeight,
 			float minRotation, float maxRotation,
@@ -50,22 +51,20 @@ namespace view
 			std::uint32_t seed
 		) {
 			std::vector<BladedGrassPatchShader::Vertex> vertices;
-			vertices.reserve(((maxXZ.y - minXZ.y) * (maxXZ.x - minXZ.x)) / (minDistance * 0.5f + maxDistance * 0.5f));
+			vertices.reserve(maxNumBlades);
 
 			srand(seed);
 
-			const float stepDistance = (maxDistance + minDistance) / 2.f;
-			for (float x = minXZ.x; x < maxXZ.x; x += stepDistance)
+			for (std::uint32_t idx = 0u; idx < maxNumBlades; idx++)
 			{
-				for (float z = minXZ.y; z < maxXZ.y; z += stepDistance)
+				float x = getRandomInRange(minXZ.x, maxXZ.x);
+				float z = getRandomInRange(minXZ.y, maxXZ.y);
+				float y = heightfield->heightAtPos(x, z, 0.f);
+
+				if (bladeGenerationProbability->getProbabilityAtPoint({ x, z }) >= getRandomInRange(0.f, 1.f))
 				{
-					float dx = getRandomInRange(-stepDistance, stepDistance) * 0.9f;
-					float dz = getRandomInRange(-stepDistance, stepDistance) * 0.9f;
-
-					float y = heightfield->heightAtPos(x + dx, z + dz, 0.f);
-
 					vertices.push_back({
-						{ x + dx, y, z + dz },
+						{ x, y, z },
 						getRandomInRange(minBaseWidth, maxBaseWidth),
 						getRandomInRange(minHeight, maxHeight),
 						getRandomInRange(minTaperRate, maxTaperRate),

@@ -208,6 +208,12 @@
     <Filter Include="Source Files\model\specialgeo\heightfield">
       <UniqueIdentifier>{2bd40b91-8e73-43a9-a231-2be1236d3402}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\util\math">
+      <UniqueIdentifier>{2ccd4ed7-92cd-4165-8d71-9f9b06f9eba7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\math">
+      <UniqueIdentifier>{2c3cbee4-aa70-4002-9989-5bf67591aa2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -437,6 +443,21 @@
     </ClCompile>
     <ClCompile Include="src\view\grass\bladedgrasspatchentity.cpp">
       <Filter>Source Files\view\grass</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\math\quadraticeaseout11.cpp">
+      <Filter>Source Files\util\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\surfacemask\heightmapprobabilityfield.cpp">
+      <Filter>Source Files\util\surfacemask</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\math\linear11.cpp">
+      <Filter>Source Files\util\math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\surfacemask\terrainmapcolorprobabilityfield.cpp">
+      <Filter>Source Files\util\surfacemask</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\surfacemask\combinationprobabilityfield.cpp">
+      <Filter>Source Files\util\surfacemask</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -703,6 +724,36 @@
     </ClInclude>
     <ClInclude Include="include\view\uniformblockobject.h">
       <Filter>Header Files\view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemask\surfaceprobabilityfieldbase.h">
+      <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemask\heightmapprobabilityfield.h">
+      <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\math\curve1to1.h">
+      <Filter>Header Files\util\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\math\quadraticeaseout11.h">
+      <Filter>Header Files\util\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\math\linear11.h">
+      <Filter>Header Files\util\math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemask\terrainmapcolorprobabilityfield.h">
+      <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\colorcomponentenum.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\surfacemask\combinationprobabilityfield.h">
+      <Filter>Header Files\util\surfacemask</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\bladedgrass.h">
+      <Filter>Header Files\sim\lakescene</Filter>
+    </ClInclude>
+    <ClInclude Include="include\util\threadpool.h">
+      <Filter>Header Files\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

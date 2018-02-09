@@ -11,11 +11,20 @@
 #include <model/specialgeo/heightfield/heightmapheightfield.h>
 #include <model/specialgeo/heightfield/reducedheightfield.h>
 
+// Grass things - should move into their own grass file!
+#include <util/math/quadraticeaseout11.h>
+#include <util/math/linear11.h>
+#include <util/surfacemask/combinationprobabilityfield.h>
+#include <util/surfacemask/heightmapprobabilityfield.h>
+#include <util/surfacemask/terrainmapcolorprobabilityfield.h>
+
 // TODO SESS: Start collecting footage of you actually programming/working on this for buzz reel
 
-// TODO SESS: Revamp terrain shader
-// - Create terrain blended shader (remember to set uv scaling up high for sampling tiled textures)
-// - Render heightmap with terrain blended shader
+// TODO SESS: You have a lovely thread pool implementation, use it to start generating CPU-expensive stuff
+//  in a future, and then generating the GPU stuff on the main thread when ready.
+// Especially stuff that's expensive to generate, like the grass!
+// Another good idea: Generate it offline, and load it from file?
+// May not actually be faster. File reads are also not free. (How long to read a 56MB file vs. generate 56MB of grass data?)
 
 // TODO SESS: Next steps
 // - Model the rock they'll be sitting on
@@ -36,16 +45,12 @@ namespace sim
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
 			, mappedPhongShader_(nullptr)
-			, grassShader_(nullptr)
-			, bladedGrassShader_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
 			, boulderTest_(nullptr)
 			, testProctreeEntity_(nullptr)
 			, heightMapTerrainRawEntity_(nullptr)
 			, blendedTerrainEntity_(nullptr)
-			, bladedGrassEntity_(nullptr)
-			, grassEntities_(0u)
 			, mainCamera_(nullptr)
 			, heightmapCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
@@ -74,7 +79,6 @@ namespace sim
 		void LakeScene::update(float dt)
 		{
 			lakeSurface_->update(dt);
-			bladedGrassEntity_->update(dt);
 			for (auto&& ge : grassEntities_)
 			{
 				ge->update(dt);
@@ -196,21 +200,6 @@ namespace sim
 				}
 			}
 
-			if (bladedGrassShader_->activate())
-			{
-				if (clipPlane)
-				{
-					bladedGrassShader_->setClipPlane(*clipPlane);
-				}
-
-				bladedGrassShader_->setViewMatrix(camera->getViewTransform());
-				bladedGrassShader_->setCameraPosition(camera->pos());
-				bladedGrassShader_->setProjMatrix(projMatrix_);
-				bladedGrassShader_->setLight(sunlight_);
-				
-				bladedGrassEntity_->render(bladedGrassShader_);
-			}
-
 			if (solidShader_->activate())
 			{
 				if (clipPlane)
@@ -322,13 +311,6 @@ namespace sim
 			if (!grassShader_ || !grassShader_->initialize())
 			{
 				log.error << "Failed to create grass shader" << util::endl;
-				return false;
-			}
-
-			bladedGrassShader_ = std::make_shared<view::grass::BladedGrassPatchShader>();
-			if (!bladedGrassShader_ || !bladedGrassShader_->initialize())
-			{
-				log.error << "Failed to create bladed grass shader" << util::endl;
 				return false;
 			}
 
@@ -572,30 +554,6 @@ namespace sim
 						log.error << "Failed to generate grass entity " << idx << util::endl;
 						return false;
 					}
-				}
-
-				bladedGrassEntity_ = std::make_shared<view::grass::BladedGrassPatchEntity>(
-					glm::vec3(0.f, -12.5f, 0.f),
-					glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
-					glm::vec3(1.f, 1.f, 1.f)
-				);
-				if (!bladedGrassEntity_ || !bladedGrassEntity_->prepare(
-					bladedGrassShader_, pso_,
-					reducedHeightfield,
-					textures_["grassBlade"],
-					heightfieldMask,
-					glm::vec2(5.f, 5.f), glm::vec2(80.f, 80.f),
-					0.1f, 0.2f,
-					0.03f, 0.05f,
-					0.1f, 0.15f,
-					0.f, 0.05f,
-					0.01f, 0.02f,
-					0.1f, 0.4f,
-					glm::vec4(0.2f, 0.2f, 0.2f, 1.f),
-					0.3f, 1u
-				)) {
-					log.error << "Failed to generate bladed grass entity" << util::endl;
-					return false;
 				}
 			}
 

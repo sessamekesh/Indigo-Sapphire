@@ -45,5 +45,6 @@ void main()
 	}
 	vec4 specularComponent = cBladeSpecular * lightSpecular * specCoefficient;
 
-	color = vec4(ambientComponent.rgb + diffuseComponent.rgb + specularComponent.rgb, 1.0);
+	//color = vec4(ambientComponent.rgb + diffuseComponent.rgb + specularComponent.rgb, 1.0);
+	color = vec4(ambientComponent.rgb + diffuseComponent.rgb, 1.0);
 }

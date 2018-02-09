@@ -58,18 +58,22 @@ void main()
 
 	mat4 mVP = matProj * matView;
 
-	// TODO SESS: Implement bending in the wind
-
 	float yLevel = 0.0;
 	float rotation = VertexIn[0].fRotation;
 	float width = VertexIn[0].fBladeBaseWidth;
 	for (int i = 0; i < 4; i++)
 	{
 	    mat3 matRot = rotationMatrix(vec3(0.0, 1.0, 0.0), rotation);
+		float windPower = sin(vGrassFieldPos.x / 5 + vGrassFieldPos.z / 5 + fTimeElapsed + (windStrength / 20.0f)) * 0.6f;
+
+		vec3 up = vec3(0.0, 1.0, 0.0);
+		vec3 wind = vWindDirection * windPower * (float(i) / 3);
+		vec3 offset = normalize(up + wind) * yLevel;
+
 	    vec3 leftVert = vGrassFieldPos + matRot * vec3(-width, 0.0, 0.0);
-		leftVert.y += yLevel;
 		vec3 rightVert = vGrassFieldPos + matRot * vec3(width, 0.0, 0.0);
-		rightVert.y += yLevel;
+		leftVert += offset;
+		rightVert += offset;
 
 		// Send in left vertex
 		vec3 vWorldPos = (matWorld * vec4(leftVert, 1.0)).xyz;
@@ -84,7 +88,7 @@ void main()
 		vWorldPos = (matWorld * vec4(rightVert, 1.0)).xyz;
 		gl_Position = mVP * vec4(vWorldPos, 1.0);
 		VertexOut.vPos = vWorldPos;
-		VertexOut.UV = vec2(0.0, float(i) / 3.0);
+		VertexOut.UV = vec2(1.0, float(i) / 3.0);
 		VertexOut.vNormal = matRot * vec3(0.0, 0.0, 1.0);
 		gl_ClipDistance[0] = dot(vWorldPos - clipPlaneOrigin, clipPlaneNormal);
 		EmitVertex();

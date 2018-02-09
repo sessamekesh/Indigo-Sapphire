@@ -1,0 +1,12 @@
+#pragma once
+
+namespace util
+{
+	enum COLOR_COMPONENT
+	{
+		COLOR_COMPONENT_R,
+		COLOR_COMPONENT_G,
+		COLOR_COMPONENT_B,
+		COLOR_COMPONENT_A
+	};
+};

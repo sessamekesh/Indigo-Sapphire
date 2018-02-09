@@ -10,6 +10,7 @@
 #include <model/specialgeo/heightfield.h>
 #include <view/texture.h>
 #include <util/surfacemaskbase.h>
+#include <util/surfacemask/surfaceprobabilityfieldbase.h>
 
 namespace view
 {
@@ -33,10 +34,11 @@ namespace view
 				std::shared_ptr<BladedGrassPatchShader> shader,
 				util::PipelineState& pso,
 				std::shared_ptr<model::specialgeo::Heightfield> heightfield,
+				std::shared_ptr<util::SurfaceProbabilityFieldBase> bladeGenerationProbability,
 				std::shared_ptr<view::Texture> grassTexture,
 				std::shared_ptr<util::SurfaceMaskBase> surfaceMask,
 				const glm::vec2& minXZ, const glm::vec2& maxXZ,
-				float minDistance, float maxDistance,
+				std::uint32_t maxNumBlades,
 				float minBaseWidth, float maxBaseWidth,
 				float minHeight, float maxHeight,
 				float minRotation, float maxRotation,

@@ -1,34 +1,34 @@
 #pragma once
 
-#include <util/surfacemaskbase.h>
+#include <util/surfacemask/surfaceprobabilityfieldbase.h>
 #include <model/imagedata.h>
 #include <memory>
 #include <util/colorcomponentenum.h>
+#include <util/math/curve1to1.h>
 
 namespace util
 {
-	class TerrainMapColorMask : public SurfaceMaskBase
+	class TerrainMapColorProbabilityField : public SurfaceProbabilityFieldBase
 	{
 	public:
-		TerrainMapColorMask(
+		TerrainMapColorProbabilityField(
 			std::shared_ptr<model::ImageData> image,
-			float width,
-			float depth,
-			float sampleThreshhold,
+			float width, float depth,
+			std::shared_ptr<util::math::Curve1To1> probabilityCurve,
 			std::vector<COLOR_COMPONENT> componentsToSample,
 			std::vector<COLOR_COMPONENT> componentsToConsider,
 			bool normalizeBeforeSampling = true
 		);
-		TerrainMapColorMask(const TerrainMapColorMask&) = default;
-		~TerrainMapColorMask() = default;
+		TerrainMapColorProbabilityField(const TerrainMapColorProbabilityField&) = default;
+		~TerrainMapColorProbabilityField() = default;
 
-		bool getMaskValue(const glm::vec2& pos) override;
+		float getProbabilityAtPoint(const glm::vec2& location) override;
 
 	protected:
 		std::shared_ptr<model::ImageData> image_;
 		float width_;
 		float depth_;
-		float sampleThreshold_;
+		std::shared_ptr<util::math::Curve1To1> curve_;
 		std::vector<COLOR_COMPONENT> componentsToSample_;
 		std::vector<COLOR_COMPONENT> componentsToConsider_;
 		bool normalizeBeforeSampling_;

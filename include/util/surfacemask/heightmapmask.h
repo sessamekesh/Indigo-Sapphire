@@ -11,8 +11,7 @@ namespace util
 	public:
 		HeightmapMask(
 			std::shared_ptr<model::specialgeo::Heightfield> heightfield,
-			float minHeight,
-			float maxHeight
+			float minHeight, float maxHeight
 		);
 		~HeightmapMask() = default;
 		HeightmapMask(const HeightmapMask&) = default;
