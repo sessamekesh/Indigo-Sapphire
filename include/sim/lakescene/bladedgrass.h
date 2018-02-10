@@ -2,6 +2,7 @@
 
 #include <view/grass/bladedgrasspatchshader.h>
 #include <view/grass/bladedgrasspatchentity.h>
+#include <model/specialgeo/heightfield.h>
 
 // TODO SESS: Finish writing this out. This will be the entire covering of grass -
 //  the entire grass covering subsystem.
@@ -75,7 +76,29 @@ namespace sim
 		class BladedGrass
 		{
 		public:
+			BladedGrass(
+				std::shared_ptr<model::specialgeo::Heightfield> heightfield_
+			);
+			~BladedGrass();
+			BladedGrass(const BladedGrass&) = delete;
 			
+			void update(float dt);
+
+		private:
+			//
+			// Resources
+			//
+			std::shared_ptr<model::specialgeo::Heightfield> heightfield_;
+
+			//
+			// Shaders
+			//
+			std::shared_ptr<view::grass::BladedGrassPatchShader> bladedGrassShader_;
+
+			//
+			// Entities
+			//
+			std::vector<std::shared_ptr<view::grass::BladedGrassPatchEntity>> grassEntities_;
 		};
 	}
 }

@@ -11,6 +11,8 @@
 #include <model/specialgeo/heightfield/heightmapheightfield.h>
 #include <model/specialgeo/heightfield/reducedheightfield.h>
 
+#include <model/specialgeo/projection/perspectiveprojection.h>
+
 // Grass things - should move into their own grass file!
 #include <util/math/quadraticeaseout11.h>
 #include <util/math/linear11.h>
@@ -47,6 +49,7 @@ namespace sim
 			, mappedPhongShader_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
+			, projection_(nullptr)
 			, boulderTest_(nullptr)
 			, testProctreeEntity_(nullptr)
 			, heightMapTerrainRawEntity_(nullptr)
@@ -61,7 +64,6 @@ namespace sim
 				glm::vec3(1.f, -1.f, 0.f)) // Direction
 			, skybox_(nullptr)
 			, lakeSurface_(nullptr)
-			, projMatrix_(glm::perspective(glm::radians(45.f), 128.f / 72.f, 0.1f, 15000.0f))
 			, textures_({})
 			, terrainHeightmap_(nullptr)
 			, waterReflectionFramebuffer_(nullptr)
@@ -138,7 +140,7 @@ namespace sim
 					skyboxShader_->setClipPlane(*clipPlane);
 				}
 
-				skyboxShader_->setProjMatrix(projMatrix_);
+				skyboxShader_->setProjMatrix(projection_->getProjectionMatrix());
 				skyboxShader_->setViewMatrix(camera->getViewTransform());
 
 				skybox_->render(skyboxShader_, pso_);
@@ -161,7 +163,7 @@ namespace sim
 				}
 
 				mappedPhongShader_->setViewMatrix(camera->getViewTransform());
-				mappedPhongShader_->setProjMatrix(projMatrix_);
+				mappedPhongShader_->setProjMatrix(projection_->getProjectionMatrix());
 				mappedPhongShader_->setLight(sunlight_);
 				mappedPhongShader_->setShininess(200.f);
 				mappedPhongShader_->setCameraPosition(camera->pos());
@@ -177,7 +179,7 @@ namespace sim
 				}
 
 				blendedTerrainShader_->setViewMatrix(camera->getViewTransform());
-				blendedTerrainShader_->setProjMatrix(projMatrix_);
+				blendedTerrainShader_->setProjMatrix(projection_->getProjectionMatrix());
 				blendedTerrainShader_->setLight(sunlight_);
 
 				blendedTerrainEntity_->render(blendedTerrainShader_);
@@ -191,7 +193,7 @@ namespace sim
 				}
 
 				grassShader_->setViewMatrix(camera->getViewTransform());
-				grassShader_->setProjMatrix(projMatrix_);
+				grassShader_->setProjMatrix(projection_->getProjectionMatrix());
 				grassShader_->setEyePos(camera->pos());
 
 				for (auto&& ge : grassEntities_)
@@ -208,7 +210,7 @@ namespace sim
 				}
 
 				solidShader_->setViewMatrix(camera->getViewTransform());
-				solidShader_->setProjMatrix(projMatrix_);
+				solidShader_->setProjMatrix(projection_->getProjectionMatrix());
 				testProctreeEntity_->render(solidShader_);
 				//genericSolidTerrain_->render(solidShader_);
 			}
@@ -258,7 +260,7 @@ namespace sim
 			{
 				//waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
 				waterSurfaceShader_->setViewMatrix(heightmapCamera_->getViewTransform());
-				waterSurfaceShader_->setProjMatrix(projMatrix_);
+				waterSurfaceShader_->setProjMatrix(projection_->getProjectionMatrix());
 				//waterSurfaceShader_->setCameraPosition(mainCamera_->pos());
 				waterSurfaceShader_->setCameraPosition(heightmapCamera_->pos());
 				waterSurfaceShader_->setLight(sunlight_);
@@ -334,6 +336,10 @@ namespace sim
 				return false;
 			}
 
+			//
+			// Cameras
+			//
+			// TODO SESS: Move camera initialization to its own method, since there is a lot of cameras/angles
 			mainCamera_ = std::shared_ptr<util::camera::FlightCamera>(new util::camera::FlightCamera(
 				glm::vec3(0.f, 2.f, 0.f),
 				glm::vec3(0.f, 1.f, 0.f),
@@ -367,6 +373,14 @@ namespace sim
 				model::geo::Plane({ 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f })
 			));
 
+			//
+			// Projections
+			//
+			projection_ = std::make_shared<model::specialgeo::PerspectiveProjection>(glm::radians(45.f), 128.f / 72.f, 0.1f, 15000.0f);
+
+			//
+			// Resources
+			//
 			skybox_ = std::shared_ptr<view::special::skybox::DaylightSkybox>(
 				new view::special::skybox::DaylightSkybox(
 					glm::vec3(0.f, -300.f, 0.f),

@@ -17,6 +17,7 @@
 #include <view/terrainshader/blendedterrainshader.h>
 #include <view/terrainshader/assets/genericblendedterrainentity.h>
 #include <util/camera/heightmapcamera.h>
+#include <model/specialgeo/projection/projectionbase.h>
 
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
@@ -89,6 +90,7 @@ namespace sim
 		private:
 			std::shared_ptr<model::geo::Rectangle> waterSurfaceModel_;
 			std::shared_ptr<Proctree::Tree> testProctreeModel_;
+			std::shared_ptr<model::specialgeo::ProjectionBase> projection_;
 
 			//
 			// Resources
@@ -106,8 +108,6 @@ namespace sim
 			std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity> blendedTerrainEntity_;
 			
 			std::vector<std::shared_ptr<view::grass::BillboardGrassEntity>> grassEntities_;
-
-			glm::mat4 projMatrix_;
 
 			//
 			// Textures

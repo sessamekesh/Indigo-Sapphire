@@ -155,6 +155,7 @@
     <ClCompile Include="src\model\specialgeo\metaball\debugmetaballgroup.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\metaball.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\metaballgroup.cpp" />
+    <ClCompile Include="src\model\specialgeo\projection\perspectiveprojection.cpp" />
     <ClCompile Include="src\model\withworldtransform.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\tree.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\treeloader.cpp" />
@@ -240,6 +241,8 @@
     <ClInclude Include="include\model\specialgeo\metaball\imetaballpath.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaball.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaballgroup.h" />
+    <ClInclude Include="include\model\specialgeo\projection\perspectiveprojection.h" />
+    <ClInclude Include="include\model\specialgeo\projection\projectionbase.h" />
     <ClInclude Include="include\model\specialgeo\water\ripple.h" />
     <ClInclude Include="include\model\withboundingsphere.h" />
     <ClInclude Include="include\model\withworldtransform.h" />

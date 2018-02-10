@@ -214,6 +214,12 @@
     <Filter Include="Source Files\util\math">
       <UniqueIdentifier>{2c3cbee4-aa70-4002-9989-5bf67591aa2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\model\specialgeo\projection">
+      <UniqueIdentifier>{60fdaaf3-562c-43a7-b95a-23d77c16b467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\specialgeo\projection">
+      <UniqueIdentifier>{9dd30b6a-2dc9-40e2-9d27-459d4e70a548}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -458,6 +464,9 @@
     </ClCompile>
     <ClCompile Include="src\util\surfacemask\combinationprobabilityfield.cpp">
       <Filter>Source Files\util\surfacemask</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\specialgeo\projection\perspectiveprojection.cpp">
+      <Filter>Source Files\model\specialgeo\projection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -754,6 +763,12 @@
     </ClInclude>
     <ClInclude Include="include\util\threadpool.h">
       <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\projection\projectionbase.h">
+      <Filter>Header Files\model\specialgeo\projection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\projection\perspectiveprojection.h">
+      <Filter>Header Files\model\specialgeo\projection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
