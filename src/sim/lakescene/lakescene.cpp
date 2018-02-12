@@ -17,7 +17,6 @@
 #include <util/math/quadraticeaseout11.h>
 #include <util/math/linear11.h>
 #include <util/surfacemask/combinationprobabilityfield.h>
-#include <util/surfacemask/heightmapprobabilityfield.h>
 #include <util/surfacemask/terrainmapcolorprobabilityfield.h>
 
 // TODO SESS: Start collecting footage of you actually programming/working on this for buzz reel
@@ -47,6 +46,9 @@ namespace sim
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
 			, mappedPhongShader_(nullptr)
+			, grassShader_(nullptr)
+			, threadPool_(8u) // TODO SESS: This should be based on the number of CPU cores perhaps?
+			, bladedGrass_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
 			, projection_(nullptr)
@@ -80,6 +82,8 @@ namespace sim
 
 		void LakeScene::update(float dt)
 		{
+			bladedGrass_->update(dt);
+
 			lakeSurface_->update(dt);
 			for (auto&& ge : grassEntities_)
 			{
@@ -214,6 +218,10 @@ namespace sim
 				testProctreeEntity_->render(solidShader_);
 				//genericSolidTerrain_->render(solidShader_);
 			}
+
+			bladedGrass_->render(
+				camera, projection_, sunlight_, clipPlane
+			);
 		}
 
 		void LakeScene::render()
@@ -352,7 +360,7 @@ namespace sim
 			);
 			auto reducedHeightfield = std::shared_ptr<model::specialgeo::Heightfield>(
 				new model::specialgeo::ReducedHeightfield(heightfield, 380u, 380u)
-				);
+			);
 
 			cameraController_ = std::make_shared<input::GamepadCameraController>(0);
 			// TODO SESS: The current heightfield causes height(point) to be a non-continuous function.
@@ -435,153 +443,17 @@ namespace sim
 				return false;
 			}
 
-			boulderTest_ = std::shared_ptr<view::mappedphong::AssimpGeo>(new view::mappedphong::AssimpGeo(
-				glm::vec3(-180.f, -30.f, -184.f),
-				glm::angleAxis(0.2f, glm::vec3(1.f, 0.f, 0.f)) *
-					glm::angleAxis(glm::pi<float>(), glm::vec3(0.f, 1.f, 0.f)) *
-					glm::angleAxis(-glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)),
-				glm::vec3(65.f, 65.f, 65.f),
-				"BoulderTest",
-				textures_["boulder-normal"],
-				textures_["boulder-diffuse"],
-				textures_["boulder-specular"]
-			));
-			if (!boulderTest_ || !boulderTest_->prepare(ASSET_PATH("environment/boulder/boulder.fbx"), mappedPhongShader_, pso_))
+			if (!setupTerrain(reducedHeightfield))
 			{
-				log.error << "Failed to initialize test boulder" << util::endl;
+				log.error << "Failed to setup terrain" << util::endl;
 				return false;
-			}
-
-			{
-				testProctreeModel_ = std::make_shared<Proctree::Tree>();
-				testProctreeModel_->mProperties.mSeed = 262;
-				testProctreeModel_->mProperties.mLevels = 5;
-				testProctreeModel_->mProperties.mVMultiplier = 2.36f;
-				testProctreeModel_->mProperties.mTwigScale = 0.239f;
-				testProctreeModel_->mProperties.mInitialBranchLength = 0.49f;
-				testProctreeModel_->mProperties.mLengthFalloffFactor = 0.85f;
-				testProctreeModel_->mProperties.mLengthFalloffPower = 0.99f;
-				testProctreeModel_->mProperties.mClumpMax = 0.454f;
-				testProctreeModel_->mProperties.mClumpMin = 0.404f;
-				testProctreeModel_->mProperties.mBranchFactor = 2.45f;
-				testProctreeModel_->mProperties.mDropAmount = -0.1f;
-				testProctreeModel_->mProperties.mGrowAmount = 0.235f;
-				testProctreeModel_->mProperties.mSweepAmount = 0.01f;
-				testProctreeModel_->mProperties.mMaxRadius = 0.139f;
-				testProctreeModel_->mProperties.mClimbRate = 0.371f;
-				testProctreeModel_->mProperties.mTrunkKink = 0.093f;
-				testProctreeModel_->mProperties.mTreeSteps = 5;
-				testProctreeModel_->mProperties.mTaperRate = 0.947f;
-				testProctreeModel_->mProperties.mRadiusFalloffRate = 0.73f;
-				testProctreeModel_->mProperties.mTwistRate = 3.02f;
-				testProctreeModel_->mProperties.mTrunkLength = 2.4f;
-				testProctreeModel_->generate();
-
-				std::shared_ptr<view::GenericMesh> tree = std::make_shared<view::GenericMesh>();
-				std::shared_ptr<view::GenericMesh> branches = std::make_shared<view::GenericMesh>();
-				auto t = view::raw::getProcTreeMesh(testProctreeModel_, this->log, *tree, *branches);
-				if (!t)
-				{
-					log.error << "Failed to generate generic proctree models" << util::endl;
-					return false;
-				}
-				testProctreeEntity_ = std::make_shared<view::solidshader::GenericSolidEntity>(
-					glm::vec3(-295.f, 0.f, -280.f),
-					glm::angleAxis(0.f, glm::vec3(0.f, 0.f, 1.f)),
-					glm::vec3(35.f, 35.f, 35.f)
-				);
-				testProctreeEntity_->addMesh(tree, glm::vec4(1.f, 0.f, 0.f, 1.f));
-				testProctreeEntity_->addMesh(branches, glm::vec4(0.f, 0.f, 1.f, 1.f));
-				if (!testProctreeEntity_->prepare(solidShader_, pso_))
-				{
-					log.error << "Failed to prepare teset proctree entity" << util::endl;
-					return false;
-				}
-			}
-
-			{
-				heightMapTerrainRawEntity_ = std::make_shared<view::raw::HeightmapTerrainEntity>(heightfield);
-
-				blendedTerrainEntity_ = std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity>(new view::terrainshader::GenericBlendedTerrainEntity(
-					glm::vec3(0.f, -12.5f, 0.f),
-					glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
-					glm::vec3(1.f, 1.f, 1.f),
-					heightMapTerrainRawEntity_->getMeshData(380u, 380u, 1.f, true),
-					textures_["terrainBlendMap"],
-					textures_["terrainDirt"],
-					150.f,
-					textures_["terrainGrass"],
-					150.f,
-					textures_["terrainMud"],
-					150.f
-				));
-				if (!blendedTerrainEntity_ || !blendedTerrainEntity_->prepare(blendedTerrainShader_, pso_))
-				{
-					log.error << "Failed to generate blended terrain entity" << util::endl;
-					return false;
-				}
-			}
-
-			{
-				std::vector<float> threshholds = { 0.2f, 0.4f, 0.85f, 0.995f };
-				std::vector<float> offsetMins = { 1.0f, 0.5f, 0.075f, 0.025f };
-				std::vector<float> offsetMaxs = { 2.6f, 0.9f, 0.25f, 0.075f };
-				std::vector<std::uint32_t> seeds = { 1, 2, 3, 4 };
-				grassEntities_.reserve(4u);
-				// TODO SESS:
-				// - Different types of vegetation, to give variety.
-				// - Combine with a "heightfield" sample, to make sure no grass grows below water
-				//   (That will also require a "combinationmask", to combine TerrainMapColorMask
-				//      and HeightfieldMask)
-				auto heightfieldMask = std::shared_ptr<util::HeightmapMask>(
-					new util::HeightmapMask(heightfield, 12.5f, 1000.f)
-				);
-				for (std::uint32_t idx = 0u; idx < threshholds.size(); idx++)
-				{
-					grassEntities_.push_back(
-						std::make_shared<view::grass::BillboardGrassEntity>(
-							glm::vec3(0.f, -12.5f, 0.f),
-							glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
-							glm::vec3(1.f, 1.f, 1.f)
-							)
-					);
-					auto terrainColorMask = std::shared_ptr<util::TerrainMapColorMask>(
-						new util::TerrainMapColorMask(
-							terrainBlendMapImage_,
-							75.f, 75.f, // TODO SESS: This really should be localized somewhere, instead of just remembering the width/depth
-							threshholds[idx],
-							{ util::COLOR_COMPONENT_G },
-							{ util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G, util::COLOR_COMPONENT_B },
-							true
-						)
-					);
-					auto combinedMask = std::shared_ptr<util::SurfaceMaskBase>(
-						new util::CombinationMask({ heightfieldMask, terrainColorMask })
-					);
-					if (!grassEntities_[idx] || !grassEntities_[idx]->prepare(
-						grassShader_, pso_,
-						reducedHeightfield, textures_["grassPack"],
-						combinedMask,
-						seeds[idx], offsetMins[idx], offsetMaxs[idx], 1.05f
-					))
-					{
-						log.error << "Failed to generate grass entity " << idx << util::endl;
-						return false;
-					}
-				}
 			}
 
 			return true;
 		}
 
 		bool LakeScene::teardownResources()
-		{
-			if (blendedTerrainEntity_)
-			{
-				blendedTerrainEntity_->release();
-				blendedTerrainEntity_ = nullptr;
-			}
-			
+		{			
 			if (skybox_)
 			{
 				skybox_->release();
@@ -744,6 +616,211 @@ namespace sim
 		bool LakeScene::teardownTextures()
 		{
 			textures_.clear();
+
+			return true;
+		}
+
+		bool LakeScene::setupTerrain(std::shared_ptr<model::specialgeo::Heightfield> generatedHeightfield)
+		{
+			boulderTest_ = std::shared_ptr<view::mappedphong::AssimpGeo>(new view::mappedphong::AssimpGeo(
+				glm::vec3(-180.f, -30.f, -184.f),
+				glm::angleAxis(0.2f, glm::vec3(1.f, 0.f, 0.f)) *
+				glm::angleAxis(glm::pi<float>(), glm::vec3(0.f, 1.f, 0.f)) *
+				glm::angleAxis(-glm::half_pi<float>(), glm::vec3(1.f, 0.f, 0.f)),
+				glm::vec3(65.f, 65.f, 65.f),
+				"BoulderTest",
+				textures_["boulder-normal"],
+				textures_["boulder-diffuse"],
+				textures_["boulder-specular"]
+			));
+			if (!boulderTest_ || !boulderTest_->prepare(ASSET_PATH("environment/boulder/boulder.fbx"), mappedPhongShader_, pso_))
+			{
+				log.error << "Failed to initialize test boulder" << util::endl;
+				return false;
+			}
+
+			{
+				testProctreeModel_ = std::make_shared<Proctree::Tree>();
+				testProctreeModel_->mProperties.mSeed = 262;
+				testProctreeModel_->mProperties.mLevels = 5;
+				testProctreeModel_->mProperties.mVMultiplier = 2.36f;
+				testProctreeModel_->mProperties.mTwigScale = 0.239f;
+				testProctreeModel_->mProperties.mInitialBranchLength = 0.49f;
+				testProctreeModel_->mProperties.mLengthFalloffFactor = 0.85f;
+				testProctreeModel_->mProperties.mLengthFalloffPower = 0.99f;
+				testProctreeModel_->mProperties.mClumpMax = 0.454f;
+				testProctreeModel_->mProperties.mClumpMin = 0.404f;
+				testProctreeModel_->mProperties.mBranchFactor = 2.45f;
+				testProctreeModel_->mProperties.mDropAmount = -0.1f;
+				testProctreeModel_->mProperties.mGrowAmount = 0.235f;
+				testProctreeModel_->mProperties.mSweepAmount = 0.01f;
+				testProctreeModel_->mProperties.mMaxRadius = 0.139f;
+				testProctreeModel_->mProperties.mClimbRate = 0.371f;
+				testProctreeModel_->mProperties.mTrunkKink = 0.093f;
+				testProctreeModel_->mProperties.mTreeSteps = 5;
+				testProctreeModel_->mProperties.mTaperRate = 0.947f;
+				testProctreeModel_->mProperties.mRadiusFalloffRate = 0.73f;
+				testProctreeModel_->mProperties.mTwistRate = 3.02f;
+				testProctreeModel_->mProperties.mTrunkLength = 2.4f;
+				testProctreeModel_->generate();
+
+				std::shared_ptr<view::GenericMesh> tree = std::make_shared<view::GenericMesh>();
+				std::shared_ptr<view::GenericMesh> branches = std::make_shared<view::GenericMesh>();
+				auto t = view::raw::getProcTreeMesh(testProctreeModel_, this->log, *tree, *branches);
+				if (!t)
+				{
+					log.error << "Failed to generate generic proctree models" << util::endl;
+					return false;
+				}
+				testProctreeEntity_ = std::make_shared<view::solidshader::GenericSolidEntity>(
+					glm::vec3(-295.f, 0.f, -280.f),
+					glm::angleAxis(0.f, glm::vec3(0.f, 0.f, 1.f)),
+					glm::vec3(35.f, 35.f, 35.f)
+					);
+				testProctreeEntity_->addMesh(tree, glm::vec4(1.f, 0.f, 0.f, 1.f));
+				testProctreeEntity_->addMesh(branches, glm::vec4(0.f, 0.f, 1.f, 1.f));
+				if (!testProctreeEntity_->prepare(solidShader_, pso_))
+				{
+					log.error << "Failed to prepare teset proctree entity" << util::endl;
+					return false;
+				}
+			}
+
+			{
+				heightMapTerrainRawEntity_ = std::make_shared<view::raw::HeightmapTerrainEntity>(generatedHeightfield);
+
+				blendedTerrainEntity_ = std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity>(new view::terrainshader::GenericBlendedTerrainEntity(
+					glm::vec3(0.f, -12.5f, 0.f),
+					glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
+					glm::vec3(1.f, 1.f, 1.f),
+					heightMapTerrainRawEntity_->getMeshData(380u, 380u, 1.f, true),
+					textures_["terrainBlendMap"],
+					textures_["terrainDirt"],
+					150.f,
+					textures_["terrainGrass"],
+					150.f,
+					textures_["terrainMud"],
+					150.f
+				));
+				if (!blendedTerrainEntity_ || !blendedTerrainEntity_->prepare(blendedTerrainShader_, pso_))
+				{
+					log.error << "Failed to generate blended terrain entity" << util::endl;
+					return false;
+				}
+			}
+
+			auto aboveWaterHeightfieldMask = std::shared_ptr<util::HeightmapMask>(
+				new util::HeightmapMask(generatedHeightfield, 12.5f, 1000.f)
+			);
+
+			auto probabilityCurve = std::make_shared<util::math::Linear11>(0.f, 0.f, 0.75f, 1.f);
+			std::shared_ptr<util::TerrainMapColorProbabilityField> probabilityMask = std::shared_ptr<util::TerrainMapColorProbabilityField>(new util::TerrainMapColorProbabilityField(
+				terrainBlendMapImage_, // Image data of the blended terrain
+				75.f, 75.f, // I think?
+				probabilityCurve, // 1:1 probability curve (linear?)
+				{ util::COLOR_COMPONENT_G },
+				{ util::COLOR_COMPONENT_B, util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G }
+			));
+			bladedGrass_ = std::shared_ptr<sim::lake::BladedGrass>(new sim::lake::BladedGrass(
+				generatedHeightfield,
+				probabilityMask,
+				aboveWaterHeightfieldMask,
+				glm::vec3(0.f, -12.5f, 0.f),
+				sim::lake::BladedGrass::STANDARD_COMPILED_CONFIG
+			));
+
+			if (!(bladedGrass_ && bladedGrass_->prepare(glm::vec2(-75.f, -75.f), glm::vec2(75.f, 75.f), pso_, threadPool_)))
+			{
+				log.error << "Failed to create bladed grass subsystem" << util::endl;
+				return false;
+			}
+
+			{
+				std::vector<float> threshholds = { 0.2f, 0.4f, 0.85f, 0.995f };
+				std::vector<float> offsetMins = { 1.0f, 0.5f, 0.075f, 0.025f };
+				std::vector<float> offsetMaxs = { 2.6f, 0.9f, 0.25f, 0.075f };
+				std::vector<std::uint32_t> seeds = { 1, 2, 3, 4 };
+				grassEntities_.reserve(4u);
+				// TODO SESS:
+				// - Different types of vegetation, to give variety.
+				// - Combine with a "heightfield" sample, to make sure no grass grows below water
+				//   (That will also require a "combinationmask", to combine TerrainMapColorMask
+				//      and HeightfieldMask)
+				for (std::uint32_t idx = 0u; idx < threshholds.size(); idx++)
+				{
+					grassEntities_.push_back(
+						std::make_shared<view::grass::BillboardGrassEntity>(
+							glm::vec3(0.f, -12.5f, 0.f),
+							glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
+							glm::vec3(1.f, 1.f, 1.f)
+							)
+					);
+					auto terrainColorMask = std::shared_ptr<util::TerrainMapColorMask>(
+						new util::TerrainMapColorMask(
+							terrainBlendMapImage_,
+							75.f, 75.f, // TODO SESS: This really should be localized somewhere, instead of just remembering the width/depth
+							threshholds[idx],
+							{ util::COLOR_COMPONENT_G },
+							{ util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G, util::COLOR_COMPONENT_B },
+							true
+						)
+						);
+					auto combinedMask = std::shared_ptr<util::SurfaceMaskBase>(
+						new util::CombinationMask({ aboveWaterHeightfieldMask, terrainColorMask })
+						);
+					if (!grassEntities_[idx] || !grassEntities_[idx]->prepare(
+						grassShader_, pso_,
+						generatedHeightfield, textures_["grassPack"],
+						combinedMask,
+						seeds[idx], offsetMins[idx], offsetMaxs[idx], 1.05f
+					))
+					{
+						log.error << "Failed to generate grass entity " << idx << util::endl;
+						return false;
+					}
+				}
+			}
+		}
+
+		bool LakeScene::teardownTerrain()
+		{
+			if (blendedTerrainEntity_)
+			{
+				blendedTerrainEntity_->release();
+				blendedTerrainEntity_ = nullptr;
+			}
+
+			if (boulderTest_)
+			{
+				boulderTest_->release();
+				boulderTest_ = nullptr;
+			}
+
+			for (auto&& grassEntity : grassEntities_)
+			{
+				grassEntity->release();
+				grassEntity = nullptr;
+			}
+			grassEntities_.resize(0u);
+
+			heightMapTerrainRawEntity_ = nullptr;
+
+			if (testProctreeEntity_)
+			{
+				testProctreeEntity_->release();
+				testProctreeEntity_ = nullptr;
+			}
+
+			if (testProctreeModel_)
+			{
+				testProctreeModel_ = nullptr;
+			}
+
+			if (bladedGrass_)
+			{
+				bladedGrass_->release();
+				bladedGrass_ = nullptr;
+			}
 
 			return true;
 		}

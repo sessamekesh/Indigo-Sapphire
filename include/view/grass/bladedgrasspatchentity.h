@@ -49,9 +49,38 @@ namespace view
 				std::uint32_t seed = 1u
 			);
 
+			struct CPUDeferrableWork
+			{
+				std::vector<BladedGrassPatchShader::Vertex> Vertices;
+				model::geo::Sphere BoundingSphere;
+			};
+			std::optional<CPUDeferrableWork> prepareCPUDeferrable(
+				std::shared_ptr<model::specialgeo::Heightfield> heightfield,
+				std::shared_ptr<util::SurfaceProbabilityFieldBase> bladeGenerationProbability,
+				std::shared_ptr<util::SurfaceMaskBase> surfaceMask,
+				const glm::vec2& minXZ, const glm::vec2& maxXZ,
+				std::uint32_t maxNumBlades,
+				float minBaseWidth, float maxBaseWidth,
+				float minHeight, float maxHeight,
+				float minRotation, float maxRotation,
+				float minTwistRate, float maxTwistRate,
+				float minTaperRate, float maxTaperRate,
+				std::uint32_t seed = 1u
+			);
+
+			bool prepareFromDeferrable(
+				const CPUDeferrableWork& result,
+				std::shared_ptr<BladedGrassPatchShader> shader,
+				util::PipelineState& pso,
+				std::shared_ptr<view::Texture> grassTexture,
+				const glm::vec4& specularColor,
+				float windStrength
+			);
+
 			bool release();
 			void update(float dt);
-			void render(std::shared_ptr<BladedGrassPatchShader> shader);
+			std::uint32_t numBlades() const;
+			void render(std::shared_ptr<BladedGrassPatchShader> shader, float percentageToDraw = 1.f);
 
 			// Inherited via WithBoundingSphere
 			virtual model::geo::Sphere getBoundingSphere() override;

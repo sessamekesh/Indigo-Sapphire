@@ -50,6 +50,8 @@ namespace util
 		auto enqueue(F&& f, Args&&... args)->std::future<typename std::result_of<F(Args...)>::type>;
 		~ThreadPool();
 
+		const std::size_t NumThreads;
+
 	private:
 		// Need to keep track of threads so we can join them
 		std::vector<std::thread> workers_;
@@ -64,10 +66,7 @@ namespace util
 	};
 
 	inline ThreadPool::ThreadPool(std::size_t numThreads)
-		: workers_({})
-		, tasks_({})
-		, queue_mutex_()
-		, condition_()
+		: NumThreads(numThreads)
 		, stop_(false)
 	{
 		for (size_t i = 0; i < numThreads; i++)
@@ -106,7 +105,7 @@ namespace util
 			std::unique_lock<std::mutex> lock(queue_mutex_);
 			
 			// Don't allow enqueueing after stopping the pool
-			if (stop)
+			if (stop_)
 			{
 				throw std::runtime_error("Enqueue on stopped ThreadPool");
 			}

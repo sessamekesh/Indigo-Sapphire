@@ -468,6 +468,9 @@
     <ClCompile Include="src\model\specialgeo\projection\perspectiveprojection.cpp">
       <Filter>Source Files\model\specialgeo\projection</Filter>
     </ClCompile>
+    <ClCompile Include="src\sim\lakescene\bladedgrass.cpp">
+      <Filter>Source Files\sim\lakescene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">

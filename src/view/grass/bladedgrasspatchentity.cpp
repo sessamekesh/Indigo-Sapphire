@@ -32,12 +32,9 @@ namespace view
 			release();
 		}
 
-		bool BladedGrassPatchEntity::prepare(
-			std::shared_ptr<BladedGrassPatchShader> shader,
-			util::PipelineState& pso,
+		std::optional<BladedGrassPatchEntity::CPUDeferrableWork> BladedGrassPatchEntity::prepareCPUDeferrable(
 			std::shared_ptr<model::specialgeo::Heightfield> heightfield,
 			std::shared_ptr<util::SurfaceProbabilityFieldBase> bladeGenerationProbability,
-			std::shared_ptr<view::Texture> grassTexture,
 			std::shared_ptr<util::SurfaceMaskBase> surfaceMask,
 			const glm::vec2& minXZ, const glm::vec2& maxXZ,
 			std::uint32_t maxNumBlades,
@@ -46,10 +43,9 @@ namespace view
 			float minRotation, float maxRotation,
 			float minTwistRate, float maxTwistRate,
 			float minTaperRate, float maxTaperRate,
-			const glm::vec4& specularColor,
-			float windStrength,
 			std::uint32_t seed
-		) {
+		)
+		{
 			std::vector<BladedGrassPatchShader::Vertex> vertices;
 			vertices.reserve(maxNumBlades);
 
@@ -74,12 +70,6 @@ namespace view
 				}
 			}
 
-			numVertices_ = vertices.size();
-			texture_ = grassTexture;
-			specularColor_ = specularColor;
-			timeElapsed_ = 0.f;
-			windStrength_ = windStrength;
-
 			std::uint32_t n = vertices.size();
 			glm::vec3 origin(0.f, 0.f, 0.f);
 			float radius = 0.f;
@@ -91,9 +81,68 @@ namespace view
 			{
 				radius = glm::max(radius, (float)(v.Pos - origin).length());
 			}
-			boundingSphere_ = model::geo::Sphere(origin, radius);
 
-			return prepareInternal(vertices, shader, pso, vao_, vb_, numVertices_);
+			return BladedGrassPatchEntity::CPUDeferrableWork({ vertices, model::geo::Sphere(origin, radius) });
+		}
+
+		bool BladedGrassPatchEntity::prepare(
+			std::shared_ptr<BladedGrassPatchShader> shader,
+			util::PipelineState& pso,
+			std::shared_ptr<model::specialgeo::Heightfield> heightfield,
+			std::shared_ptr<util::SurfaceProbabilityFieldBase> bladeGenerationProbability,
+			std::shared_ptr<view::Texture> grassTexture,
+			std::shared_ptr<util::SurfaceMaskBase> surfaceMask,
+			const glm::vec2& minXZ, const glm::vec2& maxXZ,
+			std::uint32_t maxNumBlades,
+			float minBaseWidth, float maxBaseWidth,
+			float minHeight, float maxHeight,
+			float minRotation, float maxRotation,
+			float minTwistRate, float maxTwistRate,
+			float minTaperRate, float maxTaperRate,
+			const glm::vec4& specularColor,
+			float windStrength,
+			std::uint32_t seed
+		) {
+			auto deferrableWorkOpt = prepareCPUDeferrable(
+				heightfield, bladeGenerationProbability, surfaceMask,
+				minXZ, maxXZ, maxNumBlades, minBaseWidth, maxBaseWidth,
+				minHeight, maxHeight, minRotation, maxRotation, minTwistRate, maxTwistRate,
+				minTaperRate, maxTaperRate, seed);
+
+			if (!deferrableWorkOpt)
+			{
+				return false;
+			}
+
+			return prepareFromDeferrable(*deferrableWorkOpt, shader, pso, grassTexture, specularColor, windStrength);
+		}
+
+		bool BladedGrassPatchEntity::prepareFromDeferrable(
+			const BladedGrassPatchEntity::CPUDeferrableWork& result,
+			std::shared_ptr<BladedGrassPatchShader> shader,
+			util::PipelineState& pso,
+			std::shared_ptr<view::Texture> grassTexture,
+			const glm::vec4& specularColor,
+			float windStrength
+		) {
+			auto verts = result.Vertices;
+			auto boundingSphere = result.BoundingSphere;
+
+			numVertices_ = verts.size();
+			texture_ = grassTexture;
+			specularColor_ = specularColor;
+			timeElapsed_ = 0.f;
+			windStrength_ = windStrength;
+			boundingSphere_ = boundingSphere;
+
+			if (numVertices_ == 0u)
+			{
+				return false;
+			}
+			else
+			{
+				return prepareInternal(verts, shader, pso, vao_, vb_, numVertices_);
+			}
 		}
 
 		bool BladedGrassPatchEntity::release()
@@ -107,7 +156,12 @@ namespace view
 			timeElapsed_ += dt;
 		}
 
-		void BladedGrassPatchEntity::render(std::shared_ptr<BladedGrassPatchShader> shader)
+		std::uint32_t BladedGrassPatchEntity::numBlades() const
+		{
+			return numVertices_;
+		}
+
+		void BladedGrassPatchEntity::render(std::shared_ptr<BladedGrassPatchShader> shader, float percentageToDraw)
 		{
 			shader->setWorldMatrix(worldTransform());
 			shader->setGrassBladeTexture(texture_);
@@ -116,6 +170,8 @@ namespace view
 			shader->setWind(windStrength_);
 
 			shader->submitUBOs();
+
+			unsigned int toDraw = (unsigned int)(glm::min(glm::max(0.f, percentageToDraw), 1.f) * numVertices_);
 
 			glBindVertexArray(vao_);
 			glDrawArrays(GL_POINTS, 0u, numVertices_);

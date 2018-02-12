@@ -157,6 +157,7 @@
     <ClCompile Include="src\model\specialgeo\metaball\metaballgroup.cpp" />
     <ClCompile Include="src\model\specialgeo\projection\perspectiveprojection.cpp" />
     <ClCompile Include="src\model\withworldtransform.cpp" />
+    <ClCompile Include="src\sim\lakescene\bladedgrass.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\tree.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\treeloader.cpp" />
     <ClCompile Include="src\sim\lakescene\lakescene.cpp" />

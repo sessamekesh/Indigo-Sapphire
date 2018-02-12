@@ -18,6 +18,7 @@
 #include <view/terrainshader/assets/genericblendedterrainentity.h>
 #include <util/camera/heightmapcamera.h>
 #include <model/specialgeo/projection/projectionbase.h>
+#include <sim/lakescene/bladedgrass.h>
 
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
@@ -25,8 +26,16 @@
 #include <view/grass/billboardgrassshader.h>
 #include <view/grass/billboardgrassentity.h>
 
-// TODO SESS: Also, loading times are high enough that THREADING is a thing to consider on CPU-side stuff
-//  (especially loading things from Assimp, and processing the vertices)
+// TODO SESS: Each entity should have a "generate" and a "prepare" method (though be careful about naming!)
+//  "generate" MAY be called before "prepare"
+//  "prepare" MUST be called before using.
+//  "generate" may be performed on any thread, but "prepare" must be called on the main thread
+//  If "generate" has not been called when "prepare" is called, "prepare" calls "generate" and awaits result synchronously
+//  "prepare" blocks until the results of "generate" are available. Again, "generate" may be called from a separate thread.
+//  To make life easier, it may be worth having a "setup" method that sets internal state before calling "generate", to avoid large lambdas
+// TODO SESS: Grass entities should use a heirarchial bounding geometry rough test - this prevents iterating over a huge list of things
+// TODO SESS: Increase maximum density on grass entities (or probability field - actual scene is very grass-sparse)
+// TODO SESS: Finish frustum culling implementation (in perspective projection) and apply to grass entity
 // http://assimp.sourceforge.net/lib_html/class_assimp_1_1_importer.html - individual importers are not thread-safe
 //  Create a MODEL for each thing you'll be using, as well as an ENTITY
 //  This is how you should probably organize things moving forward.
@@ -72,6 +81,8 @@ namespace sim
 			bool teardownTextures();
 			bool loadSingleTexture(std::string texName, std::string fName);
 			bool loadSingleTexture(std::string texName, std::shared_ptr<model::ImageData> imageData);
+			bool setupTerrain(std::shared_ptr<model::specialgeo::Heightfield> generatedHeightfield);
+			bool teardownTerrain();
 
 			//
 			// Shaders
@@ -83,6 +94,18 @@ namespace sim
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
 			std::shared_ptr<view::grass::BillboardGrassShader> grassShader_;
+
+			//
+			// System
+			//
+		private:
+			util::ThreadPool threadPool_;
+
+			//
+			// Subsystems
+			//
+		private:
+			std::shared_ptr<sim::lake::BladedGrass> bladedGrass_;
 
 			//
 			// Models
