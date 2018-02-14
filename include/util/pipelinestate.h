@@ -5,9 +5,25 @@
 
 namespace util
 {
-	struct PipelineState
+	class PipelineState
 	{
 	public:
-		unsigned int BOUND_VERTEX_ATTRIB_PTR = 0u;
+		PipelineState();
+
+	public:
+		unsigned int BOUND_VERTEX_ATTRIB_PTR;
+
+	public:
+		void enableDepthTest();
+		void disableDepthTest();
+		void enableDepthMask();
+		void disableDepthMask();
+		void enableBlending();
+		void disableBlending();
+
+	protected:
+		bool isDepthTestEnabled_;
+		bool isDepthMaskOn_;
+		bool isBlendingEnabled_;
 	};
 }

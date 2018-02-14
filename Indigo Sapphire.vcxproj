@@ -155,6 +155,7 @@
     <ClCompile Include="src\model\specialgeo\metaball\debugmetaballgroup.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\metaball.cpp" />
     <ClCompile Include="src\model\specialgeo\metaball\metaballgroup.cpp" />
+    <ClCompile Include="src\model\specialgeo\projection\orthographicprojection.cpp" />
     <ClCompile Include="src\model\specialgeo\projection\perspectiveprojection.cpp" />
     <ClCompile Include="src\model\withworldtransform.cpp" />
     <ClCompile Include="src\sim\lakescene\bladedgrass.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="src\util\Logger.cpp" />
     <ClCompile Include="src\util\math\linear11.cpp" />
     <ClCompile Include="src\util\math\quadraticeaseout11.cpp" />
+    <ClCompile Include="src\util\pipelinestate.cpp" />
     <ClCompile Include="src\util\surfacemask\allenabledmask.cpp" />
     <ClCompile Include="src\util\surfacemask\combinationmask.cpp" />
     <ClCompile Include="src\util\surfacemask\combinationprobabilityfield.cpp" />
@@ -242,6 +244,7 @@
     <ClInclude Include="include\model\specialgeo\metaball\imetaballpath.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaball.h" />
     <ClInclude Include="include\model\specialgeo\metaball\metaballgroup.h" />
+    <ClInclude Include="include\model\specialgeo\projection\orthographicprojection.h" />
     <ClInclude Include="include\model\specialgeo\projection\perspectiveprojection.h" />
     <ClInclude Include="include\model\specialgeo\projection\projectionbase.h" />
     <ClInclude Include="include\model\specialgeo\water\ripple.h" />

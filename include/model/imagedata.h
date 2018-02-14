@@ -22,8 +22,11 @@ namespace model
 	};
 
 	std::optional<ImageData> readPNG(std::string fName);
+	std::optional<GreyscaleImageData> readGreyscalePNG(std::string fName);
+
 	bool writePNG(const ImageData& image, std::string fName);
+	bool writePNG(const GreyscaleImageData& image, std::string fName);
+
 	void flip(ImageData& image);
 
-	std::optional<GreyscaleImageData> readGreyscalePNG(std::string fName);
 }

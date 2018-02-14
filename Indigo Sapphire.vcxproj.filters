@@ -471,6 +471,12 @@
     <ClCompile Include="src\sim\lakescene\bladedgrass.cpp">
       <Filter>Source Files\sim\lakescene</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\pipelinestate.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\specialgeo\projection\orthographicprojection.cpp">
+      <Filter>Source Files\model\specialgeo\projection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -771,6 +777,9 @@
       <Filter>Header Files\model\specialgeo\projection</Filter>
     </ClInclude>
     <ClInclude Include="include\model\specialgeo\projection\perspectiveprojection.h">
+      <Filter>Header Files\model\specialgeo\projection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\specialgeo\projection\orthographicprojection.h">
       <Filter>Header Files\model\specialgeo\projection</Filter>
     </ClInclude>
   </ItemGroup>

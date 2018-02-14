@@ -11,7 +11,7 @@ namespace sim
 	{
 		BladedGrassConfig BladedGrass::STANDARD_COMPILED_CONFIG = {
 			25.f,
-			100.f,
+			1000.f,
 			0.005f, 0.018f,
 			0.05f, 0.12f,
 			0.f, 3.14f,

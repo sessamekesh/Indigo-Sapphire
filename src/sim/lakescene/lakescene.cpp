@@ -12,6 +12,7 @@
 #include <model/specialgeo/heightfield/reducedheightfield.h>
 
 #include <model/specialgeo/projection/perspectiveprojection.h>
+#include <model/specialgeo/projection/orthographicprojection.h>
 
 // Grass things - should move into their own grass file!
 #include <util/math/quadraticeaseout11.h>
@@ -70,6 +71,7 @@ namespace sim
 			, terrainHeightmap_(nullptr)
 			, waterReflectionFramebuffer_(nullptr)
 			, waterRefractionFramebuffer_(nullptr)
+			, textureGenFramebuffer_(nullptr)
 		{
 			registerParser(parserFactory.floatParser());
 			registerParser(parserFactory.vec3Parser());
@@ -130,13 +132,33 @@ namespace sim
 			}
 		}
 
-		void LakeScene::renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, const std::optional<model::geo::Plane>& clipPlane)
+		void LakeScene::renderTerrain(std::shared_ptr<util::camera::CameraBase> camera, std::shared_ptr<model::specialgeo::ProjectionBase> projection, const std::optional<model::geo::Plane>& clipPlane)
+		{
+			pso_.disableBlending();
+			pso_.enableDepthTest();
+			pso_.enableDepthMask();
+			if (blendedTerrainShader_->activate())
+			{
+				if (clipPlane)
+				{
+					blendedTerrainShader_->setClipPlane(*clipPlane);
+				}
+
+				blendedTerrainShader_->setViewMatrix(camera->getViewTransform());
+				blendedTerrainShader_->setProjMatrix(projection->getProjectionMatrix());
+				blendedTerrainShader_->setLight(sunlight_);
+
+				blendedTerrainEntity_->render(blendedTerrainShader_);
+			}
+		}
+
+		void LakeScene::renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::shared_ptr<model::specialgeo::ProjectionBase> projection, const std::optional<model::geo::Plane>& clipPlane)
 		{
 			// TODO SESS: Things like depth test, etc., should be handled in the PSO (to avoid setting redundant state)
 			// Skybox before all else
-			glDepthMask(GL_FALSE);
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_BLEND);
+			pso_.disableDepthTest();
+			pso_.disableDepthMask();
+			pso_.disableBlending();
 			if (skyboxShader_->activate())
 			{
 				if (clipPlane)
@@ -144,7 +166,7 @@ namespace sim
 					skyboxShader_->setClipPlane(*clipPlane);
 				}
 
-				skyboxShader_->setProjMatrix(projection_->getProjectionMatrix());
+				skyboxShader_->setProjMatrix(projection->getProjectionMatrix());
 				skyboxShader_->setViewMatrix(camera->getViewTransform());
 
 				skybox_->render(skyboxShader_, pso_);
@@ -157,8 +179,8 @@ namespace sim
 			//
 			// Opaque shading first
 			//
-			glEnable(GL_DEPTH_TEST);
-			glDepthMask(GL_TRUE);
+			pso_.enableDepthTest();
+			pso_.enableDepthMask();
 			if (mappedPhongShader_->activate())
 			{
 				if (clipPlane)
@@ -167,7 +189,7 @@ namespace sim
 				}
 
 				mappedPhongShader_->setViewMatrix(camera->getViewTransform());
-				mappedPhongShader_->setProjMatrix(projection_->getProjectionMatrix());
+				mappedPhongShader_->setProjMatrix(projection->getProjectionMatrix());
 				mappedPhongShader_->setLight(sunlight_);
 				mappedPhongShader_->setShininess(200.f);
 				mappedPhongShader_->setCameraPosition(camera->pos());
@@ -175,19 +197,8 @@ namespace sim
 				boulderTest_->render(mappedPhongShader_);
 			}
 
-			if (blendedTerrainShader_->activate())
-			{
-				if (clipPlane)
-				{
-					blendedTerrainShader_->setClipPlane(*clipPlane);
-				}
-
-				blendedTerrainShader_->setViewMatrix(camera->getViewTransform());
-				blendedTerrainShader_->setProjMatrix(projection_->getProjectionMatrix());
-				blendedTerrainShader_->setLight(sunlight_);
-
-				blendedTerrainEntity_->render(blendedTerrainShader_);
-			}
+			// TODO SESS: There's a bug here, somehow.
+			renderTerrain(camera, projection, clipPlane);
 
 			if (grassShader_->activate())
 			{
@@ -197,7 +208,7 @@ namespace sim
 				}
 
 				grassShader_->setViewMatrix(camera->getViewTransform());
-				grassShader_->setProjMatrix(projection_->getProjectionMatrix());
+				grassShader_->setProjMatrix(projection->getProjectionMatrix());
 				grassShader_->setEyePos(camera->pos());
 
 				for (auto&& ge : grassEntities_)
@@ -214,13 +225,13 @@ namespace sim
 				}
 
 				solidShader_->setViewMatrix(camera->getViewTransform());
-				solidShader_->setProjMatrix(projection_->getProjectionMatrix());
+				solidShader_->setProjMatrix(projection->getProjectionMatrix());
 				testProctreeEntity_->render(solidShader_);
 				//genericSolidTerrain_->render(solidShader_);
 			}
 
 			bladedGrass_->render(
-				camera, projection_, sunlight_, clipPlane
+				camera, projection, sunlight_, clipPlane
 			);
 		}
 
@@ -244,11 +255,11 @@ namespace sim
 			waterReflectionCamera_->reflectionPlane(waterReflectionPlane);
 			waterReflectionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			renderEnvironment(waterReflectionCamera_, waterReflectionPlane);
+			renderEnvironment(waterReflectionCamera_, projection_, waterReflectionPlane);
 			waterRefractionFramebuffer_->bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			//renderEnvironment(mainCamera_, waterRefractionPlane);
-			renderEnvironment(heightmapCamera_, waterRefractionPlane);
+			renderEnvironment(heightmapCamera_, projection_, waterRefractionPlane);
 			view::Framebuffer::bindDefaultFramebuffer();
 			glViewport(0, 0, width, height);
 
@@ -257,13 +268,13 @@ namespace sim
 			//
 			glDisable(GL_CLIP_DISTANCE0);
 			//renderEnvironment(mainCamera_);
-			renderEnvironment(heightmapCamera_);
+			renderEnvironment(heightmapCamera_, projection_);
 
 			//
 			// Water surface
 			//
 			glDisable(GL_CULL_FACE);
-			glDisable(GL_BLEND);
+			pso_.disableBlending();
 			if (waterSurfaceShader_->activate())
 			{
 				//waterSurfaceShader_->setViewMatrix(mainCamera_->getViewTransform());
@@ -363,9 +374,6 @@ namespace sim
 			);
 
 			cameraController_ = std::make_shared<input::GamepadCameraController>(0);
-			// TODO SESS: The current heightfield causes height(point) to be a non-continuous function.
-			//  It REALLY REALLY needs to be continuous.
-			//  It doesn't need to be differentiable, though that would be a perk.
 			heightmapCamera_ = std::shared_ptr<util::camera::HeightmapCamera>(new util::camera::HeightmapCamera(
 				glm::vec3(0.f, 2.f, 0.f),
 				glm::vec3(0.f, 1.f, 0.f),
@@ -443,6 +451,8 @@ namespace sim
 				return false;
 			}
 
+			textureGenFramebuffer_ = std::make_shared<view::Framebuffer>();
+
 			if (!setupTerrain(reducedHeightfield))
 			{
 				log.error << "Failed to setup terrain" << util::endl;
@@ -487,6 +497,38 @@ namespace sim
 
 		bool LakeScene::processCommand(const std::vector<std::string>& terms)
 		{
+			if (terms.size() == 3u)
+			{
+				if (terms[0u] == "gen" && terms[1u] == "terrain-heightmap")
+				{
+					auto fName = terms[2u];
+					auto texSize = 1024u;
+					model::GreyscaleImageData heightmap;
+					// TODO SESS: Move the dimensions of the field to some constant, so you don't have to remember 75.f all the time.
+					generateHeightmap(texSize, [this](auto camera, auto projection)->void {
+
+						glClearColor(0.f, 0.f, 0.f, 1.f);
+						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+						
+						// TODO SESS: You should store the minimum and maximum heightmap values, so that you can use those instead of guessing like this.
+						
+						renderTerrain(camera, projection);
+
+					}, heightmap);
+
+					auto path = std::string(RENDER_PATH("") + fName);
+					if (!model::writePNG(heightmap, path))
+					{
+						log.error << "Failed to write PNG to file " << path << "!" << util::endl;
+						return false;
+					}
+					else
+					{
+						return true;
+					}
+				}
+			}
+
 			return false;
 		}
 
@@ -713,7 +755,7 @@ namespace sim
 				new util::HeightmapMask(generatedHeightfield, 12.5f, 1000.f)
 			);
 
-			auto probabilityCurve = std::make_shared<util::math::Linear11>(0.f, 0.f, 0.75f, 1.f);
+			auto probabilityCurve = std::make_shared<util::math::Linear11>(0.5f, 0.f, 0.95f, 1.f);
 			std::shared_ptr<util::TerrainMapColorProbabilityField> probabilityMask = std::shared_ptr<util::TerrainMapColorProbabilityField>(new util::TerrainMapColorProbabilityField(
 				terrainBlendMapImage_, // Image data of the blended terrain
 				75.f, 75.f, // I think?
@@ -821,6 +863,47 @@ namespace sim
 				bladedGrass_->release();
 				bladedGrass_ = nullptr;
 			}
+
+			return true;
+		}
+
+		bool LakeScene::generateHeightmap(std::uint32_t textureWidth, std::function<void(std::shared_ptr<util::camera::CameraBase>, std::shared_ptr<model::specialgeo::ProjectionBase>)> actions, model::GreyscaleImageData& o_img)
+		{
+			if (!textureGenFramebuffer_->init(textureWidth, textureWidth))
+			{
+				log.error << "Failed to initialize texture generation framebuffer!" << util::endl;
+				return false;
+			}
+
+			textureGenFramebuffer_->bind();
+			auto camera = std::shared_ptr<util::camera::CameraBase>(new util::camera::StaticCamera(glm::vec3(0.f, 20.f - 12.5f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, -1.f)));
+			float zNear = 0.f;
+			float zFar = 20.f;
+			auto projection = std::shared_ptr<model::specialgeo::ProjectionBase>(new model::specialgeo::OrthographicProjection(-75.f, 75.f, -75.f, 75.f, zNear, zFar));
+
+			actions(camera, projection);
+
+			o_img.height = textureWidth;
+			o_img.width = textureWidth;
+			o_img.pixels.clear();
+			o_img.pixels.resize(textureWidth * textureWidth);
+			glReadPixels(0u, 0u, textureWidth, textureWidth, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, &o_img.pixels[0]);
+
+			// TODO SESS: Do GPU side post-processing instead of CPU-side post processing
+			for (auto row = 0u; row < textureWidth / 2u; row++)
+			{
+				for (auto col = 0u; col < textureWidth; col++)
+				{
+					auto invRow = textureWidth - 1u - row;
+					std::swap(o_img.pixels[row * textureWidth + col], o_img.pixels[invRow * textureWidth + col]);
+				}
+			}
+			for (auto idx = 0ull; idx < textureWidth * textureWidth; idx++)
+			{
+				o_img.pixels[idx] = 255u - o_img.pixels[idx];
+			}
+
+			view::Framebuffer::bindDefaultFramebuffer();
 
 			return true;
 		}

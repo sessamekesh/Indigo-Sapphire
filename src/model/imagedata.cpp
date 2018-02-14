@@ -74,4 +74,23 @@ namespace model
 			return tr;
 		}
 	}
+
+	bool writePNG(const GreyscaleImageData& image, std::string fName)
+	{
+		std::vector<std::uint8_t> data;
+		unsigned int error = lodepng::encode(data, image.pixels, image.width, image.height, LCT_GREY);
+		if (error)
+		{
+			std::cerr << "Image encoding error - " << error << ": " << lodepng_error_text(error) << std::endl;
+			return false;
+		}
+		error = lodepng::save_file(data, fName);
+		if (error)
+		{
+			std::cerr << "Image saving error - " << error << ": " << lodepng_error_text(error) << std::endl;
+			return false;
+		}
+
+		return true;
+	}
 }

@@ -33,9 +33,16 @@
 //  If "generate" has not been called when "prepare" is called, "prepare" calls "generate" and awaits result synchronously
 //  "prepare" blocks until the results of "generate" are available. Again, "generate" may be called from a separate thread.
 //  To make life easier, it may be worth having a "setup" method that sets internal state before calling "generate", to avoid large lambdas
+// TODO SESS: Make commands to generate a heightmap texture that can be saved or used later
 // TODO SESS: Grass entities should use a heirarchial bounding geometry rough test - this prevents iterating over a huge list of things
 // TODO SESS: Increase maximum density on grass entities (or probability field - actual scene is very grass-sparse)
 // TODO SESS: Finish frustum culling implementation (in perspective projection) and apply to grass entity
+// TODO SESS: Only actually use a couple of grass patches - sample the heightmap height in the vertex shader.
+//  The current implementation actually runs out of CPU memory. Amazing, right?
+// TODO SESS: Improve grass LOD system.
+// TODO SESS: Implement a loading screen!
+// TODO SESS: Deeper water should be blue-r, and super shallow water should just be totally refractive.
+//  Perform a depth sampling - perhaps ahead of time (i.e., use the same heightmap used to generate the vertices for grass) for the shader?
 // http://assimp.sourceforge.net/lib_html/class_assimp_1_1_importer.html - individual importers are not thread-safe
 //  Create a MODEL for each thing you'll be using, as well as an ENTITY
 //  This is how you should probably organize things moving forward.
@@ -71,7 +78,8 @@ namespace sim
 			//
 			// Rendering Organization
 			//
-			void renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, const std::optional<model::geo::Plane>& clipPlane = {});
+			void renderTerrain(std::shared_ptr<util::camera::CameraBase> camera, std::shared_ptr<model::specialgeo::ProjectionBase> projection, const std::optional<model::geo::Plane>& clipPlane = {});
+			void renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::shared_ptr<model::specialgeo::ProjectionBase> projection, const std::optional<model::geo::Plane>& clipPlane = {});
 
 			//
 			// Initialization Helpers
@@ -83,6 +91,11 @@ namespace sim
 			bool loadSingleTexture(std::string texName, std::shared_ptr<model::ImageData> imageData);
 			bool setupTerrain(std::shared_ptr<model::specialgeo::Heightfield> generatedHeightfield);
 			bool teardownTerrain();
+
+			//
+			// Baking Helpers
+			//
+			bool generateHeightmap(std::uint32_t textureWidth, std::function<void(std::shared_ptr<util::camera::CameraBase>, std::shared_ptr<model::specialgeo::ProjectionBase>)> actions, model::GreyscaleImageData& o_img);
 
 			//
 			// Shaders
@@ -145,6 +158,7 @@ namespace sim
 			//
 			std::shared_ptr<view::Framebuffer> waterReflectionFramebuffer_;
 			std::shared_ptr<view::Framebuffer> waterRefractionFramebuffer_;
+			std::shared_ptr<view::Framebuffer> textureGenFramebuffer_;
 
 			//
 			// Properties
