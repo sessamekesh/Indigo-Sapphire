@@ -427,7 +427,7 @@ namespace sim
 					0.02f, // DUDV scale
 					0.f, // DUDV offset
 					0.05f, // DUDV offset velocity
-					20.f, // Shine damper
+					200.f, // Shine damper
 					0.6f // Reflectivity
 				)
 			);
@@ -778,11 +778,11 @@ namespace sim
 			}
 
 			{
-				std::vector<float> threshholds = { 0.2f, 0.4f, 0.85f, 0.995f };
-				std::vector<float> offsetMins = { 1.0f, 0.5f, 0.075f, 0.025f };
-				std::vector<float> offsetMaxs = { 2.6f, 0.9f, 0.25f, 0.075f };
-				std::vector<std::uint32_t> seeds = { 1, 2, 3, 4 };
-				grassEntities_.reserve(4u);
+				std::vector<float> threshholds = { 0.2f, 0.4f };
+				std::vector<float> offsetMins = { 1.0f, 0.5f };
+				std::vector<float> offsetMaxs = { 2.6f, 0.9f };
+				std::vector<std::uint32_t> seeds = { 1, 2 };
+				grassEntities_.reserve(2u);
 				// TODO SESS:
 				// - Different types of vegetation, to give variety.
 				// - Combine with a "heightfield" sample, to make sure no grass grows below water

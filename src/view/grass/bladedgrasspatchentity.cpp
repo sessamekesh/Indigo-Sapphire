@@ -79,7 +79,7 @@ namespace view
 			}
 			for (auto&& v : vertices)
 			{
-				radius = glm::max(radius, (float)(v.Pos - origin).length());
+				radius = glm::max(radius, glm::sqrt(glm::dot(v.Pos - origin, v.Pos - origin)));
 			}
 
 			return BladedGrassPatchEntity::CPUDeferrableWork({ vertices, model::geo::Sphere(origin, radius) });
