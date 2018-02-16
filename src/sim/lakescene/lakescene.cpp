@@ -18,7 +18,6 @@
 #include <util/math/quadraticeaseout11.h>
 #include <util/math/linear11.h>
 #include <util/surfacemask/combinationprobabilityfield.h>
-#include <util/surfacemask/terrainmapcolorprobabilityfield.h>
 
 // TODO SESS: Start collecting footage of you actually programming/working on this for buzz reel
 
@@ -72,6 +71,10 @@ namespace sim
 			, waterReflectionFramebuffer_(nullptr)
 			, waterRefractionFramebuffer_(nullptr)
 			, textureGenFramebuffer_(nullptr)
+			, heightmapMaxHeight_(20.f)
+			, terrainOffsetY_(-12.5f)
+			, terrainDimensions_(150.f, 150.f)
+			, grassProbabilityMask_(nullptr)
 		{
 			registerParser(parserFactory.floatParser());
 			registerParser(parserFactory.vec3Parser());
@@ -367,7 +370,7 @@ namespace sim
 			));
 
 			auto heightfield = std::shared_ptr<model::specialgeo::Heightfield>(
-				new model::specialgeo::HeightmapHeightfield(terrainHeightmap_, 75.f, 75.f, 20.f)
+				new model::specialgeo::HeightmapHeightfield(terrainHeightmap_, terrainDimensions_.x / 2.f, terrainDimensions_.y / 2.f, heightmapMaxHeight_)
 			);
 			auto reducedHeightfield = std::shared_ptr<model::specialgeo::Heightfield>(
 				new model::specialgeo::ReducedHeightfield(heightfield, 380u, 380u)
@@ -497,6 +500,7 @@ namespace sim
 
 		bool LakeScene::processCommand(const std::vector<std::string>& terms)
 		{
+			// TODO SESS: Commands should instead be registered, and probably handled via a trie or something.
 			if (terms.size() == 3u)
 			{
 				if (terms[0u] == "gen" && terms[1u] == "terrain-heightmap")
@@ -504,13 +508,10 @@ namespace sim
 					auto fName = terms[2u];
 					auto texSize = 1024u;
 					model::GreyscaleImageData heightmap;
-					// TODO SESS: Move the dimensions of the field to some constant, so you don't have to remember 75.f all the time.
 					generateHeightmap(texSize, [this](auto camera, auto projection)->void {
 
 						glClearColor(0.f, 0.f, 0.f, 1.f);
 						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-						
-						// TODO SESS: You should store the minimum and maximum heightmap values, so that you can use those instead of guessing like this.
 						
 						renderTerrain(camera, projection);
 
@@ -518,6 +519,41 @@ namespace sim
 
 					auto path = std::string(RENDER_PATH("") + fName);
 					if (!model::writePNG(heightmap, path))
+					{
+						log.error << "Failed to write PNG to file " << path << "!" << util::endl;
+						return false;
+					}
+					else
+					{
+						return true;
+					}
+				}
+				else if (terms[0u] == "gen" && terms[1u] == "grass-probability-field")
+				{
+					auto fName = terms[2u];
+					auto texSize = 1024u;
+					model::GreyscaleImageData probabilityField;
+					probabilityField.height = texSize;
+					probabilityField.width = texSize;
+					probabilityField.pixels.resize(texSize * texSize);
+
+					for (auto row = 0u; row < texSize; row++)
+					{
+						for (auto col = 0u; col < texSize; col++)
+						{
+							auto pxIdx = row * texSize + col;
+
+							glm::vec2 loc;
+							loc.x = (((float)row / (float)texSize) * 2.f - 1.f) * terrainDimensions_.x * 0.5f;
+							loc.y = (((float)col / (float)texSize) * 2.f - 1.f) * terrainDimensions_.y * 0.5f;
+							auto probability = grassProbabilityMask_->getProbabilityAtPoint(loc);
+
+							probabilityField.pixels[pxIdx] = probability * 255.f;
+						}
+					}
+
+					auto path = std::string(RENDER_PATH("") + fName);
+					if (!model::writePNG(probabilityField, path))
 					{
 						log.error << "Failed to write PNG to file " << path << "!" << util::endl;
 						return false;
@@ -535,7 +571,6 @@ namespace sim
 		bool LakeScene::initializeProperties()
 		{
 			// This is a wee bit awkward, eh?
-			// TODO SESS: Make a parser for the water surface as well
 			registerProperty("camera", util::command::StaticCameraParser::uuid, std::static_pointer_cast<void>(mainCamera_));
 			registerProperty("terrain_base", util::command::WithWorldTransformParser::uuid, std::static_pointer_cast<void>(blendedTerrainEntity_));
 			registerProperty("sunlight", util::command::DirectionalLightParser::uuid, std::shared_ptr<void>(&sunlight_, [](void*) {}));
@@ -732,17 +767,17 @@ namespace sim
 				heightMapTerrainRawEntity_ = std::make_shared<view::raw::HeightmapTerrainEntity>(generatedHeightfield);
 
 				blendedTerrainEntity_ = std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity>(new view::terrainshader::GenericBlendedTerrainEntity(
-					glm::vec3(0.f, -12.5f, 0.f),
+					glm::vec3(0.f, terrainOffsetY_, 0.f),
 					glm::angleAxis(0.f, glm::vec3(1.f, 0.f, 0.f)),
 					glm::vec3(1.f, 1.f, 1.f),
 					heightMapTerrainRawEntity_->getMeshData(380u, 380u, 1.f, true),
 					textures_["terrainBlendMap"],
 					textures_["terrainDirt"],
-					150.f,
+					glm::max(terrainDimensions_.x, terrainDimensions_.y),
 					textures_["terrainGrass"],
-					150.f,
+					glm::max(terrainDimensions_.x, terrainDimensions_.y),
 					textures_["terrainMud"],
-					150.f
+					glm::max(terrainDimensions_.x, terrainDimensions_.y)
 				));
 				if (!blendedTerrainEntity_ || !blendedTerrainEntity_->prepare(blendedTerrainShader_, pso_))
 				{
@@ -752,26 +787,26 @@ namespace sim
 			}
 
 			auto aboveWaterHeightfieldMask = std::shared_ptr<util::HeightmapMask>(
-				new util::HeightmapMask(generatedHeightfield, 12.5f, 1000.f)
+				new util::HeightmapMask(generatedHeightfield, -terrainOffsetY_, 1000.f)
 			);
 
 			auto probabilityCurve = std::make_shared<util::math::Linear11>(0.5f, 0.f, 0.95f, 1.f);
-			std::shared_ptr<util::TerrainMapColorProbabilityField> probabilityMask = std::shared_ptr<util::TerrainMapColorProbabilityField>(new util::TerrainMapColorProbabilityField(
+			grassProbabilityMask_ = std::shared_ptr<util::TerrainMapColorProbabilityField>(new util::TerrainMapColorProbabilityField(
 				terrainBlendMapImage_, // Image data of the blended terrain
-				75.f, 75.f, // I think?
+				terrainDimensions_.x / 2.f, terrainDimensions_.y / 2.f,
 				probabilityCurve, // 1:1 probability curve (linear?)
 				{ util::COLOR_COMPONENT_G },
 				{ util::COLOR_COMPONENT_B, util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G }
 			));
 			bladedGrass_ = std::shared_ptr<sim::lake::BladedGrass>(new sim::lake::BladedGrass(
 				generatedHeightfield,
-				probabilityMask,
+				grassProbabilityMask_,
 				aboveWaterHeightfieldMask,
-				glm::vec3(0.f, -12.5f, 0.f),
+				glm::vec3(0.f, terrainOffsetY_, 0.f),
 				sim::lake::BladedGrass::STANDARD_COMPILED_CONFIG
 			));
 
-			if (!(bladedGrass_ && bladedGrass_->prepare(glm::vec2(-75.f, -75.f), glm::vec2(75.f, 75.f), pso_, threadPool_)))
+			if (!(bladedGrass_ && bladedGrass_->prepare(-terrainDimensions_ * 0.5f, terrainDimensions_ * 0.5f, pso_, threadPool_)))
 			{
 				log.error << "Failed to create bladed grass subsystem" << util::endl;
 				return false;
@@ -792,7 +827,7 @@ namespace sim
 				{
 					grassEntities_.push_back(
 						std::make_shared<view::grass::BillboardGrassEntity>(
-							glm::vec3(0.f, -12.5f, 0.f),
+							glm::vec3(0.f, terrainOffsetY_, 0.f),
 							glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
 							glm::vec3(1.f, 1.f, 1.f)
 							)
@@ -800,7 +835,7 @@ namespace sim
 					auto terrainColorMask = std::shared_ptr<util::TerrainMapColorMask>(
 						new util::TerrainMapColorMask(
 							terrainBlendMapImage_,
-							75.f, 75.f, // TODO SESS: This really should be localized somewhere, instead of just remembering the width/depth
+							terrainDimensions_.x * 0.5f, terrainDimensions_.y * 0.5f,
 							threshholds[idx],
 							{ util::COLOR_COMPONENT_G },
 							{ util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G, util::COLOR_COMPONENT_B },
@@ -876,10 +911,10 @@ namespace sim
 			}
 
 			textureGenFramebuffer_->bind();
-			auto camera = std::shared_ptr<util::camera::CameraBase>(new util::camera::StaticCamera(glm::vec3(0.f, 20.f - 12.5f, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, -1.f)));
+			auto camera = std::shared_ptr<util::camera::CameraBase>(new util::camera::StaticCamera(glm::vec3(0.f, heightmapMaxHeight_ + terrainOffsetY_, 0.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, -1.f)));
 			float zNear = 0.f;
-			float zFar = 20.f;
-			auto projection = std::shared_ptr<model::specialgeo::ProjectionBase>(new model::specialgeo::OrthographicProjection(-75.f, 75.f, -75.f, 75.f, zNear, zFar));
+			float zFar = heightmapMaxHeight_;
+			auto projection = std::shared_ptr<model::specialgeo::ProjectionBase>(new model::specialgeo::OrthographicProjection(-terrainDimensions_.x / 2.f, terrainDimensions_.x / 2.f, -terrainDimensions_.y / 2.f, terrainDimensions_.y / 2.f, zNear, zFar));
 
 			actions(camera, projection);
 

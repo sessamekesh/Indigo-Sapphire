@@ -25,6 +25,7 @@
 
 #include <view/grass/billboardgrassshader.h>
 #include <view/grass/billboardgrassentity.h>
+#include <util/surfacemask/terrainmapcolorprobabilityfield.h>
 
 // TODO SESS: Each entity should have a "generate" and a "prepare" method (though be careful about naming!)
 //  "generate" MAY be called before "prepare"
@@ -163,6 +164,10 @@ namespace sim
 			//
 			// Properties
 			//
+			glm::vec2 terrainDimensions_;
+			float heightmapMaxHeight_;
+			float terrainOffsetY_;
+			std::shared_ptr<util::TerrainMapColorProbabilityField> grassProbabilityMask_;
 
 			//
 			// I/O
