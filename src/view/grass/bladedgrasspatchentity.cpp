@@ -179,7 +179,7 @@ namespace view
 
 		model::geo::Sphere BladedGrassPatchEntity::getBoundingSphere()
 		{
-			return boundingSphere_;
+			return model::geo::Sphere(boundingSphere_.origin() + pos(), boundingSphere_.radius());
 		}
 	}
 }

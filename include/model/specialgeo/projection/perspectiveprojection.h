@@ -24,6 +24,7 @@ namespace model
 
 		protected:
 			float fovy_;
+			float fovx_;
 			float aspectRatio_;
 			float nearPlane_;
 			float farPlane_;

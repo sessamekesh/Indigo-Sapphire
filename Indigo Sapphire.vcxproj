@@ -222,6 +222,7 @@
     <ClCompile Include="src\view\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\core\staticboundingspheretree.h" />
     <ClInclude Include="include\input\cameracontrollerbase.h" />
     <ClInclude Include="include\input\gamepadcameracontroller.h" />
     <ClInclude Include="include\lodepng.h" />

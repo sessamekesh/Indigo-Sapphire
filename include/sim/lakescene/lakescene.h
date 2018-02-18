@@ -23,8 +23,6 @@
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
 
-#include <view/grass/billboardgrassshader.h>
-#include <view/grass/billboardgrassentity.h>
 #include <util/surfacemask/terrainmapcolorprobabilityfield.h>
 
 // TODO SESS: Each entity should have a "generate" and a "prepare" method (though be careful about naming!)
@@ -107,7 +105,6 @@ namespace sim
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
-			std::shared_ptr<view::grass::BillboardGrassShader> grassShader_;
 
 			//
 			// System
@@ -143,8 +140,6 @@ namespace sim
 			std::shared_ptr<view::solidshader::GenericSolidEntity> testProctreeEntity_;
 			std::shared_ptr<view::raw::HeightmapTerrainEntity> heightMapTerrainRawEntity_;
 			std::shared_ptr<view::terrainshader::GenericBlendedTerrainEntity> blendedTerrainEntity_;
-			
-			std::vector<std::shared_ptr<view::grass::BillboardGrassEntity>> grassEntities_;
 
 			//
 			// Textures

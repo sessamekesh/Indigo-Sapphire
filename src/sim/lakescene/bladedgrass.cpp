@@ -259,9 +259,10 @@ namespace sim
 					auto numBlades = grassEntity->numBlades();
 					
 					bool showThisOne = true;
+					auto sphere = grassEntity->getBoundingSphere();
 					for (auto&& plane : frustum)
 					{
-						showThisOne &= model::geo::isSphereAtAllInPlane(plane, grassEntity->getBoundingSphere());
+						showThisOne &= model::geo::isSphereAtAllInPlane(plane, sphere);
 					}
 
 					numBladesInScene_ += numBlades;

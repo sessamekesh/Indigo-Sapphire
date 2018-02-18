@@ -46,8 +46,7 @@ namespace sim
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
 			, mappedPhongShader_(nullptr)
-			, grassShader_(nullptr)
-			, threadPool_(8u) // TODO SESS: This should be based on the number of CPU cores perhaps?
+			, threadPool_(12u) // TODO SESS: This should be based on the number of CPU cores perhaps?
 			, bladedGrass_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
@@ -90,10 +89,6 @@ namespace sim
 			bladedGrass_->update(dt);
 
 			lakeSurface_->update(dt);
-			for (auto&& ge : grassEntities_)
-			{
-				ge->update(dt);
-			}
 			cameraController_->tick();
 
 			auto ng = glm::angle(skybox_->rot());
@@ -203,23 +198,6 @@ namespace sim
 			// TODO SESS: There's a bug here, somehow.
 			renderTerrain(camera, projection, clipPlane);
 
-			if (grassShader_->activate())
-			{
-				if (clipPlane)
-				{
-					grassShader_->setClipPlane(*clipPlane);
-				}
-
-				grassShader_->setViewMatrix(camera->getViewTransform());
-				grassShader_->setProjMatrix(projection->getProjectionMatrix());
-				grassShader_->setEyePos(camera->pos());
-
-				for (auto&& ge : grassEntities_)
-				{
-					ge->render(grassShader_);
-				}
-			}
-
 			if (solidShader_->activate())
 			{
 				if (clipPlane)
@@ -328,13 +306,6 @@ namespace sim
 			if (!mappedPhongShader_ || !mappedPhongShader_->initialize())
 			{
 				log.error << "Failed to create mapped phong shader" << util::endl;
-				return false;
-			}
-
-			grassShader_ = std::make_shared<view::grass::BillboardGrassShader>();
-			if (!grassShader_ || !grassShader_->initialize())
-			{
-				log.error << "Failed to create grass shader" << util::endl;
 				return false;
 			}
 
@@ -544,8 +515,8 @@ namespace sim
 							auto pxIdx = row * texSize + col;
 
 							glm::vec2 loc;
-							loc.x = (((float)row / (float)texSize) * 2.f - 1.f) * terrainDimensions_.x * 0.5f;
-							loc.y = (((float)col / (float)texSize) * 2.f - 1.f) * terrainDimensions_.y * 0.5f;
+							loc.x = (((float)col / (float)texSize) * 2.f - 1.f) * terrainDimensions_.x * 0.5f;
+							loc.y = (((float)row / (float)texSize) * 2.f - 1.f) * terrainDimensions_.y * 0.5f;
 							auto probability = grassProbabilityMask_->getProbabilityAtPoint(loc);
 
 							probabilityField.pixels[pxIdx] = probability * 255.f;
@@ -790,7 +761,7 @@ namespace sim
 				new util::HeightmapMask(generatedHeightfield, -terrainOffsetY_, 1000.f)
 			);
 
-			auto probabilityCurve = std::make_shared<util::math::Linear11>(0.5f, 0.f, 0.95f, 1.f);
+			auto probabilityCurve = std::make_shared<util::math::Linear11>(0.45f, 0.001f, 0.95f, 1.f);
 			grassProbabilityMask_ = std::shared_ptr<util::TerrainMapColorProbabilityField>(new util::TerrainMapColorProbabilityField(
 				terrainBlendMapImage_, // Image data of the blended terrain
 				terrainDimensions_.x / 2.f, terrainDimensions_.y / 2.f,
@@ -806,56 +777,10 @@ namespace sim
 				sim::lake::BladedGrass::STANDARD_COMPILED_CONFIG
 			));
 
-			if (!(bladedGrass_ && bladedGrass_->prepare(-terrainDimensions_ * 0.5f, terrainDimensions_ * 0.5f, pso_, threadPool_)))
+			if (!(bladedGrass_ && bladedGrass_->prepare(-terrainDimensions_ * 0.125f, terrainDimensions_ * 0.225f, pso_, threadPool_)))
 			{
 				log.error << "Failed to create bladed grass subsystem" << util::endl;
 				return false;
-			}
-
-			{
-				std::vector<float> threshholds = { 0.2f, 0.4f };
-				std::vector<float> offsetMins = { 1.0f, 0.5f };
-				std::vector<float> offsetMaxs = { 2.6f, 0.9f };
-				std::vector<std::uint32_t> seeds = { 1, 2 };
-				grassEntities_.reserve(2u);
-				// TODO SESS:
-				// - Different types of vegetation, to give variety.
-				// - Combine with a "heightfield" sample, to make sure no grass grows below water
-				//   (That will also require a "combinationmask", to combine TerrainMapColorMask
-				//      and HeightfieldMask)
-				for (std::uint32_t idx = 0u; idx < threshholds.size(); idx++)
-				{
-					grassEntities_.push_back(
-						std::make_shared<view::grass::BillboardGrassEntity>(
-							glm::vec3(0.f, terrainOffsetY_, 0.f),
-							glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
-							glm::vec3(1.f, 1.f, 1.f)
-							)
-					);
-					auto terrainColorMask = std::shared_ptr<util::TerrainMapColorMask>(
-						new util::TerrainMapColorMask(
-							terrainBlendMapImage_,
-							terrainDimensions_.x * 0.5f, terrainDimensions_.y * 0.5f,
-							threshholds[idx],
-							{ util::COLOR_COMPONENT_G },
-							{ util::COLOR_COMPONENT_R, util::COLOR_COMPONENT_G, util::COLOR_COMPONENT_B },
-							true
-						)
-						);
-					auto combinedMask = std::shared_ptr<util::SurfaceMaskBase>(
-						new util::CombinationMask({ aboveWaterHeightfieldMask, terrainColorMask })
-						);
-					if (!grassEntities_[idx] || !grassEntities_[idx]->prepare(
-						grassShader_, pso_,
-						generatedHeightfield, textures_["grassPack"],
-						combinedMask,
-						seeds[idx], offsetMins[idx], offsetMaxs[idx], 1.05f
-					))
-					{
-						log.error << "Failed to generate grass entity " << idx << util::endl;
-						return false;
-					}
-				}
 			}
 		}
 
@@ -872,13 +797,6 @@ namespace sim
 				boulderTest_->release();
 				boulderTest_ = nullptr;
 			}
-
-			for (auto&& grassEntity : grassEntities_)
-			{
-				grassEntity->release();
-				grassEntity = nullptr;
-			}
-			grassEntities_.resize(0u);
 
 			heightMapTerrainRawEntity_ = nullptr;
 
