@@ -19,6 +19,7 @@
 #include <util/camera/heightmapcamera.h>
 #include <model/specialgeo/projection/projectionbase.h>
 #include <sim/lakescene/bladedgrass.h>
+#include <sim/lakescene/debugtext.h>
 
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
@@ -105,6 +106,7 @@ namespace sim
 			std::shared_ptr<view::solidshader::SolidShader> solidShader_;
 			std::shared_ptr<view::special::watersurface::WaterSurfaceShader> waterSurfaceShader_;
 			std::shared_ptr<view::mappedphong::MappedPhongShader> mappedPhongShader_;
+			std::shared_ptr<view::text::MSDFTextShader> textShader_;
 
 			//
 			// System
@@ -130,6 +132,7 @@ namespace sim
 			// Resources
 			//
 		private:
+			std::shared_ptr<DebugText> debugText_;
 			std::shared_ptr<util::camera::FlightCamera> mainCamera_;
 			std::shared_ptr<util::camera::HeightmapCamera> heightmapCamera_;
 			std::shared_ptr<util::camera::PlanarReflectionCamera> waterReflectionCamera_;

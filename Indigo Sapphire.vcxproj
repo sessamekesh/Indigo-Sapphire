@@ -157,8 +157,10 @@
     <ClCompile Include="src\model\specialgeo\metaball\metaballgroup.cpp" />
     <ClCompile Include="src\model\specialgeo\projection\orthographicprojection.cpp" />
     <ClCompile Include="src\model\specialgeo\projection\perspectiveprojection.cpp" />
+    <ClCompile Include="src\model\text\textatlas.cpp" />
     <ClCompile Include="src\model\withworldtransform.cpp" />
     <ClCompile Include="src\sim\lakescene\bladedgrass.cpp" />
+    <ClCompile Include="src\sim\lakescene\debugtext.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\tree.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\treeloader.cpp" />
     <ClCompile Include="src\sim\lakescene\lakescene.cpp" />
@@ -220,6 +222,8 @@
     <ClCompile Include="src\view\terrainshader\blendedterrainshader.cpp" />
     <ClCompile Include="src\view\terrainshader\terrainshader.cpp" />
     <ClCompile Include="src\view\texture.cpp" />
+    <ClCompile Include="src\view\text\msdfstringentity.cpp" />
+    <ClCompile Include="src\view\text\msdftextshader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\core\staticboundingspheretree.h" />
@@ -249,9 +253,11 @@
     <ClInclude Include="include\model\specialgeo\projection\perspectiveprojection.h" />
     <ClInclude Include="include\model\specialgeo\projection\projectionbase.h" />
     <ClInclude Include="include\model\specialgeo\water\ripple.h" />
+    <ClInclude Include="include\model\text\textatlas.h" />
     <ClInclude Include="include\model\withboundingsphere.h" />
     <ClInclude Include="include\model\withworldtransform.h" />
     <ClInclude Include="include\resources.h" />
+    <ClInclude Include="include\sim\lakescene\debugtext.h" />
     <ClInclude Include="include\sim\lakescene\entities\tree.h" />
     <ClInclude Include="include\sim\lakescene\entities\treeloader.h" />
     <ClInclude Include="include\sim\lakescene\lakescene.h" />
@@ -323,6 +329,8 @@
     <ClInclude Include="include\view\terrainshader\blendedterrainshader.h" />
     <ClInclude Include="include\view\terrainshader\terrainshader.h" />
     <ClInclude Include="include\view\texture.h" />
+    <ClInclude Include="include\view\text\msdfstringentity.h" />
+    <ClInclude Include="include\view\text\msdftextshader.h" />
     <ClInclude Include="include\view\uniformblockobject.h" />
   </ItemGroup>
   <ItemGroup>
@@ -338,6 +346,8 @@
     <None Include="shaders\mappedphong.vert" />
     <None Include="shaders\metaball-phong.frag" />
     <None Include="shaders\metaball-phong.vert" />
+    <None Include="shaders\msdftext.frag" />
+    <None Include="shaders\msdftext.vert" />
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
     <None Include="shaders\solidshader.frag">

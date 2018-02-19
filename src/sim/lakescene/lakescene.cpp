@@ -46,6 +46,7 @@ namespace sim
 			, solidShader_(nullptr)
 			, waterSurfaceShader_(nullptr)
 			, mappedPhongShader_(nullptr)
+			, textShader_(nullptr)
 			, threadPool_(12u) // TODO SESS: This should be based on the number of CPU cores perhaps?
 			, bladedGrass_(nullptr)
 			, waterSurfaceModel_(nullptr)
@@ -55,6 +56,7 @@ namespace sim
 			, testProctreeEntity_(nullptr)
 			, heightMapTerrainRawEntity_(nullptr)
 			, blendedTerrainEntity_(nullptr)
+			, debugText_(nullptr)
 			, mainCamera_(nullptr)
 			, heightmapCamera_(nullptr)
 			, waterReflectionCamera_(nullptr)
@@ -271,6 +273,9 @@ namespace sim
 			{
 				log.warn << "Failed to activate water surface shader, not drawing water" << util::endl;
 			}
+
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			debugText_->render(heightmapCamera_, projection_, std::nullopt, pso_);
 		}
 
 		bool LakeScene::initializeShaders()
@@ -309,6 +314,13 @@ namespace sim
 				return false;
 			}
 
+			textShader_ = std::make_shared<view::text::MSDFTextShader>();
+			if (!textShader_ || !textShader_->initialize())
+			{
+				log.error << "Failed to create text shader" << util::endl;
+				return false;
+			}
+
 			return true;
 		}
 
@@ -328,6 +340,12 @@ namespace sim
 			{
 				return false;
 			}
+
+			////////////////////////////////////////////////////////////
+			//
+			// Starting Deferred (and synchronous)
+			//
+			////////////////////////////////////////////////////////////
 
 			//
 			// Cameras
@@ -367,6 +385,17 @@ namespace sim
 			// Projections
 			//
 			projection_ = std::make_shared<model::specialgeo::PerspectiveProjection>(glm::radians(45.f), 128.f / 72.f, 0.1f, 15000.0f);
+
+			//
+			// Subsystems
+			//
+			auto debugText = std::make_shared<DebugText>(textShader_);
+			debugText_ = debugText;
+			auto f = [debugText]() {
+				return debugText->prepare();
+			};
+			//auto debugTextPrepOptFuture = threadPool_.enqueue(f);
+			auto debugTextOpt = f();
 
 			//
 			// Resources
@@ -430,6 +459,22 @@ namespace sim
 			if (!setupTerrain(reducedHeightfield))
 			{
 				log.error << "Failed to setup terrain" << util::endl;
+				return false;
+			}
+
+			////////////////////////////////////////////////////////////
+			//
+			// Finishing deferred
+			//
+			////////////////////////////////////////////////////////////
+
+			//
+			// Subsystems
+			//
+			//auto debugTextOpt = debugTextPrepOptFuture.get();
+			if (!debugText_->prepare(debugTextOpt))
+			{
+				log.error << "Failed to initialize debug text subsystem" << util::endl;
 				return false;
 			}
 
@@ -533,6 +578,30 @@ namespace sim
 					{
 						return true;
 					}
+				}
+			}
+			else if (terms.size() >= 2u)
+			{
+				if (terms[0u] == "drawtext")
+				{
+					std::string t;
+					for (std::uint32_t i = 1u; i < terms.size(); i++)
+					{
+						t += terms[i];
+						if (i < terms.size() - 1u) t += " ";
+					}
+
+					auto fwd = glm::normalize(heightmapCamera_->lookAt() - heightmapCamera_->pos());
+					auto textToAdd = debugText_->addDebugText(
+						heightmapCamera_->pos() + fwd * 10.f,
+						glm::vec3(0.f, 1.f, 0.f),
+						fwd,
+						glm::vec2(0.2f, 0.2f),
+						glm::vec4(0.f, 0.f, 0.f, 1.f),
+						t,
+						t
+					);
+					return debugText_->addDebugText(textToAdd, pso_);
 				}
 			}
 

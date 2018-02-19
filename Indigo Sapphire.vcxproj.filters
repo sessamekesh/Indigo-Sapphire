@@ -223,6 +223,21 @@
     <Filter Include="Header Files\core">
       <UniqueIdentifier>{2a66fc76-3e68-43c8-8aab-0e4a36bb31c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\view\text">
+      <UniqueIdentifier>{276d762d-1ff5-4ff8-82b6-0f4ae2884b2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\view\text">
+      <UniqueIdentifier>{0c5cadfe-94ad-411d-9392-447d3ee39a4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\model\text">
+      <UniqueIdentifier>{acb49a9d-02b5-40f9-a762-4f5b73f61357}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\text">
+      <UniqueIdentifier>{6d57d916-c80b-4b41-9351-17488f3f9d8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sim\lakescene\menu">
+      <UniqueIdentifier>{eaf78dda-32f1-47a8-8aef-4ec4c05ce267}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -479,6 +494,18 @@
     </ClCompile>
     <ClCompile Include="src\model\specialgeo\projection\orthographicprojection.cpp">
       <Filter>Source Files\model\specialgeo\projection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\text\msdftextshader.cpp">
+      <Filter>Source Files\view\text</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\text\textatlas.cpp">
+      <Filter>Source Files\model\text</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\text\msdfstringentity.cpp">
+      <Filter>Source Files\view\text</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\lakescene\debugtext.cpp">
+      <Filter>Source Files\sim\lakescene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -788,6 +815,18 @@
     <ClInclude Include="include\core\staticboundingspheretree.h">
       <Filter>Header Files\core</Filter>
     </ClInclude>
+    <ClInclude Include="include\view\text\msdftextshader.h">
+      <Filter>Header Files\view\text</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\text\textatlas.h">
+      <Filter>Header Files\model\text</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\text\msdfstringentity.h">
+      <Filter>Header Files\view\text</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\debugtext.h">
+      <Filter>Header Files\sim\lakescene\menu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\metaball-phong.frag">
@@ -854,6 +893,12 @@
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="shaders\bladedgrass.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\msdftext.vert">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\msdftext.frag">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>

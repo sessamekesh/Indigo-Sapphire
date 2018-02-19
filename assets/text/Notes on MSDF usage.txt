@@ -1,0 +1,15 @@
+Text rendering is tricky. Like... REALLY tricky.
+
+There was a paper published by Valve that detailed a method of rendering text in video games, in such a way that it looked good from a variety of distances
+  using small textures, titled "Improved Alpha-Tested Magnification for Vector Textures and Special Effects."
+  http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf
+
+While this does produce very smooth looking text with a very small texture, the integrity of sharp edges on rendered text is low.
+Github user Chlumsky advanced the technique using "Multi-channel signed distance fields," (MSDF) where the three color channels are used
+  to represent the signed-distance field (SDF) instead of just one. The MSDF method procduces significantly better results than SDF alone.
+  While it does use three color channels (requiring the usage of 3x the memory of a greyscale SDF) (4x in this engine), the results are
+  substantially better than an SDF of 2x resolution on both sides (4x total) - e.g., an MSDF of dimensions 16x16 produces far superior
+  results to an SDF of dimension 32x32.
+  https://github.com/Chlumsky/msdfgen
+
+I produced the texture atlas using this online tool: https://www.codeandweb.com/texturepacker/tutorials/how-to-create-a-sprite-sheet

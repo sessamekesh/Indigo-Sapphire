@@ -29,8 +29,6 @@ namespace view
 		width_ = textureWidth;
 		height_ = textureHeight;
 
-		// TODO SESS: Play around with this more, something is off
-
 		glGenFramebuffers(1, &fbo_);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 		glDrawBuffer(GL_COLOR_ATTACHMENT0);
