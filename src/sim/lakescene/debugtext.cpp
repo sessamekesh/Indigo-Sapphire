@@ -36,15 +36,7 @@ namespace sim
 				return std::nullopt;
 			}
 
-			auto atlasTexture = std::make_shared<view::Texture>();
-			if (!atlasTexture || !atlasTexture->init(view::Texture::RGBA, *atlasImage))
-			{
-				log.error << "Failed to create atlas texture - aborting!" << util::endl;
-				atlasTexture = nullptr;
-				return std::nullopt;
-			}
-
-			return { { atlasTexture } };
+			return { { *atlasImage } };
 		}
 
 		bool DebugText::prepare(const std::optional<DebugText::DeferrableWorkItem>& deferredWork)
@@ -55,7 +47,12 @@ namespace sim
 				return false;
 			}
 
-			atlasTexture_ = deferredWork->AtlasTexture;
+			atlasTexture_ = std::make_shared<view::Texture>();
+			if (!atlasTexture_ || !atlasTexture_->init(view::Texture::RGBA, deferredWork->AtlasImage))
+			{
+				log.error << "Failed to create atlas texture - aborting!" << util::endl;
+				atlasTexture_ = nullptr;
+			}
 
 			return true;
 		}
@@ -79,8 +76,8 @@ namespace sim
 		)
 		{
 			auto upRotation = glm::rotation(glm::vec3(0.f, 1.f, 0.f), up);
-			auto fwdRotation = glm::rotation(glm::vec3(0.f, 0.f, -1.f), fwd);
-			auto rot = fwdRotation * upRotation;
+			auto fwdRotation = glm::rotation(glm::vec3(0.f, 0.f, 1.f), fwd);
+			auto rot = upRotation * fwdRotation;
 
 			view::text::MSDFStringEntity toAdd(startPosition, rot, glm::vec3(1.f, 1.f, 1.f));
 			return {

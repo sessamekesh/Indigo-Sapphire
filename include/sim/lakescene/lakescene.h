@@ -20,6 +20,8 @@
 #include <model/specialgeo/projection/projectionbase.h>
 #include <sim/lakescene/bladedgrass.h>
 #include <sim/lakescene/debugtext.h>
+#include <input/menunavigationcontrollerbase.h>
+#include <sim/lakescene/menu/startmenu.h>
 
 #include <view/solidshader/genericsolidentity.h>
 #include <model/proctree/proctree.h>
@@ -119,6 +121,7 @@ namespace sim
 			//
 		private:
 			std::shared_ptr<sim::lake::BladedGrass> bladedGrass_;
+			std::shared_ptr<sim::lake::StartMenu> startMenu_;
 
 			//
 			// Models
@@ -171,6 +174,7 @@ namespace sim
 			// I/O
 			//
 			std::shared_ptr<input::CameraControllerBase> cameraController_;
+			std::shared_ptr<input::MenuNavigationControllerBase> menuNavigationController_;
 		private:
 		};
 	}

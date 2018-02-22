@@ -16,6 +16,7 @@ namespace model
 		, scl_(scl)
 		, isWorldTransformDirty_(true)
 		, worldTransform_(1.f)
+		, parent_(nullptr)
 	{}
 
 	glm::mat4 WithWorldTransform::worldTransform()
@@ -29,7 +30,14 @@ namespace model
 			isWorldTransformDirty_ = false;
 		}
 
-		return worldTransform_;
+		auto tr = worldTransform_;
+
+		if (parent_)
+		{
+			tr = tr * parent_->worldTransform();
+		}
+
+		return tr;
 	}
 
 	void WithWorldTransform::pos(const glm::vec3 & pos)
@@ -63,5 +71,10 @@ namespace model
 	glm::vec3 WithWorldTransform::scl() const
 	{
 		return scl_;
+	}
+
+	void WithWorldTransform::setParent(std::shared_ptr<model::WithWorldTransform> parent)
+	{
+		parent_ = parent;
 	}
 }

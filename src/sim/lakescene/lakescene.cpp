@@ -13,6 +13,7 @@
 
 #include <model/specialgeo/projection/perspectiveprojection.h>
 #include <model/specialgeo/projection/orthographicprojection.h>
+#include <input/gamepadmenunavigationcontroller.h>
 
 // Grass things - should move into their own grass file!
 #include <util/math/quadraticeaseout11.h>
@@ -49,6 +50,7 @@ namespace sim
 			, textShader_(nullptr)
 			, threadPool_(12u) // TODO SESS: This should be based on the number of CPU cores perhaps?
 			, bladedGrass_(nullptr)
+			, startMenu_(nullptr)
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
 			, projection_(nullptr)
@@ -76,6 +78,7 @@ namespace sim
 			, terrainOffsetY_(-12.5f)
 			, terrainDimensions_(150.f, 150.f)
 			, grassProbabilityMask_(nullptr)
+			, menuNavigationController_(nullptr)
 		{
 			registerParser(parserFactory.floatParser());
 			registerParser(parserFactory.vec3Parser());
@@ -89,9 +92,11 @@ namespace sim
 		void LakeScene::update(float dt)
 		{
 			bladedGrass_->update(dt);
+			startMenu_->update(dt);
 
 			lakeSurface_->update(dt);
 			cameraController_->tick();
+			menuNavigationController_->tick();
 
 			auto ng = glm::angle(skybox_->rot());
 			ng += 0.02f * dt;
@@ -148,13 +153,14 @@ namespace sim
 				blendedTerrainShader_->setProjMatrix(projection->getProjectionMatrix());
 				blendedTerrainShader_->setLight(sunlight_);
 
-				blendedTerrainEntity_->render(blendedTerrainShader_);
+				//blendedTerrainEntity_->render(blendedTerrainShader_);
 			}
 		}
 
 		void LakeScene::renderEnvironment(std::shared_ptr<util::camera::CameraBase> camera, std::shared_ptr<model::specialgeo::ProjectionBase> projection, const std::optional<model::geo::Plane>& clipPlane)
 		{
-			// TODO SESS: Things like depth test, etc., should be handled in the PSO (to avoid setting redundant state)
+			// TODO SESS: This is curently functionally "Render everything that water reflects" - sooo change the name
+
 			// Skybox before all else
 			pso_.disableDepthTest();
 			pso_.disableDepthMask();
@@ -197,7 +203,6 @@ namespace sim
 				boulderTest_->render(mappedPhongShader_);
 			}
 
-			// TODO SESS: There's a bug here, somehow.
 			renderTerrain(camera, projection, clipPlane);
 
 			if (solidShader_->activate())
@@ -210,12 +215,13 @@ namespace sim
 				solidShader_->setViewMatrix(camera->getViewTransform());
 				solidShader_->setProjMatrix(projection->getProjectionMatrix());
 				testProctreeEntity_->render(solidShader_);
-				//genericSolidTerrain_->render(solidShader_);
 			}
 
 			bladedGrass_->render(
 				camera, projection, sunlight_, clipPlane
 			);
+
+			startMenu_->render(camera, projection, clipPlane);
 		}
 
 		void LakeScene::render()
@@ -366,6 +372,8 @@ namespace sim
 			);
 
 			cameraController_ = std::make_shared<input::GamepadCameraController>(0);
+			menuNavigationController_ = std::make_shared<input::GamepadMenuNavigationController>(0);
+
 			heightmapCamera_ = std::shared_ptr<util::camera::HeightmapCamera>(new util::camera::HeightmapCamera(
 				glm::vec3(0.f, 2.f, 0.f),
 				glm::vec3(0.f, 1.f, 0.f),
@@ -394,8 +402,24 @@ namespace sim
 			auto f = [debugText]() {
 				return debugText->prepare();
 			};
-			//auto debugTextPrepOptFuture = threadPool_.enqueue(f);
-			auto debugTextOpt = f();
+			auto debugTextPrepOptFuture = threadPool_.enqueue(f);
+			
+			StartMenuConfiguration startMenuConfiguration;
+			startMenuConfiguration.TerrainOffsetY = terrainOffsetY_;
+			startMenu_ = std::make_shared<StartMenu>(
+				textShader_,
+				solidShader_,
+				menuNavigationController_,
+				reducedHeightfield,
+				[this]()->std::shared_ptr<util::camera::CameraBase> {
+					return heightmapCamera_;
+				},
+				startMenuConfiguration
+			);
+			auto startMenu = startMenu_;
+			auto startMenuPrepOptFuture = threadPool_.enqueue([startMenu]() {
+				return startMenu->prepare();
+			});
 
 			//
 			// Resources
@@ -471,10 +495,22 @@ namespace sim
 			//
 			// Subsystems
 			//
-			//auto debugTextOpt = debugTextPrepOptFuture.get();
+			auto debugTextOpt = debugTextPrepOptFuture.get();
 			if (!debugText_->prepare(debugTextOpt))
 			{
 				log.error << "Failed to initialize debug text subsystem" << util::endl;
+				return false;
+			}
+
+			auto startMenuPrepOpt = startMenuPrepOptFuture.get();
+			if (!startMenuPrepOpt)
+			{
+				log.error << "Failed to perform deferrable part of start menu preparation" << util::endl;
+				return false;
+			}
+			if (!startMenu_->prepare(*startMenuPrepOpt, pso_))
+			{
+				log.error << "Failed to finish start menu preparation" << util::endl;
 				return false;
 			}
 
@@ -516,6 +552,31 @@ namespace sim
 
 		bool LakeScene::processCommand(const std::vector<std::string>& terms)
 		{
+			if (terms.size() >= 2u)
+			{
+				if (terms[0u] == "drawtext")
+				{
+					std::string t;
+					for (std::uint32_t i = 1u; i < terms.size(); i++)
+					{
+						t += terms[i];
+						if (i < terms.size() - 1u) t += " ";
+					}
+
+					auto fwd = glm::normalize(heightmapCamera_->lookAt() - heightmapCamera_->pos());
+					auto textToAdd = debugText_->addDebugText(
+						heightmapCamera_->pos() + fwd * 10.f,
+						glm::vec3(0.f, 1.f, 0.f),
+						-fwd,
+						glm::vec2(0.2f, 0.2f),
+						glm::vec4(0.f, 0.f, 0.f, 1.f),
+						t,
+						t
+					);
+					return debugText_->addDebugText(textToAdd, pso_);
+				}
+			}
+
 			// TODO SESS: Commands should instead be registered, and probably handled via a trie or something.
 			if (terms.size() == 3u)
 			{
@@ -578,30 +639,6 @@ namespace sim
 					{
 						return true;
 					}
-				}
-			}
-			else if (terms.size() >= 2u)
-			{
-				if (terms[0u] == "drawtext")
-				{
-					std::string t;
-					for (std::uint32_t i = 1u; i < terms.size(); i++)
-					{
-						t += terms[i];
-						if (i < terms.size() - 1u) t += " ";
-					}
-
-					auto fwd = glm::normalize(heightmapCamera_->lookAt() - heightmapCamera_->pos());
-					auto textToAdd = debugText_->addDebugText(
-						heightmapCamera_->pos() + fwd * 10.f,
-						glm::vec3(0.f, 1.f, 0.f),
-						fwd,
-						glm::vec2(0.2f, 0.2f),
-						glm::vec4(0.f, 0.f, 0.f, 1.f),
-						t,
-						t
-					);
-					return debugText_->addDebugText(textToAdd, pso_);
 				}
 			}
 
@@ -851,6 +888,8 @@ namespace sim
 				log.error << "Failed to create bladed grass subsystem" << util::endl;
 				return false;
 			}
+
+			return true;
 		}
 
 		bool LakeScene::teardownTerrain()

@@ -75,6 +75,10 @@ namespace model
 						zpBlend
 					);
 				}
+				else
+				{
+					return topLeft;
+				}
 			}
 		}
 

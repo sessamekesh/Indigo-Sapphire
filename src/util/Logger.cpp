@@ -68,6 +68,18 @@ namespace util
 		}
 	}
 
+	Logger::InternalLogger& Logger::operator<<(float t)
+	{
+		switch (_defaultLevel)
+		{
+		case INFO: info << t; return info;
+		case DEBUG: debug << t; return debug;
+		case WARN: warn << t; return warn;
+		case ERR: error << t; return error;
+		default: case PANIC: panic << t; return panic;
+		}
+	}
+
 	Logger::InternalLogger::InternalLogger(std::string prefix)
 		: _out(true)
 		, _shouldPrefix(true)
@@ -98,6 +110,23 @@ namespace util
 			std::cout << *s;
 		}
 
+		return *this;
+	}
+
+	Logger::InternalLogger& Logger::InternalLogger::operator<<(float t)
+	{
+		if (!_out)
+		{
+			return *this;
+		}
+
+		if (_shouldPrefix)
+		{
+			std::cout << prefix_;
+			_shouldPrefix = false;
+		}
+
+		std::cout << t;
 		return *this;
 	}
 

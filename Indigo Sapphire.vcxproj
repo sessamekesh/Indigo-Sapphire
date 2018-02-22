@@ -93,6 +93,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>zlibstatic.lib;assimp-vc140-mt_d.lib;glm_static.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -114,6 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -137,6 +139,8 @@
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\input\gamepadcameracontroller.cpp" />
+    <ClCompile Include="src\input\gamepadmenunavigationcontroller.cpp" />
+    <ClCompile Include="src\input\menunavigationcontrollerbase.cpp" />
     <ClCompile Include="src\lodepng.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\model\event\eventbase.cpp" />
@@ -147,6 +151,10 @@
     <ClCompile Include="src\model\geo\sphere.cpp" />
     <ClCompile Include="src\model\imagedata.cpp" />
     <ClCompile Include="src\model\light\directionallight.cpp" />
+    <ClCompile Include="src\model\menu\selectoptionmenuitemvalue.cpp" />
+    <ClCompile Include="src\model\menu\twocolumnmenu.cpp" />
+    <ClCompile Include="src\model\menu\verticalinnermenu.cpp" />
+    <ClCompile Include="src\model\menu\verticalsubmenu.cpp" />
     <ClCompile Include="src\model\proctree\proctree.cpp" />
     <ClCompile Include="src\model\simplegeo\grid.cpp" />
     <ClCompile Include="src\model\specialgeo\heightfield\heightmapheightfield.cpp" />
@@ -164,6 +172,7 @@
     <ClCompile Include="src\sim\lakescene\entities\tree.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\treeloader.cpp" />
     <ClCompile Include="src\sim\lakescene\lakescene.cpp" />
+    <ClCompile Include="src\sim\lakescene\menu\startmenu.cpp" />
     <ClCompile Include="src\sim\lakescene\model\tree.cpp" />
     <ClCompile Include="src\sim\lakescene\shaders\tree.cpp" />
     <ClCompile Include="src\sim\scene.cpp" />
@@ -202,6 +211,7 @@
     <ClCompile Include="src\view\mappedphong\assimpgeo.cpp" />
     <ClCompile Include="src\view\mappedphong\mappedphongshader.cpp" />
     <ClCompile Include="src\view\rawentities\heightmapterrain.cpp" />
+    <ClCompile Include="src\view\rawentities\planegenerator.cpp" />
     <ClCompile Include="src\view\rawentities\proctree.cpp" />
     <ClCompile Include="src\view\shader.cpp" />
     <ClCompile Include="src\view\solidshader\assets\computermonitor.cpp" />
@@ -229,6 +239,8 @@
     <ClInclude Include="include\core\staticboundingspheretree.h" />
     <ClInclude Include="include\input\cameracontrollerbase.h" />
     <ClInclude Include="include\input\gamepadcameracontroller.h" />
+    <ClInclude Include="include\input\gamepadmenunavigationcontroller.h" />
+    <ClInclude Include="include\input\menunavigationcontrollerbase.h" />
     <ClInclude Include="include\lodepng.h" />
     <ClInclude Include="include\model\event\eventbase.h" />
     <ClInclude Include="include\model\geo\grid.h" />
@@ -239,6 +251,14 @@
     <ClInclude Include="include\model\geo\sphere.h" />
     <ClInclude Include="include\model\imagedata.h" />
     <ClInclude Include="include\model\light\directionallight.h" />
+    <ClInclude Include="include\model\menu\menuitem.h" />
+    <ClInclude Include="include\model\menu\menuitemvaluebase.h" />
+    <ClInclude Include="include\model\menu\menurect.h" />
+    <ClInclude Include="include\model\menu\selectoptionmenuitemvalue.h" />
+    <ClInclude Include="include\model\menu\submenuentry.h" />
+    <ClInclude Include="include\model\menu\twocolumnmenu.h" />
+    <ClInclude Include="include\model\menu\verticalinnermenu.h" />
+    <ClInclude Include="include\model\menu\verticalsubmenu.h" />
     <ClInclude Include="include\model\proctree\proctree.h" />
     <ClInclude Include="include\model\specialgeo\heightfield.h" />
     <ClInclude Include="include\model\specialgeo\heightfield\heightmapheightfield.h" />
@@ -262,6 +282,7 @@
     <ClInclude Include="include\sim\lakescene\entities\treeloader.h" />
     <ClInclude Include="include\sim\lakescene\lakescene.h" />
     <ClInclude Include="include\sim\lakescene\bladedgrass.h" />
+    <ClInclude Include="include\sim\lakescene\menu\startmenu.h" />
     <ClInclude Include="include\sim\lakescene\model\tree.h" />
     <ClInclude Include="include\sim\lakescene\shaders\tree.h" />
     <ClInclude Include="include\sim\scene.h" />
@@ -309,6 +330,7 @@
     <ClInclude Include="include\view\mappedphong\assimpgeo.h" />
     <ClInclude Include="include\view\mappedphong\mappedphongshader.h" />
     <ClInclude Include="include\view\rawentities\heightmapterrain.h" />
+    <ClInclude Include="include\view\rawentities\planegenerator.h" />
     <ClInclude Include="include\view\rawentities\proctree.h" />
     <ClInclude Include="include\view\shader.h" />
     <ClInclude Include="include\view\solidshader\assets\computermonitor.h" />

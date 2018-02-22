@@ -19,7 +19,7 @@ namespace sim
 
 			struct DeferrableWorkItem
 			{
-				std::shared_ptr<view::Texture> AtlasTexture;
+				model::ImageData AtlasImage;
 			};
 
 			std::optional<DeferrableWorkItem> prepare();

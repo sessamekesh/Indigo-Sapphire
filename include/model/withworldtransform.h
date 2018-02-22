@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <memory>
 
 namespace model
 {
@@ -18,6 +19,8 @@ namespace model
 
 		glm::mat4 worldTransform();
 
+		void setParent(std::shared_ptr<model::WithWorldTransform> parent);
+
 		void pos(const glm::vec3& pos);
 		glm::vec3 pos() const;
 		void rot(const glm::quat& rot);
@@ -31,5 +34,7 @@ namespace model
 		glm::vec3 scl_;
 		bool isWorldTransformDirty_;
 		glm::mat4 worldTransform_;
+
+		std::shared_ptr<model::WithWorldTransform> parent_;
 	};
 }

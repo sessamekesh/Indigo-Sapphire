@@ -238,6 +238,15 @@
     <Filter Include="Header Files\sim\lakescene\menu">
       <UniqueIdentifier>{eaf78dda-32f1-47a8-8aef-4ec4c05ce267}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\model\menu">
+      <UniqueIdentifier>{9303bf05-34a2-4db8-bbcb-6f5088d2d8ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\model\menu">
+      <UniqueIdentifier>{09b55f86-6831-487d-bd10-c34104c86c67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sim\lakescene\menu">
+      <UniqueIdentifier>{42674a2a-5ac3-43ae-a2f4-fbdcb10f9d3e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\glad.c">
@@ -506,6 +515,30 @@
     </ClCompile>
     <ClCompile Include="src\sim\lakescene\debugtext.cpp">
       <Filter>Source Files\sim\lakescene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\menu\verticalsubmenu.cpp">
+      <Filter>Source Files\model\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\menu\selectoptionmenuitemvalue.cpp">
+      <Filter>Source Files\model\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\menu\verticalinnermenu.cpp">
+      <Filter>Source Files\model\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model\menu\twocolumnmenu.cpp">
+      <Filter>Source Files\model\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sim\lakescene\menu\startmenu.cpp">
+      <Filter>Source Files\sim\lakescene\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\menunavigationcontrollerbase.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\gamepadmenunavigationcontroller.cpp">
+      <Filter>Source Files\input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\view\rawentities\planegenerator.cpp">
+      <Filter>Source Files\view\rawentity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -826,6 +859,42 @@
     </ClInclude>
     <ClInclude Include="include\sim\lakescene\debugtext.h">
       <Filter>Header Files\sim\lakescene\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\submenuentry.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\verticalsubmenu.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\menurect.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\menuitem.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\menuitemvaluebase.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\selectoptionmenuitemvalue.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\verticalinnermenu.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\twocolumnmenu.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\menu\startmenu.h">
+      <Filter>Header Files\sim\lakescene\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\menunavigationcontrollerbase.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input\gamepadmenunavigationcontroller.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\view\rawentities\planegenerator.h">
+      <Filter>Header Files\view\rawentities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
