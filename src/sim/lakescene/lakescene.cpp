@@ -54,6 +54,7 @@ namespace sim
 			, waterSurfaceModel_(nullptr)
 			, testProctreeModel_(nullptr)
 			, projection_(nullptr)
+			, atlasLookup_(8u, 8u, "defghijQklmnopqRrstuvwxSyz01234T56789ABUCDEFGHIVJKLMNOPWXYZabc")
 			, boulderTest_(nullptr)
 			, testProctreeEntity_(nullptr)
 			, heightMapTerrainRawEntity_(nullptr)
@@ -153,7 +154,7 @@ namespace sim
 				blendedTerrainShader_->setProjMatrix(projection->getProjectionMatrix());
 				blendedTerrainShader_->setLight(sunlight_);
 
-				//blendedTerrainEntity_->render(blendedTerrainShader_);
+				blendedTerrainEntity_->render(blendedTerrainShader_);
 			}
 		}
 
@@ -508,7 +509,7 @@ namespace sim
 				log.error << "Failed to perform deferrable part of start menu preparation" << util::endl;
 				return false;
 			}
-			if (!startMenu_->prepare(*startMenuPrepOpt, pso_))
+			if (!startMenu_->prepare(atlasLookup_, textures_["textAtlas"], *startMenuPrepOpt, pso_))
 			{
 				log.error << "Failed to finish start menu preparation" << util::endl;
 				return false;
@@ -742,6 +743,7 @@ namespace sim
 			if (!loadSingleTexture("terrainMud", ASSET_PATH("texture/road.png"))) return false;
 			if (!loadSingleTexture("grassPack", ASSET_PATH("texture/grassPack.png"))) return false;
 			if (!loadSingleTexture("grassBlade", ASSET_PATH("texture/grassBlade.png"))) return false;
+			if (!loadSingleTexture("textAtlas", ASSET_PATH("text/OverpassMonoMSDF2.png"))) return false;
 
 			{
 				auto opt = model::readGreyscalePNG(ASSET_PATH("environment/terrain_base/heightmap.png"));

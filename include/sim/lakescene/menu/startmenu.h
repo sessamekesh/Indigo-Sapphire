@@ -18,6 +18,7 @@
 #include <model/specialgeo/heightfield.h>
 #include <util/math/curve1to1.h>
 #include <util/math/linear11.h>
+#include <sim/lakescene/entities/verticalsubmenu.h>
 
 namespace sim
 {
@@ -26,13 +27,20 @@ namespace sim
 		struct StartMenuConfiguration
 		{
 			glm::vec2 WorldSize = glm::vec2(3.3f, 2.f);
-			glm::vec4 Color = glm::vec4(0.f, 0.f, 0.f, 1.f);
+			glm::vec4 Color = glm::vec4(0.2f, 0.3f, 0.5f, 1.f);
 			float SpawnDistanceForward = 6.f;
 			float DistanceAboveGround = 0.25f;
 			float AnimationDuration = 0.5f;
 			std::shared_ptr<util::math::Curve1To1> AnimateInCurve = std::make_shared<util::math::Linear11>(0.f, -1.f, 1.f, 0.f);
 			std::shared_ptr<util::math::Curve1To1> AnimateOutCurve = std::make_shared<util::math::Linear11>(0.f, 0.f, 1.f, -1.f);
 			float TerrainOffsetY = 0.f;
+
+			glm::vec4 InactiveBackgroundColor = glm::vec4(0x33 / 255.f, 0x6B / 255.f, 0x87 / 255.f, 1.f);
+			glm::vec4 DisabledBackgroundColor = glm::vec4(0x2A / 255.f, 0x31 / 255.f, 0x32 / 255.f, 1.f);
+			glm::vec4 SelectedBackgroundColor = glm::vec4(0x90 / 255.f, 0xAF / 255.f, 0xC5 / 255.f, 1.f);
+			glm::vec4 InactiveTextColor = glm::vec4(0x2A / 255.f, 0x31 / 255.f, 0x32 / 255.f, 1.f);
+			glm::vec4 DisabledTextColor = glm::vec4(0x50 / 255.f, 0x56 / 255.f, 0x57 / 255.f, 1.f);
+			glm::vec4 SelectedTextColor = glm::vec4(0x33 / 255.f, 0x6B / 255.f, 0x87 / 255.f, 1.f);
 		};
 
 		class StartMenu
@@ -54,6 +62,7 @@ namespace sim
 			{
 				std::shared_ptr<model::menu::TwoColumnMenu> MenuModel;
 				std::shared_ptr<model::menu::SelectOptionMenuItemValue> WaterColoringType;
+				std::shared_ptr<view::GenericMesh> LeftMenuItemMesh;
 			};
 			struct ListenersPrepareDeferrable
 			{
@@ -65,7 +74,12 @@ namespace sim
 				ListenersPrepareDeferrable Listeners;
 			};
 			std::optional<PrepareDeferrable> prepare();
-			bool prepare(const PrepareDeferrable& deferredWork, util::PipelineState& pso);
+			bool prepare(
+				const model::text::TextAtlas& atlasData,
+				std::shared_ptr<view::Texture> textTexture,
+				const PrepareDeferrable& deferredWork,
+				util::PipelineState& pso
+			);
 
 			void update(float dtd);
 			void render(
@@ -84,7 +98,7 @@ namespace sim
 		protected:
 			ModelPrepareDeferrable prepareModel();
 			bool prepareListeners(const ModelPrepareDeferrable& modelResults);
-			bool prepareEntities(util::PipelineState& pso);
+			bool prepareEntities(const model::text::TextAtlas& atlasData, std::shared_ptr<view::Texture> textTexture, util::PipelineState& pso);
 			bool releaseHandles();
 
 			//
@@ -131,6 +145,7 @@ namespace sim
 			std::shared_ptr<model::WithWorldTransform> menuTransform_;
 			std::shared_ptr<model::WithWorldTransform> menuAnimationTransform_;
 			std::shared_ptr<view::solidshader::GenericSolidEntity> menuBackgroundEntity_;
+			std::shared_ptr<sim::lake::entity::VerticalSubmenuEntity> verticalSubmenuEntity_;
 		};
 	}
 }

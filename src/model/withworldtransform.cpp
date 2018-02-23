@@ -34,7 +34,7 @@ namespace model
 
 		if (parent_)
 		{
-			tr = tr * parent_->worldTransform();
+			tr = parent_->worldTransform() * tr;
 		}
 
 		return tr;

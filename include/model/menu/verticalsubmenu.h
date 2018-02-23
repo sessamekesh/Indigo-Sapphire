@@ -42,6 +42,8 @@ namespace model
 			void moveSelectionUp();
 			void moveSelectionDown();
 
+			MenuRect rect() const { return submenuRect_; }
+
 		protected:
 			MenuRect submenuRect_;
 			float submenuEntryHeight_;

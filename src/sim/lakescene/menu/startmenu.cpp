@@ -8,6 +8,12 @@ namespace sim
 	namespace lake
 	{
 		const glm::vec3 DefaultFacingDirection(0.f, 0.f, 1.f);
+		const glm::vec2 LogicalMenuSize(800.f, 600.f);
+		const float HeaderHeight = 20.f;
+		const float FooterHeight = 20.f;
+		const float LeftColumnWidth = 350.f;
+		const float SubmenuEntryHeight = 40.f;
+		const float MenuItemHeight = 50.f;
 
 		StartMenu::StartMenu(
 			std::shared_ptr<view::text::MSDFTextShader> textShader,
@@ -32,6 +38,7 @@ namespace sim
 			, menuBackgroundEntity_(nullptr)
 			, configuration_(config)
 			, log(util::DEBUG, util::DEBUG, "[StartMenu] ")
+			, verticalSubmenuEntity_(nullptr)
 		{}
 
 		StartMenu::~StartMenu()
@@ -46,16 +53,17 @@ namespace sim
 			return { { model } };
 		}
 
-		bool StartMenu::prepare(const StartMenu::PrepareDeferrable& deferredWork, util::PipelineState& pso)
+		bool StartMenu::prepare(const model::text::TextAtlas& atlasData, std::shared_ptr<view::Texture> textTexture, const StartMenu::PrepareDeferrable& deferredWork, util::PipelineState& pso)
 		{
 			auto model = deferredWork.Model.MenuModel;
+			menuModel_ = model;
 
 			if (!prepareListeners(deferredWork.Model))
 			{
 				return false;
 			}
 
-			if (!prepareEntities(pso))
+			if (!prepareEntities(atlasData, textTexture, pso))
 			{
 				return false;
 			}
@@ -78,15 +86,15 @@ namespace sim
 			StartMenu::ModelPrepareDeferrable tr;
 
 			tr.MenuModel = std::make_shared<model::menu::TwoColumnMenu>(
-				glm::vec2(800.f, 600.f),
-				20.f, 20.f,
-				350.f,
-				40.f
+				LogicalMenuSize,
+				HeaderHeight, FooterHeight,
+				LeftColumnWidth,
+				SubmenuEntryHeight
 			);
 
 			// Create vertical menu entries
 			{
-				model::menu::VerticalInnerMenu waterMenu(50.f);
+				model::menu::VerticalInnerMenu waterMenu(MenuItemHeight);
 
 				{
 					model::menu::MenuItem<std::string> mi;
@@ -108,6 +116,13 @@ namespace sim
 
 				tr.MenuModel->addSubmenu("water", "Water Options", waterMenu);
 			}
+
+			// Create geometry
+			tr.LeftMenuItemMesh = std::make_shared<view::GenericMesh>(view::raw::PlaneGenerator::getGenericMeshData(
+				model::geo::Plane(glm::vec3(0.f, 0.f, 0.f), DefaultFacingDirection),
+				glm::vec3(0.f, 1.f, 0.f),
+				glm::vec2(0.9f * LeftColumnWidth / LogicalMenuSize.x, 0.9f * SubmenuEntryHeight / LogicalMenuSize.y)
+			));
 
 			return tr;
 		}
@@ -204,7 +219,7 @@ namespace sim
 			return true;
 		}
 
-		bool StartMenu::prepareEntities(util::PipelineState& pso)
+		bool StartMenu::prepareEntities(const model::text::TextAtlas& atlasData, std::shared_ptr<view::Texture> textTexture, util::PipelineState& pso)
 		{
 			menuTransform_ = std::make_shared<model::WithWorldTransform>(glm::vec3(0.f, 0.f, 0.f), glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)), glm::vec3(1.f, 1.f, 1.f));
 			menuAnimationTransform_ = std::make_shared<model::WithWorldTransform>(glm::vec3(0.f, 0.f, 0.f), glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)), glm::vec3(1.f, 1.f, 1.f));
@@ -219,6 +234,21 @@ namespace sim
 			menuBackgroundEntity_->setParent(menuTransform_);
 
 			if (!menuBackgroundEntity_->prepare(solidShader_, pso))
+			{
+				return false;
+			}
+
+			verticalSubmenuEntity_ = std::make_shared<sim::lake::entity::VerticalSubmenuEntity>(
+				menuModel_->getSubmenu(),
+				configuration_.InactiveBackgroundColor,
+				configuration_.SelectedBackgroundColor,
+				configuration_.DisabledBackgroundColor,
+				configuration_.InactiveTextColor,
+				configuration_.SelectedTextColor,
+				configuration_.DisabledTextColor,
+				configuration_.WorldSize
+			);
+			if (!verticalSubmenuEntity_->prepare(solidShader_, textShader_, pso, atlasData, menuTransform_, textTexture))
 			{
 				return false;
 			}
@@ -283,6 +313,20 @@ namespace sim
 					solidShader_->setProjMatrix(projection->getProjectionMatrix());
 					
 					menuBackgroundEntity_->render(solidShader_);
+					verticalSubmenuEntity_->renderBackground(solidShader_);
+				}
+
+				if (textShader_->activate())
+				{
+					if (clipPlane)
+					{
+						textShader_->setClipPlane(*clipPlane);
+					}
+					
+					textShader_->setViewMatrix(camera->getViewTransform());
+					textShader_->setProjMatrix(projection->getProjectionMatrix());
+
+					verticalSubmenuEntity_->renderText(textShader_);
 				}
 			}
 		}

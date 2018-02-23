@@ -540,6 +540,9 @@
     <ClCompile Include="src\view\rawentities\planegenerator.cpp">
       <Filter>Source Files\view\rawentity</Filter>
     </ClCompile>
+    <ClCompile Include="src\sim\lakescene\entities\verticalsubmenu.cpp">
+      <Filter>Source Files\sim\lakescene\entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -866,9 +869,6 @@
     <ClInclude Include="include\model\menu\verticalsubmenu.h">
       <Filter>Header Files\model\menu</Filter>
     </ClInclude>
-    <ClInclude Include="include\model\menu\menurect.h">
-      <Filter>Header Files\model\menu</Filter>
-    </ClInclude>
     <ClInclude Include="include\model\menu\menuitem.h">
       <Filter>Header Files\model\menu</Filter>
     </ClInclude>
@@ -895,6 +895,12 @@
     </ClInclude>
     <ClInclude Include="include\view\rawentities\planegenerator.h">
       <Filter>Header Files\view\rawentities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model\menu\menurect.h">
+      <Filter>Header Files\model\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\entities\verticalsubmenu.h">
+      <Filter>Header Files\sim\lakescene\entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

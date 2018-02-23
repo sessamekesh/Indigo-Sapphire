@@ -130,6 +130,7 @@ namespace sim
 			std::shared_ptr<model::geo::Rectangle> waterSurfaceModel_;
 			std::shared_ptr<Proctree::Tree> testProctreeModel_;
 			std::shared_ptr<model::specialgeo::ProjectionBase> projection_;
+			const model::text::TextAtlas atlasLookup_;
 
 			//
 			// Resources
