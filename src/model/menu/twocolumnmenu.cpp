@@ -27,7 +27,7 @@ namespace model
 		void TwoColumnMenu::addSubmenu(std::string name, std::string caption, VerticalInnerMenu toAdd)
 		{
 			toAdd.setMenuRect(innerMenuRect_);
-			submenu_.addMenuItem({ name, caption, SubmenuEntry::INACTIVE });
+			submenu_.addMenuItem(std::make_shared<model::menu::SubmenuEntry>(model::menu::SubmenuEntry({ name, caption, SubmenuEntry::INACTIVE })));
 			if (innerMenus_.find(name) != innerMenus_.end())
 			{
 				log.warn << "Warning: A menu item by name \"" << name << "\" already exists and will be overridden." << util::endl;
@@ -45,10 +45,10 @@ namespace model
 
 			auto selectedEntry = *selectedEntryOpt;
 
-			auto menu = innerMenus_.find(selectedEntry.Entry.Name);
+			auto menu = innerMenus_.find(selectedEntry.Entry->Name);
 			if (menu == innerMenus_.end())
 			{
-				log.warn << "No menu by name \"" << selectedEntry.Entry.Name << "\" found!" << util::endl;
+				log.warn << "No menu by name \"" << selectedEntry.Entry->Name << "\" found!" << util::endl;
 				return std::nullopt;
 			}
 

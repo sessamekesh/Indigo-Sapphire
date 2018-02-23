@@ -27,7 +27,8 @@ namespace sim
 					const glm::vec4& inactiveTextColor,
 					const glm::vec4& selectedTextColor,
 					const glm::vec4& disabledTextColor,
-					const glm::vec2& worldDimensions
+					const glm::vec2& overMenuWorldDimensions,
+					const glm::vec2& overMenuLogicalSize
 				);
 				~VerticalSubmenuEntity();
 				VerticalSubmenuEntity(const VerticalSubmenuEntity&) = default;
@@ -48,7 +49,8 @@ namespace sim
 				void renderText(std::shared_ptr<view::text::MSDFTextShader> textShader);
 
 			private:
-				glm::vec2 modelToWorldSpace(const glm::vec2& modelPoint) const;
+				glm::vec2 modelToWorldLocation(const glm::vec2& modelPoint) const;
+				glm::vec2 modelToWorldSize(const glm::vec2& size) const;
 
 			private:
 				model::menu::VerticalSubmenu model_;
@@ -62,7 +64,7 @@ namespace sim
 				std::shared_ptr<model::WithWorldTransform> scrollTransform_;
 				std::shared_ptr<model::WithWorldTransform> submenuTransform_;
 				glm::vec2 worldDimensions_;
-				std::shared_ptr<model::WithWorldTransform> menuTransform_;
+				glm::vec2 worldMenuLogicalSize_;
 
 				struct MenuItemEntity
 				{

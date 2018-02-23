@@ -7,14 +7,14 @@ namespace model
 		VerticalSubmenu::VerticalSubmenu(
 			const MenuRect& submenuRect,
 			float submenuEntryHeight,
-			const std::vector<SubmenuEntry>& initialEntries
+			const std::vector<std::shared_ptr<SubmenuEntry>>& initialEntries
 		)
 			: submenuRect_(submenuRect)
 			, submenuEntryHeight_(submenuEntryHeight)
 			, entries_(initialEntries)
 		{}
 
-		void VerticalSubmenu::addMenuItem(const SubmenuEntry& add)
+		void VerticalSubmenu::addMenuItem(const std::shared_ptr<SubmenuEntry>& add)
 		{
 			entries_.push_back(add);
 		}
@@ -47,7 +47,7 @@ namespace model
 			float y = submenuRect_.TopLeftPos.y;
 			for (auto&& e : entries_)
 			{
-				if (e.State == SubmenuEntry::SELECTED)
+				if (e->State == SubmenuEntry::SELECTED)
 				{
 					VerticalSubmenu::PlacedSubmenuEntry next;
 					next.Entry = e;
@@ -67,27 +67,27 @@ namespace model
 		{
 			for (auto&& e : entries_)
 			{
-				if (e.State == SubmenuEntry::SELECTED)
+				if (e->State == SubmenuEntry::SELECTED)
 				{
-					e.State = SubmenuEntry::INACTIVE;
+					e->State = SubmenuEntry::INACTIVE;
 				}
 			}
 		}
 
 		void VerticalSubmenu::moveSelectionUp()
 		{
-			for (std::int32_t idx = 1; idx < entries_.size(); idx++)
+			for (std::int32_t idx = 0u; idx < entries_.size(); idx++)
 			{
-				if (entries_[idx].State == SubmenuEntry::SELECTED)
+				if (entries_[idx]->State == SubmenuEntry::SELECTED)
 				{
-					entries_[idx].State = SubmenuEntry::INACTIVE;
+					entries_[idx]->State = SubmenuEntry::INACTIVE;
 					
 					// Try from the entry directly above
 					for (std::int32_t nextIdx = idx - 1; nextIdx >= 0; nextIdx--)
 					{
-						if (entries_[nextIdx].State == SubmenuEntry::INACTIVE)
+						if (entries_[nextIdx]->State == SubmenuEntry::INACTIVE)
 						{
-							entries_[nextIdx].State = SubmenuEntry::SELECTED;
+							entries_[nextIdx]->State = SubmenuEntry::SELECTED;
 							return;
 						}
 					}
@@ -95,30 +95,40 @@ namespace model
 					// Didn't find it? Try from the end of the list, cycle up
 					for (std::int32_t nextIdx = entries_.size() - 1; nextIdx >= idx; idx--)
 					{
-						if (entries_[nextIdx].State == SubmenuEntry::INACTIVE)
+						if (entries_[nextIdx]->State == SubmenuEntry::INACTIVE)
 						{
-							entries_[nextIdx].State == SubmenuEntry::SELECTED;
+							entries_[nextIdx]->State = SubmenuEntry::SELECTED;
 							return;
 						}
 					}
+				}
+			}
+
+			// Nothing is selected, select the first
+			for (std::uint32_t idx = 0u; idx < entries_.size(); idx++)
+			{
+				if (entries_[idx]->State == SubmenuEntry::INACTIVE)
+				{
+					entries_[0u]->State = SubmenuEntry::SELECTED;
+					return;
 				}
 			}
 		}
 
 		void VerticalSubmenu::moveSelectionDown()
 		{
-			for (std::int32_t idx = 1u; idx < entries_.size(); idx++)
+			for (std::int32_t idx = 0u; idx < entries_.size(); idx++)
 			{
-				if (entries_[idx].State == SubmenuEntry::SELECTED)
+				if (entries_[idx]->State == SubmenuEntry::SELECTED)
 				{
-					entries_[idx].State = SubmenuEntry::INACTIVE;
+					entries_[idx]->State = SubmenuEntry::INACTIVE;
 
 					// Try from the entry directly below
 					for (std::int32_t nextIdx = idx + 1; nextIdx < entries_.size(); nextIdx++)
 					{
-						if (entries_[nextIdx].State == SubmenuEntry::INACTIVE)
+						if (entries_[nextIdx]->State == SubmenuEntry::INACTIVE)
 						{
-							entries_[nextIdx].State = SubmenuEntry::SELECTED;
+							entries_[nextIdx]->State = SubmenuEntry::SELECTED;
 							return;
 						}
 					}
@@ -126,12 +136,22 @@ namespace model
 					// Didn't find it? Try from the end of the list, cycle up
 					for (std::int32_t nextIdx = 0; nextIdx <= idx; idx++)
 					{
-						if (entries_[nextIdx].State == SubmenuEntry::INACTIVE)
+						if (entries_[nextIdx]->State == SubmenuEntry::INACTIVE)
 						{
-							entries_[nextIdx].State == SubmenuEntry::SELECTED;
+							entries_[nextIdx]->State = SubmenuEntry::SELECTED;
 							return;
 						}
 					}
+				}
+			}
+
+			// Nothing is selected, select the first
+			for (std::uint32_t idx = 0u; idx < entries_.size(); idx++)
+			{
+				if (entries_[idx]->State == SubmenuEntry::INACTIVE)
+				{
+					entries_[0u]->State = SubmenuEntry::SELECTED;
+					return;
 				}
 			}
 		}

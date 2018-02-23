@@ -4,6 +4,7 @@
 #include <model/menu/submenuentry.h>
 #include <vector>
 #include <optional>
+#include <memory>
 
 /**
  * Vertical Submenu
@@ -21,7 +22,7 @@ namespace model
 		public:
 			struct PlacedSubmenuEntry
 			{
-				SubmenuEntry Entry;
+				std::shared_ptr<SubmenuEntry> Entry;
 				MenuRect Location;
 			};
 
@@ -29,11 +30,11 @@ namespace model
 			VerticalSubmenu(
 				const MenuRect& submenuRect,
 				float submenuEntryHeight,
-				const std::vector<SubmenuEntry>& initialEntries
+				const std::vector<std::shared_ptr<SubmenuEntry>>& initialEntries
 			);
 			~VerticalSubmenu() = default;
 			VerticalSubmenu(const VerticalSubmenu&) = default;
-			void addMenuItem(const SubmenuEntry& add);
+			void addMenuItem(const std::shared_ptr<SubmenuEntry>& add);
 
 			std::vector<PlacedSubmenuEntry> getMenuItems() const;
 
@@ -43,11 +44,12 @@ namespace model
 			void moveSelectionDown();
 
 			MenuRect rect() const { return submenuRect_; }
+			float submenuEntryHeight() { return submenuEntryHeight_; }
 
 		protected:
 			MenuRect submenuRect_;
 			float submenuEntryHeight_;
-			std::vector<SubmenuEntry> entries_;
+			std::vector<std::shared_ptr<SubmenuEntry>> entries_;
 		};
 	}
 }

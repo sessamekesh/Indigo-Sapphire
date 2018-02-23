@@ -15,7 +15,8 @@ namespace sim
 				const glm::vec4& inactiveTextColor,
 				const glm::vec4& selectedTextColor,
 				const glm::vec4& disabledTextColor,
-				const glm::vec2& worldDimensions
+				const glm::vec2& overMenuWorldDimensions,
+				const glm::vec2& overMenuLogicalSize
 			)
 				: model::WithWorldTransform(glm::vec3(0.f, 0.f, 0.f), glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)), glm::vec3(1.f, 1.f, 1.f))
 				, model_(model)
@@ -27,8 +28,8 @@ namespace sim
 				, disabledTextColor_(disabledTextColor)
 				, scrollTransform_(nullptr)
 				, submenuTransform_(nullptr)
-				, worldDimensions_(worldDimensions)
-				, menuTransform_(nullptr)
+				, worldDimensions_(overMenuWorldDimensions)
+				, worldMenuLogicalSize_(overMenuLogicalSize)
 				, inactiveEntities_()
 				, disabledEntities_()
 				, selectedEntities_()
@@ -57,14 +58,34 @@ namespace sim
 				// Release anything that may have been previously prepared
 				release();
 
+				// Offset to put 0,0 at the upper-left hand corner of the menu (in world space)
+				submenuTransform_ = std::make_shared<model::WithWorldTransform>(
+					glm::vec3(-worldDimensions_.x / 2.f, worldDimensions_.y / 2.f, 0.f),
+					glm::angleAxis(0.f, glm::vec3(0.f, 0.f, 0.f)),
+					glm::vec3(1.f, 1.f, 1.f)
+				);
+
+				// Offset for the text to put its upper left hand corner in the right place
+				auto textOffset = modelToWorldSize(glm::vec2(0.f, -model_.submenuEntryHeight()));
+				auto textTransform = std::make_shared<model::WithWorldTransform>(
+					glm::vec3(textOffset, 0.f), glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)), glm::vec3(1.f, 1.f, 1.f)
+				);
+
 				for (auto&& menuItem : model_.getMenuItems())
 				{
+					// Transformation to put the upper-left corner of the background where it should be
+					auto upperLeft = modelToWorldLocation(menuItem.Location.TopLeftPos);
+					auto size = modelToWorldSize(menuItem.Location.Size);
+					auto backgroundTransform = std::make_shared<model::WithWorldTransform>(
+						glm::vec3(size.x * 0.5f, -size.y, 0.f),
+						glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.f)),
+						glm::vec3(1.f, 1.f, 1.f)
+					);
+
 					//
 					// Inactive entity
 					//
 					MenuItemEntity inactiveEntity;
-					auto upperLeft = modelToWorldSpace(menuItem.Location.TopLeftPos);
-					auto size = modelToWorldSpace(menuItem.Location.Size);
 					inactiveEntity.BackgroundEntity = std::make_shared<view::solidshader::GenericSolidEntity>(glm::vec3(upperLeft.x, upperLeft.y, 0.01f), glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.)), glm::vec3(1.f, 1.f, 1.f));
 					inactiveEntity.BackgroundEntity->addMesh(std::make_shared<view::GenericMesh>(view::raw::PlaneGenerator::getGenericMeshData(
 						model::geo::Plane(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, -1.f)),
@@ -73,20 +94,20 @@ namespace sim
 					)), inactiveBackgroundColor_);
 					if (!inactiveEntity.BackgroundEntity->prepare(solidShader, pso))
 					{
-						log.error << "Failed to prepare inactive background entity for menu item " << menuItem.Entry.Name << util::endl;
+						log.error << "Failed to prepare inactive background entity for menu item " << menuItem.Entry->Name << util::endl;
 						return false;
 					}
 					inactiveEntity.TextEntity = std::make_shared<view::text::MSDFStringEntity>(glm::vec3(upperLeft.x, upperLeft.y, 0.02f), glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.)), glm::vec3(1.f, 1.f, 1.f));
 					{
 						auto p1 = inactiveEntity.TextEntity->prepareCPUDeferrable(
-							menuItem.Entry.Caption,
+							menuItem.Entry->Caption,
 							size.y * 0.6f, size.y * 0.6f,
 							atlas,
 							inactiveTextColor_
 						);
 						if (!inactiveEntity.TextEntity->prepareFromDeferrable(p1, textShader, pso, textAtlasTexture))
 						{
-							log.error << "Failed to prepare inactive text entity for menu item " << menuItem.Entry.Name << util::endl;
+							log.error << "Failed to prepare inactive text entity for menu item " << menuItem.Entry->Name << util::endl;
 							return false;
 						}
 					}
@@ -103,20 +124,20 @@ namespace sim
 					)), disabledBackgroundColor_);
 					if (!disabledEntity.BackgroundEntity->prepare(solidShader, pso))
 					{
-						log.error << "Failed to prepare inactive background entity for menu item " << menuItem.Entry.Name << util::endl;
+						log.error << "Failed to prepare inactive background entity for menu item " << menuItem.Entry->Name << util::endl;
 						return false;
 					}
 					disabledEntity.TextEntity = std::make_shared<view::text::MSDFStringEntity>(glm::vec3(upperLeft.x, upperLeft.y, 0.02f), glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.)), glm::vec3(1.f, 1.f, 1.f));
 					{
 						auto p1 = disabledEntity.TextEntity->prepareCPUDeferrable(
-							menuItem.Entry.Caption,
+							menuItem.Entry->Caption,
 							size.y * 0.6f, size.y * 0.6f,
 							atlas,
 							disabledTextColor_
 						);
 						if (!disabledEntity.TextEntity->prepareFromDeferrable(p1, textShader, pso, textAtlasTexture))
 						{
-							log.error << "Failed to prepare inactive text entity for menu item " << menuItem.Entry.Name << util::endl;
+							log.error << "Failed to prepare inactive text entity for menu item " << menuItem.Entry->Name << util::endl;
 							return false;
 						}
 					}
@@ -133,33 +154,38 @@ namespace sim
 					)), selectedBackgroundColor_);
 					if (!selectedEntity.BackgroundEntity->prepare(solidShader, pso))
 					{
-						log.error << "Failed to prepare inactive background entity for menu item " << menuItem.Entry.Name << util::endl;
+						log.error << "Failed to prepare inactive background entity for menu item " << menuItem.Entry->Name << util::endl;
 						return false;
 					}
 					selectedEntity.TextEntity = std::make_shared<view::text::MSDFStringEntity>(glm::vec3(upperLeft.x, upperLeft.y, 0.02f), glm::angleAxis(0.f, glm::vec3(0.f, 1.f, 0.)), glm::vec3(1.f, 1.f, 1.f));
 					{
 						auto p1 = selectedEntity.TextEntity->prepareCPUDeferrable(
-							menuItem.Entry.Caption,
+							menuItem.Entry->Caption,
 							size.y * 0.6f, size.y * 0.6f,
 							atlas,
 							selectedTextColor_
 						);
 						if (!selectedEntity.TextEntity->prepareFromDeferrable(p1, textShader, pso, textAtlasTexture))
 						{
-							log.error << "Failed to prepare inactive text entity for menu item " << menuItem.Entry.Name << util::endl;
+							log.error << "Failed to prepare inactive text entity for menu item " << menuItem.Entry->Name << util::endl;
 							return false;
 						}
 					}
 
-					inactiveEntity.BackgroundEntity->setParent(menuTransform);
-					inactiveEntity.TextEntity->setParent(menuTransform);
-					disabledEntity.BackgroundEntity->setParent(menuTransform);
-					disabledEntity.TextEntity->setParent(menuTransform);
-					selectedEntity.BackgroundEntity->setParent(menuTransform);
-					selectedEntity.TextEntity->setParent(menuTransform);
-					inactiveEntities_.insert({ menuItem.Entry.Name, inactiveEntity });
-					inactiveEntities_.insert({ menuItem.Entry.Name, disabledEntity });
-					inactiveEntities_.insert({ menuItem.Entry.Name, selectedEntity });
+					submenuTransform_->setParent(menuTransform);
+
+					backgroundTransform->setParent(submenuTransform_);
+					textTransform->setParent(submenuTransform_);
+
+					inactiveEntity.BackgroundEntity->setParent(backgroundTransform);
+					inactiveEntity.TextEntity->setParent(textTransform);
+					disabledEntity.BackgroundEntity->setParent(backgroundTransform);
+					disabledEntity.TextEntity->setParent(textTransform);
+					selectedEntity.BackgroundEntity->setParent(backgroundTransform);
+					selectedEntity.TextEntity->setParent(textTransform);
+					inactiveEntities_.insert({ menuItem.Entry->Name, inactiveEntity });
+					disabledEntities_.insert({ menuItem.Entry->Name, disabledEntity });
+					selectedEntities_.insert({ menuItem.Entry->Name, selectedEntity });
 				}
 
 				return true;
@@ -192,11 +218,11 @@ namespace sim
 			{
 				for (auto&& menuItem : model_.getMenuItems())
 				{
-					switch (menuItem.Entry.State)
+					switch (menuItem.Entry->State)
 					{
 					case model::menu::SubmenuEntry::DISABLED:
 					{
-						auto entity = disabledEntities_.find(menuItem.Entry.Name);
+						auto entity = disabledEntities_.find(menuItem.Entry->Name);
 						if (entity != disabledEntities_.end())
 						{
 							entity->second.BackgroundEntity->render(solidShader);
@@ -206,7 +232,7 @@ namespace sim
 					case model::menu::SubmenuEntry::INACTIVE:
 					default:
 					{
-						auto entity = inactiveEntities_.find(menuItem.Entry.Name);
+						auto entity = inactiveEntities_.find(menuItem.Entry->Name);
 						if (entity != inactiveEntities_.end())
 						{
 							entity->second.BackgroundEntity->render(solidShader);
@@ -215,7 +241,7 @@ namespace sim
 					break;
 					case model::menu::SubmenuEntry::SELECTED:
 					{
-						auto entity = selectedEntities_.find(menuItem.Entry.Name);
+						auto entity = selectedEntities_.find(menuItem.Entry->Name);
 						if (entity != selectedEntities_.end())
 						{
 							entity->second.BackgroundEntity->render(solidShader);
@@ -230,11 +256,11 @@ namespace sim
 			{
 				for (auto&& menuItem : model_.getMenuItems())
 				{
-					switch (menuItem.Entry.State)
+					switch (menuItem.Entry->State)
 					{
 					case model::menu::SubmenuEntry::DISABLED:
 					{
-						auto entity = disabledEntities_.find(menuItem.Entry.Name);
+						auto entity = disabledEntities_.find(menuItem.Entry->Name);
 						if (entity != disabledEntities_.end())
 						{
 							entity->second.TextEntity->render(textShader);
@@ -244,7 +270,7 @@ namespace sim
 					case model::menu::SubmenuEntry::INACTIVE:
 					default:
 					{
-						auto entity = inactiveEntities_.find(menuItem.Entry.Name);
+						auto entity = inactiveEntities_.find(menuItem.Entry->Name);
 						if (entity != inactiveEntities_.end())
 						{
 							entity->second.TextEntity->render(textShader);
@@ -253,7 +279,7 @@ namespace sim
 					break;
 					case model::menu::SubmenuEntry::SELECTED:
 					{
-						auto entity = selectedEntities_.find(menuItem.Entry.Name);
+						auto entity = selectedEntities_.find(menuItem.Entry->Name);
 						if (entity != selectedEntities_.end())
 						{
 							entity->second.TextEntity->render(textShader);
@@ -264,11 +290,19 @@ namespace sim
 				}
 			}
 
-			glm::vec2 VerticalSubmenuEntity::modelToWorldSpace(const glm::vec2& modelPoint) const
+			glm::vec2 VerticalSubmenuEntity::modelToWorldLocation(const glm::vec2& modelPoint) const
 			{
 				return glm::vec2(
-					modelPoint.x * (worldDimensions_.x / model_.rect().Size.x),
-					modelPoint.y * (worldDimensions_.y / model_.rect().Size.y)
+					modelPoint.x * (worldDimensions_.x / worldMenuLogicalSize_.x),
+					-modelPoint.y * (worldDimensions_.y / worldMenuLogicalSize_.y)
+				);
+			}
+
+			glm::vec2 VerticalSubmenuEntity::modelToWorldSize(const glm::vec2& modelPoint) const
+			{
+				return glm::vec2(
+					modelPoint.x * (worldDimensions_.x / worldMenuLogicalSize_.x),
+					modelPoint.y * (worldDimensions_.y / worldMenuLogicalSize_.y)
 				);
 			}
 		}

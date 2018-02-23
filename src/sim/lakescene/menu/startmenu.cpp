@@ -95,6 +95,7 @@ namespace sim
 			// Create vertical menu entries
 			{
 				model::menu::VerticalInnerMenu waterMenu(MenuItemHeight);
+				model::menu::VerticalInnerMenu grassMenu(MenuItemHeight);
 
 				{
 					model::menu::MenuItem<std::string> mi;
@@ -115,6 +116,7 @@ namespace sim
 				}
 
 				tr.MenuModel->addSubmenu("water", "Water Options", waterMenu);
+				tr.MenuModel->addSubmenu("grass", "Grass Options", grassMenu);
 			}
 
 			// Create geometry
@@ -216,6 +218,16 @@ namespace sim
 				}
 			}));
 
+			handles_.push_back(controller_->addDeselectButtonListener([this]() {
+				auto state = getState();
+				if (state == StartMenu::SHOWN)
+				{
+					menuModel_->deselect();
+
+					// TODO SESS: Resume logic here
+				}
+			}));
+
 			return true;
 		}
 
@@ -238,15 +250,17 @@ namespace sim
 				return false;
 			}
 
+			auto submenu = menuModel_->getSubmenu();
 			verticalSubmenuEntity_ = std::make_shared<sim::lake::entity::VerticalSubmenuEntity>(
-				menuModel_->getSubmenu(),
+				submenu,
 				configuration_.InactiveBackgroundColor,
 				configuration_.SelectedBackgroundColor,
 				configuration_.DisabledBackgroundColor,
 				configuration_.InactiveTextColor,
 				configuration_.SelectedTextColor,
 				configuration_.DisabledTextColor,
-				configuration_.WorldSize
+				configuration_.WorldSize,
+				LogicalMenuSize
 			);
 			if (!verticalSubmenuEntity_->prepare(solidShader_, textShader_, pso, atlasData, menuTransform_, textTexture))
 			{
