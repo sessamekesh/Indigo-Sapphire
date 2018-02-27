@@ -55,7 +55,7 @@ namespace view
 
 		bool prepareInternal(const std::vector<VertexType> vertices, const std::vector<std::uint32_t> indices, std::shared_ptr<ShaderType> shader, util::PipelineState& pso, GLuint& o_VAO, GLuint& o_VB, GLuint& o_IB, std::uint32_t& o_numIndices)
 		{
-			glCreateVertexArrays(1, &o_VAO);
+			glGenVertexArrays(1, &o_VAO);
 			glBindVertexArray(o_VAO);
 			
 			glGenBuffers(1, &o_VB);
@@ -82,7 +82,7 @@ namespace view
 
 		bool prepareInternal(const std::vector<VertexType> vertices, std::shared_ptr<ShaderType> shader, util::PipelineState& pso, GLuint& o_VAO, GLuint& o_VB, std::uint32_t& o_numPoints)
 		{
-			glCreateVertexArrays(1, &o_VAO);
+			glGenVertexArrays(1, &o_VAO);
 			glBindVertexArray(o_VAO);
 
 			glGenBuffers(1, &o_VB);

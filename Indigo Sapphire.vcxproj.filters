@@ -543,6 +543,9 @@
     <ClCompile Include="src\sim\lakescene\entities\verticalsubmenu.cpp">
       <Filter>Source Files\sim\lakescene\entities</Filter>
     </ClCompile>
+    <ClCompile Include="src\sim\lakescene\entities\verticalinnermenu.cpp">
+      <Filter>Source Files\sim\lakescene\entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\model\geo\grid.h">
@@ -900,6 +903,9 @@
       <Filter>Header Files\model\menu</Filter>
     </ClInclude>
     <ClInclude Include="include\sim\lakescene\entities\verticalsubmenu.h">
+      <Filter>Header Files\sim\lakescene\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sim\lakescene\entities\verticalinnermenu.h">
       <Filter>Header Files\sim\lakescene\entities</Filter>
     </ClInclude>
   </ItemGroup>

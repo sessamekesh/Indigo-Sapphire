@@ -171,6 +171,7 @@
     <ClCompile Include="src\sim\lakescene\debugtext.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\tree.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\treeloader.cpp" />
+    <ClCompile Include="src\sim\lakescene\entities\verticalinnermenu.cpp" />
     <ClCompile Include="src\sim\lakescene\entities\verticalsubmenu.cpp" />
     <ClCompile Include="src\sim\lakescene\lakescene.cpp" />
     <ClCompile Include="src\sim\lakescene\menu\startmenu.cpp" />
@@ -281,6 +282,7 @@
     <ClInclude Include="include\sim\lakescene\debugtext.h" />
     <ClInclude Include="include\sim\lakescene\entities\tree.h" />
     <ClInclude Include="include\sim\lakescene\entities\treeloader.h" />
+    <ClInclude Include="include\sim\lakescene\entities\verticalinnermenu.h" />
     <ClInclude Include="include\sim\lakescene\entities\verticalsubmenu.h" />
     <ClInclude Include="include\sim\lakescene\lakescene.h" />
     <ClInclude Include="include\sim\lakescene\bladedgrass.h" />

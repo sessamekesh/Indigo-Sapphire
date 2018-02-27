@@ -1,8 +1,7 @@
 #pragma once
 
-#include <model/menu/verticalsubmenu.h>
+#include <model/menu/verticalinnermenu.h>
 #include <view/solidshader/solidshader.h>
-#include <view/entity.h>
 #include <model/withworldtransform.h>
 #include <view/GenericVertex.h>
 #include <view/solidshader/genericsolidentity.h>
@@ -14,12 +13,11 @@ namespace sim
 	{
 		namespace entity
 		{
-			class VerticalSubmenuEntity
-				: public model::WithWorldTransform
+			class VerticalInnerMenuEntity
 			{
 			public:
-				VerticalSubmenuEntity(
-					model::menu::VerticalSubmenu model,
+				VerticalInnerMenuEntity(
+					std::shared_ptr<model::menu::VerticalInnerMenu> model,
 					const glm::vec4& inactiveBackgroundColor,
 					const glm::vec4& selectedBackgroundColor,
 					const glm::vec4& disabledBackgroundColor,
@@ -29,8 +27,8 @@ namespace sim
 					const glm::vec2& overMenuWorldDimensions,
 					const glm::vec2& overMenuLogicalSize
 				);
-				~VerticalSubmenuEntity();
-				VerticalSubmenuEntity(const VerticalSubmenuEntity&) = default;
+				~VerticalInnerMenuEntity();
+				VerticalInnerMenuEntity(const VerticalInnerMenuEntity&) = default;
 
 				void setScroll(float logicalScrollAmt);
 
@@ -52,7 +50,7 @@ namespace sim
 				glm::vec2 modelToWorldSize(const glm::vec2& size) const;
 
 			private:
-				model::menu::VerticalSubmenu model_;
+				std::shared_ptr<model::menu::VerticalInnerMenu> model_;
 				glm::vec4 inactiveBackgroundColor_;
 				glm::vec4 selectedBackgroundColor_;
 				glm::vec4 disabledBackgroundColor_;
@@ -70,12 +68,13 @@ namespace sim
 					std::shared_ptr<view::solidshader::GenericSolidEntity> BackgroundEntity;
 					std::shared_ptr<view::text::MSDFStringEntity> TextEntity;
 				};
-				// TODO SESS: Consider this further. Do you really want this mapping? Or should you just do a list?
-				std::map<std::string, MenuItemEntity> inactiveEntities_;
-				std::map<std::string, MenuItemEntity> disabledEntities_;
-				std::map<std::string, MenuItemEntity> selectedEntities_;
 
-				util::Logger log;
+				//
+				// Menu item entities
+				//
+				std::unordered_map<std::uint32_t, MenuItemEntity> inactiveEntities_;
+				std::unordered_map<std::uint32_t, MenuItemEntity> selectedEntities_;
+				std::unordered_map<std::uint32_t, MenuItemEntity> disabledEntities_;
 			};
 		}
 	}
